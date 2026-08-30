@@ -63,6 +63,7 @@
   --sh-white: #ffffff;
   --sh-red: #cf1c29;
   --sh-bone: #f2efe9;
+  --sh-muted: #6b6860; /* secondary text on bone — 4.85:1, AA pass */
 
   /* Comma-separated triplets, to match Dawn's rgb(var(--x)) convention. */
   --sh-ink-rgb: 17, 17, 16;
@@ -338,7 +339,7 @@ button.shopify-payment-button__button--unbranded {
   font-family: var(--sh-font-mono);
   font-weight: var(--sh-weight-regular);
   font-size: 1.3rem;
-  color: rgba(17, 17, 16, 0.6);
+  color: var(--sh-muted);
   text-decoration: line-through;
 }
 
@@ -347,7 +348,7 @@ button.shopify-payment-button__button--unbranded {
   font-weight: var(--sh-weight-regular);
   font-size: 1.1rem;
   letter-spacing: var(--sh-label-tracking);
-  color: rgba(17, 17, 16, 0.65);
+  color: var(--sh-muted);
 }
 
 /* Dawn's own price element, set in mono so any price we have not wrapped in a
@@ -523,5 +524,207 @@ textarea.text-area,
 
   .sh-ticket--card {
     font-size: 1.6rem;
+  }
+}
+
+
+/* ==========================================================================
+   STAGE 2 — Product page
+   ==========================================================================
+
+   Order is set in templates/product.json, not here:
+     title, price, why_we_stock_it, variant picker, quantity, buy buttons,
+     delivery estimate, description, spec table.
+
+   See the price, read why it is worth it, then choose and buy.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   13. The price, as a full bordered ticket
+   Dawn's own price block is restyled rather than replaced. Reimplementing it
+   would mean reimplementing compare-at, unit pricing and the tax line — all of
+   which Dawn already handles correctly.
+   -------------------------------------------------------------------------- */
+
+.product__info-container .price {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  padding: 0.9rem 1.3rem;
+  border: var(--sh-ticket-border) solid var(--sh-red);
+  border-radius: 0;
+  font-family: var(--sh-font-mono);
+  font-weight: var(--sh-weight-bold);
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+/* One price per product page, so the red figure spends the accent only once. */
+.product__info-container .price .price-item--regular,
+.product__info-container .price .price-item--sale {
+  color: var(--sh-red);
+  font-family: var(--sh-font-mono);
+  letter-spacing: 0;
+}
+
+/* Compare-at: quiet and factual. Never an inflated RRP. */
+.product__info-container .price .price-item--last,
+.product__info-container .price s.price-item {
+  color: var(--sh-muted);
+  font-size: 1.5rem;
+  font-weight: var(--sh-weight-regular);
+}
+
+.product__info-container .price__container {
+  display: block;
+}
+
+.product__info-container .price .price__unit,
+.product__info-container .price .price__tax {
+  flex-basis: 100%;
+  font-size: 1.1rem;
+  font-weight: var(--sh-weight-regular);
+  letter-spacing: var(--sh-label-tracking);
+  color: var(--sh-muted);
+}
+
+/* --------------------------------------------------------------------------
+   14. Why we stock it — the reason the shop exists
+   380 products, not 14,000. This paragraph is the business model, so it sits
+   directly under the price and above the buy button, with the accent rule.
+   -------------------------------------------------------------------------- */
+
+.sh-why {
+  margin: 2.4rem 0;
+  padding: 0.2rem 0 0.2rem 1.6rem;
+  border-left: var(--sh-accent-rule) solid var(--sh-red);
+}
+
+.sh-why__label {
+  margin: 0 0 0.8rem;
+  color: var(--sh-ink);
+}
+
+.sh-why__body > p {
+  margin: 0 0 1.2rem;
+  font-family: var(--sh-font-display);
+  font-weight: var(--sh-weight-regular);
+  font-size: 1.7rem;
+  line-height: 1.6;
+  color: var(--sh-ink);
+  max-width: 62ch; /* keeps the measure readable on wide screens */
+}
+
+.sh-why__body > p:last-child {
+  margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   15. Delivery estimate
+   Factual logistics, not urgency. No countdowns on alcohol.
+   -------------------------------------------------------------------------- */
+
+.sh-delivery {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.9rem;
+  margin: 1.6rem 0;
+  padding-top: 1.4rem;
+  border-top: var(--sh-rule-weight) solid var(--sh-hairline);
+}
+
+.sh-delivery__label {
+  color: var(--sh-muted);
+}
+
+.sh-delivery__text {
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: var(--sh-ink);
+}
+
+/* --------------------------------------------------------------------------
+   16. Specification table
+   A definition list, so the key/value relationship is real for screen readers
+   rather than implied by layout.
+   -------------------------------------------------------------------------- */
+
+.sh-spec {
+  margin: 3.2rem 0 0;
+  padding-top: 2rem;
+  border-top: var(--sh-rule-weight) solid var(--sh-hairline);
+}
+
+.sh-spec__heading {
+  margin: 0 0 1.4rem;
+  color: var(--sh-muted);
+  font-size: var(--sh-label-size);
+}
+
+.sh-spec__list {
+  display: grid;
+  grid-template-columns: minmax(9rem, auto) 1fr;
+  gap: 0;
+  margin: 0;
+}
+
+.sh-spec__list dt {
+  margin: 0;
+  padding: 1rem 1.6rem 1rem 0;
+  color: var(--sh-muted);
+  border-top: var(--sh-rule-weight) solid var(--sh-hairline);
+}
+
+.sh-spec__list dd {
+  margin: 0;
+  padding: 1rem 0;
+  font-family: var(--sh-font-mono);
+  font-size: 1.4rem;
+  color: var(--sh-ink);
+  border-top: var(--sh-rule-weight) solid var(--sh-hairline);
+}
+
+.sh-spec__list dt:first-of-type,
+.sh-spec__list dt:first-of-type + dd {
+  border-top: 0;
+}
+
+/* --------------------------------------------------------------------------
+   17. Product page, 375px first
+   -------------------------------------------------------------------------- */
+
+@media screen and (max-width: 749px) {
+  .product__info-container .price {
+    font-size: 2rem;
+    padding: 0.8rem 1.1rem;
+  }
+
+  .sh-why__body > p {
+    font-size: 1.6rem;
+  }
+
+  .sh-why {
+    padding-left: 1.2rem;
+    margin: 2rem 0;
+  }
+
+  /* Below ~420px a two-column list starts hyphenating the values, so stack. */
+  .sh-spec__list {
+    grid-template-columns: 1fr;
+  }
+
+  .sh-spec__list dt {
+    padding: 1rem 0 0.2rem;
+  }
+
+  .sh-spec__list dd {
+    padding: 0 0 1rem;
+    border-top: 0;
+  }
+
+  .sh-spec__list dt:first-of-type + dd {
+    border-top: 0;
   }
 }

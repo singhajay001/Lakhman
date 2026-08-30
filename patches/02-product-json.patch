@@ -1,0 +1,59 @@
+--- a/templates/product.json
++++ b/templates/product.json
+@@ -3,19 +3,15 @@
+     "main": {
+       "type": "main-product",
+       "blocks": {
+-        "vendor": {
+-          "type": "text",
+-          "settings": {
+-            "text": "{{ product.vendor }}",
+-            "text_style": "uppercase"
+-          }
+-        },
+         "title": {
+           "type": "title"
+         },
+         "price": {
+           "type": "price"
+         },
++        "why_we_stock_it": {
++          "type": "why_we_stock_it"
++        },
+         "variant_picker": {
+           "type": "variant_picker",
+           "settings": {
+@@ -33,25 +29,26 @@
+             "show_gift_card_recipient": true
+           }
+         },
++        "delivery_estimate": {
++          "type": "delivery_estimate"
++        },
+         "description": {
+           "type": "description"
+         },
+-        "share": {
+-          "type": "share",
+-          "settings": {
+-            "share_label": "Share"
+-          }
++        "spec_table": {
++          "type": "spec_table"
+         }
+       },
+       "block_order": [
+-        "vendor",
+         "title",
+         "price",
++        "why_we_stock_it",
+         "variant_picker",
+         "quantity_selector",
+         "buy_buttons",
++        "delivery_estimate",
+         "description",
+-        "share"
++        "spec_table"
+       ],
+       "settings": {
+         "enable_sticky_info": true,
