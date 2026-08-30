@@ -349,6 +349,19 @@
       custom properties set in the {% style %} block above.
     {%- endcomment -%}
     {{ 'spirithaus.css' | asset_url | stylesheet_tag }}
+
+    {%- comment -%}
+      Age gate, part one of two. The gate itself is a section in the footer
+      group; this runs in <head> purely so a visitor who has already answered
+      never sees it paint. Reading a cookie is cheap and unblocking.
+    {%- endcomment -%}
+    <script>
+      (function () {
+        if (document.cookie.split('; ').indexOf('sh_age_ok=1') !== -1) {
+          document.documentElement.classList.add('sh-age-verified');
+        }
+      })();
+    </script>
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">

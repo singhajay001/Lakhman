@@ -731,6 +731,22 @@
                     least one metafield on this product actually has a value.
                   {%- endcomment -%}
                   {%- capture spec_rows -%}
+                    {%- comment -%}
+                      Standard drinks leads the table: it is the figure
+                      Australian customers look for, and it is regulated under
+                      the Food Standards Code. It is read from a metafield, never
+                      computed from volume x ABV — the bottle label is the source
+                      of truth, and a derived number that disagrees with it is a
+                      compliance problem rather than a display bug.
+                    {%- endcomment -%}
+                    {%- if m.standard_drinks.value != blank -%}
+                      {%- assign sd = m.standard_drinks.value -%}
+                      {%- assign sd_whole = sd | round -%}
+                      <dt class="sh-label">{{ 'Standard drinks' }}</dt>
+                      <dd>
+                        {%- if sd == sd_whole -%}{{ sd_whole }}{%- else -%}{{ sd | round: 1 }}{%- endif -%}
+                      </dd>
+                    {%- endif -%}
                     {%- if m.style.value != blank -%}
                       <dt class="sh-label">{{ 'Style' }}</dt><dd>{{ m.style.value | escape }}</dd>
                     {%- endif -%}
@@ -1085,7 +1101,7 @@
         },
         {
           "type": "paragraph",
-          "content": "Built from the custom metafields: style, producer, region, country, volume_ml and abv. Only fields with values are shown."
+          "content": "Built from the custom metafields: standard_drinks, style, producer, region, country, volume_ml and abv. Only fields with values are shown. Standard drinks is read from the metafield, never calculated — the bottle label is the source of truth."
         }
       ]
     },

@@ -1,0 +1,173 @@
+--- a/sections/main-product.liquid
++++ b/sections/main-product.liquid
+@@ -688,6 +688,105 @@
+                   </product-recommendations>
+                 {%- when 'icon-with-text' -%}
+                   {% render 'icon-with-text', block: block %}
++
++                {%- comment -%}
++                  SpiritHaus blocks. Added as new `when` branches rather than by
++                  restructuring this section, so the file stays mergeable with
++                  upstream Dawn. Order is set in templates/product.json.
++                {%- endcomment -%}
++
++                {%- when 'why_we_stock_it' -%}
++                  {%- assign why = product.metafields.custom.why_we_stock_it.value -%}
++                  {%- if why != blank -%}
++                    <div class="sh-why quick-add-hidden" {{ block.shopify_attributes }}>
++                      <p class="sh-label sh-why__label">{{ block.settings.label }}</p>
++                      <div class="sh-why__body">
++                        {%- comment -%}
++                          Multi-line metafield: escape first, then split, so a
++                          stray angle bracket in the copy cannot inject markup.
++                        {%- endcomment -%}
++                        {%- assign paragraphs = why | escape | split: '
++' -%}
++                        {%- for paragraph in paragraphs -%}
++                          {%- unless paragraph == blank -%}
++                            <p>{{ paragraph }}</p>
++                          {%- endunless -%}
++                        {%- endfor -%}
++                      </div>
++                    </div>
++                  {%- endif -%}
++
++                {%- when 'delivery_estimate' -%}
++                  {%- if block.settings.text != blank -%}
++                    <p class="sh-delivery quick-add-hidden" {{ block.shopify_attributes }}>
++                      <span class="sh-label sh-delivery__label">{{ block.settings.label }}</span>
++                      <span class="sh-delivery__text">{{ block.settings.text | escape }}</span>
++                    </p>
++                  {%- endif -%}
++
++                {%- when 'spec_table' -%}
++                  {%- assign m = product.metafields.custom -%}
++                  {%- comment -%}
++                    Build the rows first so the <dl> is only emitted when at
++                    least one metafield on this product actually has a value.
++                  {%- endcomment -%}
++                  {%- capture spec_rows -%}
++                    {%- comment -%}
++                      Standard drinks leads the table: it is the figure
++                      Australian customers look for, and it is regulated under
++                      the Food Standards Code. It is read from a metafield, never
++                      computed from volume x ABV — the bottle label is the source
++                      of truth, and a derived number that disagrees with it is a
++                      compliance problem rather than a display bug.
++                    {%- endcomment -%}
++                    {%- if m.standard_drinks.value != blank -%}
++                      {%- assign sd = m.standard_drinks.value -%}
++                      {%- assign sd_whole = sd | round -%}
++                      <dt class="sh-label">{{ 'Standard drinks' }}</dt>
++                      <dd>
++                        {%- if sd == sd_whole -%}{{ sd_whole }}{%- else -%}{{ sd | round: 1 }}{%- endif -%}
++                      </dd>
++                    {%- endif -%}
++                    {%- if m.style.value != blank -%}
++                      <dt class="sh-label">{{ 'Style' }}</dt><dd>{{ m.style.value | escape }}</dd>
++                    {%- endif -%}
++                    {%- if m.producer.value != blank -%}
++                      <dt class="sh-label">{{ 'Producer' }}</dt><dd>{{ m.producer.value | escape }}</dd>
++                    {%- endif -%}
++                    {%- if m.region.value != blank -%}
++                      <dt class="sh-label">{{ 'Region' }}</dt><dd>{{ m.region.value | escape }}</dd>
++                    {%- endif -%}
++                    {%- if m.country.value != blank -%}
++                      <dt class="sh-label">{{ 'Country' }}</dt><dd>{{ m.country.value | escape }}</dd>
++                    {%- endif -%}
++                    {%- if m.volume_ml.value != blank -%}
++                      {%- assign ml = m.volume_ml.value -%}
++                      <dt class="sh-label">{{ 'Volume' }}</dt>
++                      <dd>
++                        {%- if ml >= 1000 -%}
++                          {{ ml | divided_by: 1000.0 | round: 2 }} L
++                        {%- else -%}
++                          {{ ml }} mL
++                        {%- endif -%}
++                      </dd>
++                    {%- endif -%}
++                    {%- if m.abv.value != blank -%}
++                      {%- assign abv = m.abv.value -%}
++                      {%- assign abv_whole = abv | round -%}
++                      <dt class="sh-label">{{ 'Alcohol' }}</dt>
++                      <dd>
++                        {%- if abv == abv_whole -%}{{ abv_whole }}{%- else -%}{{ abv | round: 1 }}{%- endif -%}% ABV
++                      </dd>
++                    {%- endif -%}
++                  {%- endcapture -%}
++                  {%- if spec_rows != blank -%}
++                    <div class="sh-spec quick-add-hidden" {{ block.shopify_attributes }}>
++                      {%- if block.settings.heading != blank -%}
++                        <h2 class="sh-spec__heading sh-label">{{ block.settings.heading | escape }}</h2>
++                      {%- endif -%}
++                      <dl class="sh-spec__list">{{ spec_rows }}</dl>
++                    </div>
++                  {%- endif -%}
+               {%- endcase -%}
+             {%- endfor -%}
+             <a href="{{ product.url }}" class="link product__view-details animate-arrow">
+@@ -949,6 +1048,64 @@
+       "limit": 1
+     },
+     {
++      "comment": "SpiritHaus blocks. Plain-English labels rather than t: keys, so that locales/en.default.schema.json does not also need editing.",
++      "type": "why_we_stock_it",
++      "name": "Why we stock it",
++      "limit": 1,
++      "settings": [
++        {
++          "type": "paragraph",
++          "content": "Renders the custom.why_we_stock_it metafield. The block is hidden automatically on products where that field is empty."
++        },
++        {
++          "type": "text",
++          "id": "label",
++          "label": "Label",
++          "default": "Why we stock it"
++        }
++      ]
++    },
++    {
++      "type": "delivery_estimate",
++      "name": "Delivery estimate",
++      "limit": 1,
++      "settings": [
++        {
++          "type": "text",
++          "id": "label",
++          "label": "Label",
++          "default": "Delivery"
++        },
++        {
++          "type": "text",
++          "id": "text",
++          "label": "Estimate",
++          "default": "Sydney metro. Same-day dispatch on orders placed before 2pm."
++        },
++        {
++          "type": "paragraph",
++          "content": "Keep this factual. Avoid urgency or countdown wording on alcohol."
++        }
++      ]
++    },
++    {
++      "type": "spec_table",
++      "name": "Specifications",
++      "limit": 1,
++      "settings": [
++        {
++          "type": "text",
++          "id": "heading",
++          "label": "Heading",
++          "default": "Specifications"
++        },
++        {
++          "type": "paragraph",
++          "content": "Built from the custom metafields: standard_drinks, style, producer, region, country, volume_ml and abv. Only fields with values are shown. Standard drinks is read from the metafield, never calculated — the bottle label is the source of truth."
++        }
++      ]
++    },
++    {
+       "type": "share",
+       "name": "t:sections.main-product.blocks.share.name",
+       "limit": 1,

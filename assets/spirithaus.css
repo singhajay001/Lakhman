@@ -728,3 +728,175 @@ textarea.text-area,
     border-top: 0;
   }
 }
+
+/* ==========================================================================
+   STAGE 3 — Compliance
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   18. Site-wide liquor notice
+   Sits below the footer on ink. Type is white or a light grey — never red,
+   which measures 3.46:1 on ink and fails as text.
+   -------------------------------------------------------------------------- */
+
+.sh-compliance {
+  background-color: var(--sh-ink);
+  color: var(--sh-white);
+  padding: 2.4rem 0 3.2rem;
+  border-top: var(--sh-rule-weight) solid rgba(255, 255, 255, 0.16);
+}
+
+.sh-compliance__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sh-compliance__key {
+  display: block;
+  margin-bottom: 0.4rem;
+  /* 5.27:1 on ink — the same grey the tagline uses, AA pass. */
+  color: #8a8780;
+}
+
+.sh-compliance__licence {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+
+.sh-compliance__value {
+  font-weight: var(--sh-weight-bold);
+}
+
+.sh-compliance__number {
+  display: inline-block;
+  margin-left: 0.8rem;
+  font-family: var(--sh-font-mono);
+  font-weight: var(--sh-weight-regular);
+  letter-spacing: 0.04em;
+}
+
+.sh-compliance__warning {
+  margin: 0;
+  padding-left: 1.4rem;
+  border-left: var(--sh-accent-rule) solid var(--sh-red);
+  font-size: 1.4rem;
+  line-height: 1.55;
+  font-weight: var(--sh-weight-bold);
+  max-width: 68ch;
+}
+
+.sh-compliance__id {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.55;
+  color: #c9c7c2; /* 11.4:1 on ink */
+  max-width: 68ch;
+}
+
+/* --------------------------------------------------------------------------
+   19. Age gate
+   Overlay, never a blank page. The document renders underneath so crawlers and
+   assistive technology both still see the content.
+   -------------------------------------------------------------------------- */
+
+.sh-age-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--sh-ink);
+  overflow-y: auto;
+}
+
+/* Set by the <head> script for a returning visitor, so the gate never paints. */
+.sh-age-verified .sh-age-gate {
+  display: none;
+}
+
+/* Stop the page behind the gate from scrolling while it is open. */
+.sh-age-locked,
+.sh-age-locked body {
+  overflow: hidden;
+}
+
+.sh-age-gate__panel {
+  width: 100%;
+  max-width: 46rem;
+  text-align: left;
+}
+
+.sh-age-gate__heading {
+  margin: 0 0 1.6rem;
+  color: var(--sh-white);
+  font-size: 3.2rem;
+}
+
+.sh-age-gate__body {
+  margin: 0 0 2.8rem;
+  color: var(--sh-white);
+  font-size: 1.6rem;
+  line-height: 1.6;
+  max-width: 40ch;
+}
+
+.sh-age-gate__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.2rem;
+}
+
+/* The confirm button is the one red element in this view. */
+.sh-age-gate .button.sh-age-gate__confirm {
+  background-color: var(--sh-red);
+  color: var(--sh-white);
+  border: 0;
+  width: 100%;
+}
+
+.sh-age-gate__decline {
+  background: none;
+  border: var(--sh-rule-weight) solid rgba(255, 255, 255, 0.5);
+  color: var(--sh-white);
+  font-family: var(--sh-font-display);
+  font-size: 1.4rem;
+  font-weight: var(--sh-weight-regular);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  min-height: 4.6rem;
+  padding: 0 2rem;
+  cursor: pointer;
+}
+
+.sh-age-gate__decline:hover {
+  border-color: var(--sh-white);
+}
+
+.sh-age-gate__footnote {
+  margin: 2.4rem 0 0;
+  color: #8a8780; /* 5.27:1 on ink */
+  font-family: var(--sh-font-mono);
+  font-size: 1.1rem;
+  letter-spacing: var(--sh-label-tracking);
+  line-height: 1.5;
+}
+
+@media screen and (min-width: 750px) {
+  .sh-age-gate__heading {
+    font-size: 4rem;
+  }
+
+  .sh-age-gate__actions {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .sh-age-gate .button.sh-age-gate__confirm {
+    width: auto;
+  }
+}
