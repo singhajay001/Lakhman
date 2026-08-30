@@ -1,0 +1,46 @@
+--- a/layout/theme.liquid
++++ b/layout/theme.liquid
+@@ -15,6 +15,30 @@
+       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+     {%- endunless -%}
+ 
++    {%- comment -%}
++      SpiritHaus type. Archivo 300/400/700/900 carries the logo's light-against-black
++      weight contrast; Space Mono 400/700 sets prices and utility labels.
++
++      Loaded from Google rather than Shopify's hosted library: the signature depends
++      on weight 300 being present, and Shopify's font picker does not expose every
++      weight for every family. Google serves all four Archivo weights (verified).
++      preconnect + display=swap keep the cost to one early, non-blocking request.
++    {%- endcomment -%}
++    <link rel="preconnect" href="https://fonts.googleapis.com">
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link
++      rel="stylesheet"
++      href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap"
++      media="print"
++      onload="this.media='all'"
++    >
++    <noscript>
++      <link
++        rel="stylesheet"
++        href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap"
++      >
++    </noscript>
++
+     <title>
+       {{ page_title }}
+       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+@@ -319,6 +343,12 @@
+         document.documentElement.classList.add('shopify-design-mode');
+       }
+     </script>
++
++    {%- comment -%}
++      SpiritHaus brand layer. Linked last so its :root redefinitions override the
++      custom properties set in the {% style %} block above.
++    {%- endcomment -%}
++    {{ 'spirithaus.css' | asset_url | stylesheet_tag }}
+   </head>
+ 
+   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">

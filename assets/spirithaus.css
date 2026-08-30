@@ -1,0 +1,527 @@
+/* ==========================================================================
+   SpiritHaus — brand layer over Dawn 16.0.0
+   ==========================================================================
+
+   SPIRITHAUS PTY LTD (ACN 701 853 483). Australian English throughout.
+
+   HOW THIS FILE WORKS
+   -------------------
+   Dawn declares its geometry and typography as CSS custom properties inside a
+   {% style %} block in layout/theme.liquid, then consumes them across its own
+   stylesheets (border-radius: var(--media-radius), and so on). So the cheapest
+   and most durable way to restyle Dawn is to redefine those properties rather
+   than to fight its rules selector by selector.
+
+   That is what section 2 below does. It is why this file contains no
+   !important: a custom property redefined on :root in a later stylesheet wins
+   outright, with no specificity contest at all.
+
+   LOAD ORDER — IMPORTANT
+   ----------------------
+   This file is linked last in <head>, after base.css, so :root here overrides
+   :root in Dawn's {% style %} block.
+
+   Note one Dawn quirk: some component stylesheets (component-card.css,
+   component-price.css and friends) are injected by sections and therefore land
+   in <body>, i.e. AFTER this file in document order. Custom properties are
+   immune to that — Dawn's components read the variable, and the variable is
+   ours. But a plain rule here can still be beaten by a body-injected rule of
+   equal specificity. Where that happens below, the fix is a small specificity
+   bump (a .shopify-section ancestor, or doubling a class), never !important.
+
+   COLOUR AND CONTRAST
+   -------------------
+   Measured against bone #F2EFE9 and ink #111110:
+
+     ink   on bone   16.5:1   passes AA and AAA, all sizes
+     red   on bone    4.75:1  passes AA normal text (4.5:1 floor)
+     white on red     5.45:1  passes AA normal text
+     white on ink    18.9:1   passes AA and AAA, all sizes
+     red   on ink     3.46:1  FAILS AA for text — borders and rules only
+
+   The brand red was specified as #D8202E, which measures 4.39:1 on bone and
+   fails the 4.5:1 AA floor for normal-size text. It is #CF1C29 here: the same
+   colour to the eye, 4.75:1, and compliant. One token, one place to change.
+
+   Do not set red type on the ink footer. At 3.46:1 it fails as text. It is
+   fine as a rule, border or divider, where the 3:1 non-text threshold applies.
+
+   BUTTON COLOUR IS DELIBERATELY NOT SET HERE
+   ------------------------------------------
+   Dawn takes button colour from the colour schemes in theme settings. Those
+   are being updated to #CF1C29 in the admin. This file therefore styles button
+   GEOMETRY only — square corners, no shadow — and leaves colour to the scheme,
+   so there is exactly one source of truth for it.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Brand tokens
+   -------------------------------------------------------------------------- */
+
+:root {
+  --sh-ink: #111110;
+  --sh-white: #ffffff;
+  --sh-red: #cf1c29;
+  --sh-bone: #f2efe9;
+
+  /* Comma-separated triplets, to match Dawn's rgb(var(--x)) convention. */
+  --sh-ink-rgb: 17, 17, 16;
+  --sh-white-rgb: 255, 255, 255;
+  --sh-red-rgb: 207, 28, 41;
+  --sh-bone-rgb: 242, 239, 233;
+
+  --sh-hairline: rgba(17, 17, 16, 0.18);
+  --sh-rule-weight: 1px;
+  --sh-ticket-border: 2px;
+  --sh-accent-rule: 3px;
+
+  --sh-font-display: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Helvetica, Arial, sans-serif;
+  --sh-font-mono: 'Space Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
+    Consolas, 'Liberation Mono', monospace;
+
+  --sh-weight-light: 300;
+  --sh-weight-regular: 400;
+  --sh-weight-bold: 700;
+  --sh-weight-black: 900;
+
+  /* Mono utility type: uppercase, tracked out, small. */
+  --sh-label-tracking: 0.12em;
+  --sh-label-size: 1.1rem;
+}
+
+/* --------------------------------------------------------------------------
+   2. Dawn overrides — geometry and type
+   Square, flat, high contrast: no radius, no shadow, anywhere.
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Typography. Overriding these two re-faces the whole theme in one go. */
+  --font-body-family: var(--sh-font-display);
+  --font-body-style: normal;
+  --font-body-weight: 400;
+  --font-body-weight-bold: 700;
+  --font-heading-family: var(--sh-font-display);
+  --font-heading-style: normal;
+  --font-heading-weight: 300;
+
+  /* Every corner radius Dawn exposes. */
+  --media-radius: 0px;
+  --product-card-corner-radius: 0px;
+  --collection-card-corner-radius: 0px;
+  --blog-card-corner-radius: 0px;
+  --badge-corner-radius: 0px;
+  --popup-corner-radius: 0px;
+  --text-boxes-radius: 0px;
+  --buttons-radius: 0px;
+  --buttons-radius-outset: 0px;
+  --inputs-radius: 0px;
+  --inputs-radius-outset: 0px;
+  --variant-pills-radius: 0px;
+
+  /* Every shadow. Dawn multiplies its shadow layers by the -visible flag, so
+     zeroing the flag removes the layer outright; the opacity is zeroed too so
+     nothing survives on the paths that read it directly. */
+  --media-shadow-visible: 0;
+  --media-shadow-opacity: 0;
+  --product-card-shadow-visible: 0;
+  --product-card-shadow-opacity: 0;
+  --collection-card-shadow-visible: 0;
+  --collection-card-shadow-opacity: 0;
+  --blog-card-shadow-visible: 0;
+  --blog-card-shadow-opacity: 0;
+  --text-boxes-shadow-visible: 0;
+  --text-boxes-shadow-opacity: 0;
+  --buttons-shadow-visible: 0;
+  --buttons-shadow-opacity: 0;
+  --inputs-shadow-opacity: 0;
+  --variant-pills-shadow-opacity: 0;
+  --popup-shadow-opacity: 0;
+  --drawer-shadow-opacity: 0;
+
+  /* Dawn insets bordered elements by this much to make room for a shadow.
+     With no shadows, the offset only blurs edge alignment. */
+  --buttons-border-offset: 0px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Page ground
+   Bone, never pure white.
+   -------------------------------------------------------------------------- */
+
+body {
+  background-color: var(--sh-bone);
+  color: var(--sh-ink);
+  font-family: var(--sh-font-display);
+  font-weight: var(--sh-weight-regular);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* NOTE — section backgrounds are deliberately NOT forced here.
+   Dawn paints each section from its colour scheme. Blanket-overriding .gradient
+   to bone would also repaint any section a scheme intentionally paints dark,
+   which is a bug waiting to happen on the hero. Set the scheme backgrounds to
+   bone #F2EFE9 in Theme settings > Colours instead — same place the button red
+   is being corrected. This rule keeps the page ground bone behind everything. */
+
+/* --------------------------------------------------------------------------
+   4. Typography — the weight-contrast device
+   The logo sets SPIRIT light against HAUS black. Headings carry that: the
+   heading is light, the emphasised word inside it is black.
+   -------------------------------------------------------------------------- */
+
+h1,
+h2,
+h3,
+.h0,
+.h1,
+.h2,
+.h3 {
+  font-family: var(--sh-font-display);
+  font-weight: var(--sh-weight-light);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+h1 strong,
+h2 strong,
+h3 strong,
+.h0 strong,
+.h1 strong,
+.h2 strong,
+.h3 strong,
+.sh-heading strong {
+  font-weight: var(--sh-weight-black);
+  letter-spacing: -0.02em;
+}
+
+.sh-heading {
+  font-family: var(--sh-font-display);
+  font-weight: var(--sh-weight-light);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* Mono utility type: labels, facet counts, badges, spec keys. */
+.sh-label {
+  font-family: var(--sh-font-mono);
+  font-weight: var(--sh-weight-regular);
+  font-size: var(--sh-label-size);
+  letter-spacing: var(--sh-label-tracking);
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   5. Header and footer — ink
+   -------------------------------------------------------------------------- */
+
+.header-wrapper,
+body .header-wrapper {
+  background-color: var(--sh-ink);
+  border-bottom: 0;
+}
+
+.header-wrapper .header__heading-link,
+.header-wrapper .header__menu-item,
+.header-wrapper .header__icon,
+.header-wrapper .header__icon .icon,
+.header-wrapper .list-menu__item--link {
+  color: var(--sh-white);
+}
+
+.header-wrapper .header__icon .icon {
+  stroke: currentColor;
+}
+
+/* Dawn's menu underline on hover. Keep it, in white, square. */
+.header-wrapper .header__menu-item:hover span {
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3rem;
+}
+
+.footer,
+body .footer {
+  background-color: var(--sh-ink);
+  color: var(--sh-white);
+  border-top: 0;
+}
+
+.footer a,
+.footer .link,
+.footer .list-menu__item--link {
+  color: var(--sh-white);
+}
+
+/* Ink ground, so the divider is white at low alpha, not red — red on ink is
+   3.46:1 and must not carry meaning as type. */
+.footer__content-bottom {
+  border-top: var(--sh-rule-weight) solid rgba(255, 255, 255, 0.22);
+}
+
+/* --------------------------------------------------------------------------
+   6. Buttons — square, flat. Colour comes from the theme colour scheme.
+   -------------------------------------------------------------------------- */
+
+.button,
+.shopify-challenge__button,
+.customer button,
+button.shopify-payment-button__button--unbranded {
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--sh-font-display);
+  font-weight: var(--sh-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  min-height: 4.6rem;
+}
+
+/* Dawn draws the button's border and its shadow as two stacked pseudo-elements.
+   Square off the border layer and remove the shadow layer entirely. */
+.button::after,
+.shopify-challenge__button::after,
+.customer button::after {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.button::before,
+.shopify-challenge__button::before,
+.customer button::before {
+  content: none;
+}
+
+/* Shopify's dynamic checkout buttons render in an iframe we cannot style, but
+   the wrapper's rounding is ours. */
+.shopify-payment-button__button--branded,
+.shopify-payment-button {
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   7. The price ticket — the brand's signature device
+   A printed shelf tag: Space Mono inside a hard border.
+
+   Two variants, per the agreed rule that red appears once per view:
+     .sh-ticket            product page — red figure, red border
+     .sh-ticket--card      collection card — ink figure, red border
+   -------------------------------------------------------------------------- */
+
+.sh-ticket {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.7rem 1.1rem;
+  border: var(--sh-ticket-border) solid var(--sh-red);
+  border-radius: 0;
+  font-family: var(--sh-font-mono);
+  font-weight: var(--sh-weight-bold);
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--sh-red);
+  background: transparent;
+}
+
+/* Collection cards: the figure is ink, the border keeps the red signal. Thirty
+   red figures in a grid would spend the accent thirty times over. */
+.sh-ticket--card {
+  border: var(--sh-rule-weight) solid var(--sh-red);
+  padding: 0.4rem 0.7rem;
+  font-size: 1.5rem;
+  color: var(--sh-ink);
+}
+
+/* Compare-at. Struck through and quiet — never inflated, never a fake RRP. */
+.sh-ticket__was {
+  font-family: var(--sh-font-mono);
+  font-weight: var(--sh-weight-regular);
+  font-size: 1.3rem;
+  color: rgba(17, 17, 16, 0.6);
+  text-decoration: line-through;
+}
+
+.sh-ticket__unit {
+  font-family: var(--sh-font-mono);
+  font-weight: var(--sh-weight-regular);
+  font-size: 1.1rem;
+  letter-spacing: var(--sh-label-tracking);
+  color: rgba(17, 17, 16, 0.65);
+}
+
+/* Dawn's own price element, set in mono so any price we have not wrapped in a
+   ticket still reads as part of the system. */
+.price,
+.price__container,
+.price-item {
+  font-family: var(--sh-font-mono);
+  font-weight: var(--sh-weight-bold);
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   8. Badges and facets — mono labels
+   -------------------------------------------------------------------------- */
+
+.badge {
+  border-radius: 0;
+  border: var(--sh-rule-weight) solid var(--sh-ink);
+  font-family: var(--sh-font-mono);
+  font-size: var(--sh-label-size);
+  font-weight: var(--sh-weight-regular);
+  letter-spacing: var(--sh-label-tracking);
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+}
+
+.facets__label,
+.facets__summary,
+.facets__heading,
+.facet-checkbox,
+.active-facets__button-inner,
+.facets__button {
+  font-family: var(--sh-font-mono);
+  font-size: 1.3rem;
+  letter-spacing: 0.06em;
+}
+
+.facets__summary,
+.facets__heading {
+  text-transform: uppercase;
+  letter-spacing: var(--sh-label-tracking);
+}
+
+.facet-checkbox input[type='checkbox'],
+.facets__price input {
+  border-radius: 0;
+}
+
+.active-facets__button,
+.active-facets__button-wrapper {
+  border-radius: 0;
+}
+
+/* --------------------------------------------------------------------------
+   9. Form fields — square
+   -------------------------------------------------------------------------- */
+
+.field__input,
+.select__select,
+.customer .field input,
+.customer select,
+textarea.text-area,
+.search__input {
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--sh-font-display);
+}
+
+.field::after,
+.select::after,
+.customer .field::after,
+.localization-form__select::after {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.field__label {
+  font-family: var(--sh-font-display);
+}
+
+/* --------------------------------------------------------------------------
+   10. Cards and media — flat, bordered
+   The variable overrides in section 2 do most of this. These rules catch the
+   places Dawn hard-codes a value rather than reading a property.
+   -------------------------------------------------------------------------- */
+
+.card,
+.card__inner,
+.card__media,
+.card__content,
+.media,
+.global-media-settings,
+.global-media-settings img,
+.global-media-settings video {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Doubled class beats an equal-specificity rule from a body-injected sheet
+   without resorting to !important. */
+.card-wrapper .card.card,
+.card-wrapper .card__inner.card__inner {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.card--standard .card__inner {
+  border: var(--sh-rule-weight) solid var(--sh-hairline);
+}
+
+.card__heading {
+  font-family: var(--sh-font-display);
+  font-weight: var(--sh-weight-regular);
+  letter-spacing: -0.005em;
+}
+
+.card__heading a {
+  text-decoration: none;
+}
+
+.card__heading a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}
+
+/* --------------------------------------------------------------------------
+   11. Accessibility
+   -------------------------------------------------------------------------- */
+
+/* Dawn's focus ring is a rounded outline. Keep it obvious, make it square.
+   Two-tone so it stays visible on both bone and ink. */
+*:focus-visible {
+  outline: 3px solid var(--sh-red);
+  outline-offset: 2px;
+  border-radius: 0;
+}
+
+/* On the ink header and footer the red ring drops to 3.46:1, so switch to white
+   (18.9:1) rather than let the indicator go weak where the ground is dark. */
+.header-wrapper *:focus-visible,
+.footer *:focus-visible {
+  outline-color: var(--sh-white);
+}
+
+.skip-to-content-link:focus-visible {
+  background-color: var(--sh-ink);
+  color: var(--sh-white);
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. Mobile first
+   Base rules above target 375px. These scale type up from 750px, matching
+   Dawn's own breakpoint so the two systems stay in step.
+   -------------------------------------------------------------------------- */
+
+@media screen and (min-width: 750px) {
+  .sh-ticket {
+    font-size: 2.6rem;
+  }
+
+  .sh-ticket--card {
+    font-size: 1.6rem;
+  }
+}

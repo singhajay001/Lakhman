@@ -1,0 +1,10 @@
+# Files that live in the repository but must never upload to the theme.
+# Shopify only recognises assets/ config/ layout/ locales/ sections/ snippets/
+# templates/ blocks/ — anything else at the root is repo furniture.
+
+CLAUDE.md
+README.md
+lakhman-platform
+patches/
+.git/
+.github/
