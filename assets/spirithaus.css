@@ -900,3 +900,296 @@ textarea.text-area,
     width: auto;
   }
 }
+
+/* ==========================================================================
+   STAGE 4 — Homepage
+   ==========================================================================
+
+   The hero and the category tiles share one overlay mechanic: an ink scrim at
+   --sh-hero-overlay, set per section from the theme editor. The schema clamps
+   that value at 58% minimum, which is the point where white type clears 4.5:1
+   even over a pure-white photograph. See the note in spirithaus-hero.liquid.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   20. Hero
+   -------------------------------------------------------------------------- */
+
+.sh-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 62vh;
+  background-color: var(--sh-ink);
+  overflow: hidden;
+}
+
+.sh-hero__media,
+.sh-hero__scrim {
+  position: absolute;
+  inset: 0;
+}
+
+.sh-hero__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sh-hero__scrim {
+  /* rgba() with a comma triplet, matching Dawn's own convention. The modern
+     rgb(r g b / a) slash form CANNOT be used here: --sh-ink-rgb is stored
+     comma-separated, so it would expand to rgb(17, 17, 16 / 0.62), which is
+     invalid and gets dropped — leaving no scrim and white text on bare
+     photography. Verified against the CSS spec, not assumed. */
+  background-color: rgba(var(--sh-ink-rgb), var(--sh-hero-overlay, 0.62));
+}
+
+.sh-hero__content {
+  position: relative;
+  z-index: 1;
+  padding-top: 6rem;
+  padding-bottom: 4.8rem;
+  color: var(--sh-white);
+  width: 100%;
+}
+
+.sh-hero__kicker {
+  margin: 0 0 1.6rem;
+  color: var(--sh-white);
+}
+
+.sh-hero__heading {
+  margin: 0 0 1.6rem;
+  color: var(--sh-white);
+  font-size: 3.6rem;
+  max-width: 18ch;
+}
+
+.sh-hero__body {
+  margin: 0 0 2.8rem;
+  font-size: 1.6rem;
+  line-height: 1.6;
+  max-width: 46ch;
+  color: var(--sh-white);
+}
+
+/* The single red element in this view. */
+.sh-hero .button.sh-hero__cta {
+  background-color: var(--sh-red);
+  color: var(--sh-white);
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   21. Category tiles
+   The whole tile is one link: one tab stop, one large touch target.
+   -------------------------------------------------------------------------- */
+
+.sh-cats {
+  padding: 4.8rem 0;
+}
+
+.sh-cats__heading {
+  margin: 0 0 2.4rem;
+  font-size: 2.8rem;
+}
+
+.sh-cats__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sh-cat {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 22rem;
+  padding: 1.8rem;
+  background-color: var(--sh-ink);
+  color: var(--sh-white);
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.sh-cat__media,
+.sh-cat__scrim {
+  position: absolute;
+  inset: 0;
+}
+
+.sh-cat__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sh-cat__scrim {
+  background-color: rgba(var(--sh-ink-rgb), var(--sh-hero-overlay, 0.66));
+  transition: background-color 0.2s ease;
+}
+
+.sh-cat:hover .sh-cat__scrim,
+.sh-cat:focus-visible .sh-cat__scrim {
+  background-color: rgba(var(--sh-ink-rgb), 0.5);
+}
+
+.sh-cat__text {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.sh-cat__title {
+  display: block;
+  font-size: 2.4rem;
+  color: var(--sh-white);
+}
+
+.sh-cat__caption {
+  display: block;
+  margin-top: 0.6rem;
+  color: var(--sh-white);
+}
+
+/* --------------------------------------------------------------------------
+   22. Curation statement
+   Type only. The argument for the whole shop, so it gets room.
+   -------------------------------------------------------------------------- */
+
+.sh-curation {
+  padding: 5.6rem 0;
+  border-top: var(--sh-rule-weight) solid var(--sh-hairline);
+  border-bottom: var(--sh-rule-weight) solid var(--sh-hairline);
+}
+
+.sh-curation__inner {
+  max-width: 76rem;
+}
+
+.sh-curation__kicker {
+  margin: 0 0 1.6rem;
+  color: var(--sh-muted);
+}
+
+.sh-curation__heading {
+  margin: 0 0 2.4rem;
+  font-size: 3.2rem;
+}
+
+.sh-curation__body {
+  font-size: 1.7rem;
+  line-height: 1.65;
+  max-width: 62ch;
+}
+
+.sh-curation__body > p {
+  margin: 0 0 1.4rem;
+}
+
+.sh-curation__body > p:last-child {
+  margin-bottom: 0;
+}
+
+.sh-curation__figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3.2rem;
+  margin: 3.2rem 0 0;
+  padding-top: 2.4rem;
+  border-top: var(--sh-accent-rule) solid var(--sh-red);
+}
+
+.sh-curation__figure {
+  margin: 0;
+}
+
+.sh-curation__figure-label {
+  margin: 0 0 0.6rem;
+  color: var(--sh-muted);
+}
+
+.sh-curation__figure-value {
+  margin: 0;
+  font-family: var(--sh-font-mono);
+  font-weight: var(--sh-weight-bold);
+  font-size: 3.2rem;
+  line-height: 1;
+  color: var(--sh-ink);
+}
+
+/* --------------------------------------------------------------------------
+   23. Staff picks
+   Dawn's own featured-collection section, configured to the staff-picks
+   collection. Reusing it keeps the slider, keyboard controls and card markup
+   that Dawn already ships rather than reimplementing them. Only the heading
+   needs brand treatment; the cards inherit from section 10.
+   -------------------------------------------------------------------------- */
+
+.sh-cats-section + .shopify-section .collection__title .title,
+.shopify-section .collection__title .title {
+  font-weight: var(--sh-weight-light);
+}
+
+.shopify-section .collection__title .title strong {
+  font-weight: var(--sh-weight-black);
+}
+
+/* --------------------------------------------------------------------------
+   24. Homepage, 750px and up
+   -------------------------------------------------------------------------- */
+
+@media screen and (min-width: 750px) {
+  .sh-hero--tall {
+    min-height: 76vh;
+  }
+
+  .sh-hero__content {
+    padding-top: 10rem;
+    padding-bottom: 7.2rem;
+  }
+
+  .sh-hero__heading {
+    font-size: 6.4rem;
+  }
+
+  .sh-hero__body {
+    font-size: 1.8rem;
+  }
+
+  .sh-cats__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem;
+  }
+
+  .sh-cat {
+    min-height: 34rem;
+    padding: 2.4rem;
+  }
+
+  .sh-cat__title {
+    font-size: 3.2rem;
+  }
+
+  .sh-cats__heading {
+    font-size: 3.6rem;
+  }
+
+  .sh-curation {
+    padding: 8rem 0;
+  }
+
+  .sh-curation__heading {
+    font-size: 4.8rem;
+  }
+
+  .sh-curation__figure-value {
+    font-size: 4rem;
+  }
+}

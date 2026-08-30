@@ -1,0 +1,142 @@
+{%- comment -%}
+  SpiritHaus — category tiles. Spirits, Wine, Cocktails.
+
+  Blocks rather than three fixed slots, so the set can change without a code
+  edit. Each tile is a single link wrapping the whole card: one tab stop and one
+  large touch target rather than an image link and a heading link that go to the
+  same place.
+
+  Same overlay floor as the hero — 58% minimum, for the same reason.
+{%- endcomment -%}
+
+{%- if section.blocks.size > 0 -%}
+  <div class="sh-cats page-width">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="sh-cats__heading sh-heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <ul class="sh-cats__grid" role="list">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign collection = block.settings.collection
+          assign tile_url = block.settings.link
+          if tile_url == blank and collection != blank
+            assign tile_url = collection.url
+          endif
+          assign tile_image = block.settings.image
+          if tile_image == blank and collection != blank
+            assign tile_image = collection.featured_image
+          endif
+          assign tile_title = block.settings.title
+          if tile_title == blank and collection != blank
+            assign tile_title = collection.title
+          endif
+        -%}
+
+        <li class="sh-cats__item" {{ block.shopify_attributes }}>
+          <a
+            class="sh-cat"
+            {% if tile_url != blank %}href="{{ tile_url }}"{% endif %}
+            style="--sh-hero-overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
+          >
+            {%- if tile_image != blank -%}
+              <div class="sh-cat__media">
+                {{
+                  tile_image
+                  | image_url: width: 1500
+                  | image_tag:
+                    loading: 'lazy',
+                    class: 'sh-cat__image',
+                    widths: '375, 550, 750, 1100, 1500',
+                    sizes: '(min-width: 990px) 33vw, 100vw',
+                    alt: ''
+                }}
+              </div>
+            {%- endif -%}
+
+            <span class="sh-cat__scrim"></span>
+
+            <span class="sh-cat__text">
+              <span class="sh-cat__title sh-heading">{{ tile_title }}</span>
+              {%- if block.settings.caption != blank -%}
+                <span class="sh-label sh-cat__caption">{{ block.settings.caption | escape }}</span>
+              {%- endif -%}
+            </span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Category tiles",
+  "tag": "section",
+  "class": "sh-cats-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by <strong>category</strong>"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Ink overlay",
+      "unit": "%",
+      "min": 58,
+      "max": 90,
+      "step": 2,
+      "default": 66,
+      "info": "Starts at 58% because below that white text can fail WCAG AA over a light image."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Tile",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "The tile takes its title, image and link from the collection unless overridden below."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title override"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image override"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link override"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category tiles",
+      "blocks": [
+        { "type": "tile" },
+        { "type": "tile" },
+        { "type": "tile" }
+      ]
+    }
+  ]
+}
+{% endschema %}
