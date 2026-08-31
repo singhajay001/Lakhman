@@ -1,95 +1,149 @@
 # CLAUDE.md
 
-Guidance for Claude Code (claude.ai/code) and other AI assistants working in this repository.
+Guidance for Claude Code and other AI assistants working in this repository.
 
-## Current state of the repository — read this first
+## What this is
 
-**This repository contains no source code yet.** As of the latest commit
-(`0051c19 "Add files via upload"`), the entire tracked tree is:
+A **Shopify theme** for SPIRITHAUS PTY LTD (ACN 701 853 483) — an online bottle
+shop selling spirits, wine and canned cocktails, Sydney metro at launch.
+
+The theme is **Dawn 16.0.0** (upstream commit `258f00f`) with a SpiritHaus brand
+layer applied on top. The complete Dawn tree is vendored here, so the repository
+is a full, syncable theme rather than a patch set — that is what Shopify's
+GitHub integration requires.
+
+- Store: `1312wd-hk.myshopify.com` → `spirithaus.com.au`
+- Build brief, and the single source of truth for scope: `docs/BRIEF.md`
+
+## Repository layout
 
 ```
-lakhman-platform    # 0-byte file, no extension, no content
+assets/ config/ layout/ locales/ sections/ snippets/ templates/
+                      # the theme. Shopify's own structure, at the repo root.
+docs/BRIEF.md         # the build brief
+patches/              # diffs against pristine Dawn, plus test harnesses
+.shopifyignore        # keeps repo furniture out of a CLI push
 ```
 
-There is no application code, no build system, no dependency manifest
-(`package.json`, `requirements.txt`, `go.mod`, `pom.xml`, …), no tests, no CI
-configuration, and no README. The GitHub API reports the repository size as 0
-and detects no language.
+Everything outside the seven theme directories is repository furniture and is
+ignored by both Shopify's GitHub sync and the CLI.
 
-Consequences for anyone working here:
+## What is ours versus Dawn's
 
-- **There is no architecture to describe, and none should be invented.** Do not
-  assume a framework, language, or directory layout. If a task refers to
-  existing modules, services, or endpoints, they are not in this repository —
-  ask where the code actually lives before writing anything.
-- **There are no build, test, lint, or run commands.** Nothing can be executed
-  or verified until a project is scaffolded.
-- **`lakhman-platform` is an empty placeholder.** Its purpose is not documented
-  anywhere in the repository. Treat the name as a hint at intent, not as a
-  specification. Do not delete or repurpose it without asking.
-- **This file must be updated as soon as real code lands.** The "To fill in"
-  section below is the checklist.
+Knowing which is which matters, because Dawn-owned files are the merge-conflict
+surface when upstream updates.
 
-## Repository facts
+**New files (ours):**
 
-| | |
-|---|---|
-| Remote | `https://github.com/singhajay001/Lakhman` |
-| Default branch | `main` |
-| Visibility | Public |
-| Commits on `main` | 1 |
-| Tracked files | 1 (`lakhman-platform`, empty) |
+```
+assets/spirithaus.css                   the whole brand layer
+sections/spirithaus-hero.liquid
+sections/spirithaus-categories.liquid
+sections/spirithaus-curation.liquid
+sections/spirithaus-compliance.liquid   site-wide liquor licence notice
+sections/spirithaus-age-gate.liquid
+```
+
+**Dawn files we edited** — all additive except the JSON templates:
+
+```
+layout/theme.liquid            +39  fonts, stylesheet link, age-gate cookie check
+sections/main-product.liquid  +153  three new {% case %} branches + schema blocks
+sections/footer-group.json          registers the two compliance sections
+templates/product.json              block order
+templates/index.json                homepage
+templates/collection.json           grid settings
+config/settings_data.json           colour schemes, radius and shadow zeroed
+```
+
+`patches/*.patch` holds each edit as a diff against pristine Dawn, so a change
+can be re-applied to a differently-customised theme by hand.
+
+## How the brand layer works
+
+Dawn declares its geometry and typography as CSS custom properties in a
+`{% style %}` block in `layout/theme.liquid`, then consumes them everywhere.
+`assets/spirithaus.css` **redefines those properties** rather than fighting
+Dawn's rules selector by selector. That is why the file contains **no
+`!important`** — a custom property redefined on `:root` in a later stylesheet
+wins outright.
+
+Two gotchas that have already cost time:
+
+- **Body-injected stylesheets.** Some Dawn component CSS (`component-card.css`,
+  `component-price.css`) is injected by sections and lands in `<body>`, i.e.
+  *after* our stylesheet. Custom properties are immune, but a plain rule can be
+  beaten at equal specificity. Fix with a specificity bump, never `!important`.
+- **Colour triplets.** Dawn stores scheme colours comma-separated
+  (`17, 17, 16`) for `rgba(var(--x), a)`. The modern `rgb(r g b / a)` slash form
+  **cannot** be used with them — it expands to invalid CSS and is silently
+  dropped. `patches/css-check.mjs` guards against this.
+
+## Palette
+
+| Token | Hex | Notes |
+|---|---|---|
+| `--sh-ink` | `#111110` | 16.46:1 on bone |
+| `--sh-bone` | `#F2EFE9` | page ground, never pure white |
+| `--sh-red` | `#CF1C29` | 4.75:1 on bone, 5.45:1 white-on-red |
+| `--sh-muted` | `#6B6860` | 4.85:1 on bone |
+
+`#D8202E` was the original brand red and **must not be reintroduced**: it
+measures 4.39:1 on bone and fails WCAG AA for normal text. Red on ink is
+3.46:1 — borders and rules only, never type.
+
+## Verification, since nothing can be rendered here
+
+There is no store access and no browser in this environment, so claims are
+checked mechanically rather than by looking:
+
+```bash
+node patches/css-check.mjs      # CSS parse, spec validation, !important, rgb misuse
+node patches/age-gate.test.mjs  # jsdom behaviour test for the age gate (12 assertions)
+```
+
+Both need `npm install css-tree jsdom` first. Contrast figures quoted in
+comments are computed, not estimated. Anything that cannot be verified this way
+is reported as unverified rather than asserted.
+
+## Alcohol retail — non-negotiable
+
+This store sells alcohol in Australia. Do not build anything that encourages
+rapid or excessive consumption, uses countdown timers or fake scarcity on
+alcohol, inflates RRP strikethroughs, or could appeal to under-18s. These are
+ABAC and state liquor advertising requirements, not style preferences.
+
+The age gate is an **entry-level declaration only** — it verifies nothing. The
+real controls are photo ID on delivery and checkout-level verification from a
+separate app. Never let the gate stand in for either.
+
+Standard drinks is read from `custom.standard_drinks` and **never computed** in
+the theme: the bottle label is the regulated source of truth.
+
+## Metafields (namespace `custom`, created in admin)
+
+```
+standard_drinks (decimal)   abv (decimal)        volume_ml (integer)
+country          region     producer             style
+why_we_stock_it (multi-line text)
+```
+
+`why_we_stock_it` is the business model — it renders directly under the price
+and above the buy button, and must never be buried under specs.
 
 ## Git workflow
 
-These conventions apply now and do not depend on what the code turns out to be.
+- Never commit directly to `main`. Work on the assigned `claude/*` branch.
+- Push with `git push -u origin <branch>`; retry only network failures.
+- Do not open a pull request unless explicitly asked.
+- **Never push to the published Shopify theme.** The owner reviews on a
+  duplicate or an unpublished GitHub-connected theme and publishes.
 
-- **Never commit directly to `main`.** Work on a feature branch and push that.
-- Claude Code sessions are assigned a branch (e.g. `claude/<topic>-<suffix>`).
-  Develop and push there; create it locally if it does not exist. Never push to
-  a different branch without explicit permission.
-- Push with upstream tracking: `git push -u origin <branch-name>`.
-- Retry a push only for network failures, with backoff (2s, 4s, 8s, 16s).
-- **Do not open a pull request unless explicitly asked.** There is no PR
-  template in the repository; if one is added under `.github/`, follow its
-  section structure when writing a PR body.
-- If the PR for an assigned branch has already been merged, restart the branch
-  from the latest `main` rather than stacking new commits on merged history:
-  `git fetch origin main && git checkout -B <branch> origin/main`.
-- Write commit messages in the imperative mood with a short subject line and,
-  where the change is not self-explanatory, a body explaining *why*.
+## Outstanding
 
-## Working conventions for AI assistants
-
-- **Verify before asserting.** Because the tree is empty, any claim about
-  "existing code" is necessarily unverified. Read the actual files first; if a
-  path does not exist, say so rather than guessing at its contents.
-- **Do not scaffold a project unprompted.** Choosing a language, framework, or
-  directory layout is a product decision. If a task requires code and no stack
-  has been specified, ask which stack to use — the choice is hard to reverse
-  once dependencies and tooling are committed.
-- **Keep the first real commits small and documented.** The first change that
-  introduces a stack should also update this file with the build, test, and run
-  commands, so the next session does not have to rediscover them.
-- **No secrets in the repository.** The repo is public. Keep credentials, API
-  keys, and connection strings out of tracked files; use a `.env` file with a
-  committed `.env.example` and a `.gitignore` entry once a stack exists.
-
-## To fill in once code exists
-
-Replace the "Current state" section above and complete each item below as it
-becomes true. Prefer commands that were actually run and observed to pass over
-commands copied from a framework's documentation.
-
-- [ ] **Overview** — what the project does, who uses it, how it is deployed.
-- [ ] **Stack** — language(s), runtime versions, framework(s), database.
-- [ ] **Setup** — clone-to-running steps, including required env vars.
-- [ ] **Commands** — install, build, run/dev server, test (full and single
-      test), lint, format, typecheck.
-- [ ] **Architecture** — the directory layout and, more importantly, the parts
-      that are not obvious from reading a single file: how requests flow, where
-      state lives, module boundaries, and any non-standard patterns.
-- [ ] **Testing conventions** — framework, where tests live, naming, what is
-      expected to pass before a push.
-- [ ] **CI** — what runs on push/PR and what must be green to merge.
-- [ ] **Gotchas** — anything that has already cost someone an hour.
+- Logo assets are being regenerated. The wordmark is **SPIRITHAUS**, one word,
+  with the drawn U as the ninth glyph inside HAUS, in `#CF1C29`. An earlier
+  export spelled it "SPIRITUS HAUS" and used the old red — it was rejected and
+  removed. The header logo is deliberately **unwired** until the new SVGs land.
+- Nothing in this theme has been rendered in a browser. Mobile layout at 375px
+  is reasoned from the CSS, not observed.

@@ -1193,3 +1193,221 @@ textarea.text-area,
     font-size: 4rem;
   }
 }
+
+/* ==========================================================================
+   STAGE 5 — Collection page
+   ==========================================================================
+
+   Dawn already renders the collection description above the grid via the
+   main-collection-banner section, so no Liquid change is needed for that —
+   only the type treatment below.
+
+   Cards inherit their flat, square, shadowless geometry from section 2 and
+   section 10. What is left here is the price ticket and the facets.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   25. Collection header
+   -------------------------------------------------------------------------- */
+
+.collection-hero__title,
+.collection-hero .title {
+  font-weight: var(--sh-weight-light);
+  letter-spacing: -0.01em;
+}
+
+.collection-hero__title strong,
+.collection-hero .title strong {
+  font-weight: var(--sh-weight-black);
+}
+
+.collection-hero__description {
+  font-size: 1.6rem;
+  line-height: 1.6;
+  max-width: 62ch;
+  color: var(--sh-ink);
+}
+
+/* --------------------------------------------------------------------------
+   26. Card price — the lighter ticket
+   Ink figure inside a red-bordered ticket. Thirty red figures in a grid would
+   spend the accent thirty times; the border keeps the signal, the figure stays
+   ink. The full red figure is reserved for the product page, where there is
+   only one price in the view.
+
+   Scoped under .card-wrapper so it outranks component-price.css, which sections
+   inject into <body> and which therefore lands after this file in document
+   order. Specificity, not !important.
+   -------------------------------------------------------------------------- */
+
+.card-wrapper .price {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.7rem;
+  padding: 0.4rem 0.7rem;
+  border: var(--sh-rule-weight) solid var(--sh-red);
+  border-radius: 0;
+  font-family: var(--sh-font-mono);
+  font-weight: var(--sh-weight-bold);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--sh-ink);
+}
+
+.card-wrapper .price .price-item--regular,
+.card-wrapper .price .price-item--sale {
+  color: var(--sh-ink);
+  font-family: var(--sh-font-mono);
+  letter-spacing: 0;
+}
+
+/* Compare-at stays quiet and factual. Never an inflated RRP. */
+.card-wrapper .price .price-item--last,
+.card-wrapper .price s.price-item {
+  color: var(--sh-muted);
+  font-size: 1.2rem;
+  font-weight: var(--sh-weight-regular);
+}
+
+.card-wrapper .price .price__unit,
+.card-wrapper .price .price__tax {
+  flex-basis: 100%;
+  font-size: 1rem;
+  font-weight: var(--sh-weight-regular);
+  letter-spacing: var(--sh-label-tracking);
+  color: var(--sh-muted);
+}
+
+/* Dawn hides the sold-out/sale badge behind a rounded pill; square it off. */
+.card-wrapper .badge {
+  border-radius: 0;
+}
+
+/* --------------------------------------------------------------------------
+   27. Facets
+   Dawn ships three filter layouts (horizontal, vertical, drawer). These rules
+   cover all three, since the layout is an editor setting that may change.
+   -------------------------------------------------------------------------- */
+
+.facets__summary,
+.facets__disclosure .facets__summary,
+.facets-vertical .facets__summary {
+  font-family: var(--sh-font-mono);
+  font-size: 1.2rem;
+  letter-spacing: var(--sh-label-tracking);
+  text-transform: uppercase;
+  color: var(--sh-ink);
+}
+
+.facets__display,
+.facets__display-vertical {
+  border: var(--sh-rule-weight) solid var(--sh-ink);
+  border-radius: 0;
+  box-shadow: none;
+  background-color: var(--sh-bone);
+}
+
+.facets__item .facet-checkbox,
+.facets__label {
+  font-family: var(--sh-font-display);
+  font-size: 1.4rem;
+}
+
+/* The count beside each filter reads as data, so it is mono and muted. */
+.facets__label .facet-checkbox__text-label + span,
+.facets__item .label-text + span {
+  font-family: var(--sh-font-mono);
+  color: var(--sh-muted);
+}
+
+.facets__price .field__input {
+  font-family: var(--sh-font-mono);
+}
+
+/* Active filter chips. */
+.active-facets__button-wrapper,
+.active-facets__button {
+  border-radius: 0;
+}
+
+.active-facets__button-inner {
+  border-radius: 0;
+  border: var(--sh-rule-weight) solid var(--sh-ink);
+  font-family: var(--sh-font-mono);
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background-color: transparent;
+  color: var(--sh-ink);
+}
+
+.active-facets__button-inner:hover {
+  background-color: var(--sh-ink);
+  color: var(--sh-bone);
+}
+
+.facets__reset,
+.active-facets__button-remove {
+  font-family: var(--sh-font-mono);
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+}
+
+/* Sort control, so it matches the filters rather than Dawn's default select. */
+.facet-filters__field .select__select,
+.facet-filters__sort {
+  font-family: var(--sh-font-mono);
+  font-size: 1.3rem;
+  border-radius: 0;
+}
+
+.facet-filters__label,
+.product-count,
+.product-count__text {
+  font-family: var(--sh-font-mono);
+  font-size: 1.2rem;
+  letter-spacing: var(--sh-label-tracking);
+  color: var(--sh-muted);
+}
+
+/* Mobile filter drawer. */
+.mobile-facets__inner {
+  background-color: var(--sh-bone);
+  border-radius: 0;
+}
+
+.mobile-facets__header,
+.mobile-facets__footer {
+  background-color: var(--sh-bone);
+  border-radius: 0;
+}
+
+.mobile-facets__open,
+.mobile-facets__close {
+  border-radius: 0;
+  font-family: var(--sh-font-mono);
+  font-size: 1.2rem;
+  letter-spacing: var(--sh-label-tracking);
+  text-transform: uppercase;
+}
+
+.mobile-facets__summary {
+  font-family: var(--sh-font-mono);
+  font-size: 1.3rem;
+  letter-spacing: 0.06em;
+}
+
+/* --------------------------------------------------------------------------
+   28. Collection page, 750px and up
+   -------------------------------------------------------------------------- */
+
+@media screen and (min-width: 750px) {
+  .card-wrapper .price {
+    font-size: 1.6rem;
+  }
+
+  .collection-hero__description {
+    font-size: 1.7rem;
+  }
+}
