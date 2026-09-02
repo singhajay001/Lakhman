@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Pre-launch check. Exits non-zero while the site is not ready to publish.
+set -uo pipefail
+cd "$(dirname "$0")"
+fail=0
+say() { printf '%-6s %s\n' "$1" "$2"; }
+
+# 1. Placeholders must be gone.
+if grep -rn 'REPLACE\|class="todo"' --include='*.html' . >/dev/null 2>&1; then
+  say FAIL "placeholder content still present:"
+  grep -rln 'REPLACE\|class="todo"' --include='*.html' . | sed 's/^/         /'
+  fail=1
+else
+  say OK "no placeholders left"
+fi
+
+# 2. noindex must never ship. This is the classic launch failure.
+if grep -rni 'noindex' --include='*.html' . >/dev/null 2>&1; then
+  say FAIL "noindex found — this would hide the site from Google"
+  fail=1
+else
+  say OK "no noindex directive"
+fi
+
+# 3. NAP must match the master sheet exactly, on every page.
+# Tracked separately so this result is reported whatever else failed.
+nap=0
+for f in *.html; do
+  grep -q 'Shop 5A, 1 Trafalgar Place' "$f" || { say FAIL "$f missing exact street address"; nap=1; }
+  grep -q 'Marsfield NSW 2122' "$f"        || { say FAIL "$f missing suburb/state/postcode"; nap=1; }
+  grep -q '+61298681070' "$f"              || { say FAIL "$f missing tel: link"; nap=1; }
+done
+[ $nap -eq 0 ] && say OK "NAP present and consistent on all pages"
+[ $nap -eq 0 ] || fail=1
+
+# 4. Wrong address formats must not creep back in.
+if grep -rn 'Shop 5/1\|1 Trafalgar Pl,\|Shiop' --include='*.html' . >/dev/null 2>&1; then
+  say FAIL "a retired address format has crept in"
+  fail=1
+else
+  say OK "no retired address formats"
+fi
+
+# 5. JSON-LD must parse.
+python3 - <<'PY' || fail=1
+import re, json, sys, glob
+ok = True
+for f in glob.glob("*.html"):
+    for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>',
+                            open(f).read(), re.S):
+        try:
+            json.loads(block)
+        except json.JSONDecodeError as e:
+            print(f"FAIL   {f}: invalid JSON-LD — {e}"); ok = False
+print("OK     JSON-LD parses" if ok else "")
+sys.exit(0 if ok else 1)
+PY
+
+echo
+if [ $fail -eq 0 ]; then
+  echo "READY TO PUBLISH"
+else
+  echo "NOT READY — fix the failures above first"
+fi
+exit $fail

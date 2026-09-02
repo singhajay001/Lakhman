@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://localliquormarsfield.com.au/sitemap.xml
