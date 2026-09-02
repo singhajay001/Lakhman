@@ -615,6 +615,19 @@
      "slug": "winesmiths-traditional"
     },
     {
+     "brand": "Stoneleigh",
+     "name": "Stoneleigh Marlborough Range",
+     "pack": "Bottles 750mL",
+     "vessel": "bottle",
+     "accent": "#3f6b5c",
+     "abbr": "SM",
+     "dollars": 12,
+     "cents": "99",
+     "unit": "ea",
+     "flag": "Hot price",
+     "slug": "stoneleigh-marlborough"
+    },
+    {
      "brand": "Stones",
      "name": "Stones Ginger Wine",
      "pack": "Bottles 750mL",

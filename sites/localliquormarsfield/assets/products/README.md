@@ -1,106 +1,120 @@
-# Product photos
+# Product images
 
-Drop image files in this folder named after the product's slug and they appear
-on the site automatically. No code change, no edit to `build/specials.json`.
+Two routes in. Both end with `python3 build/specials.py`.
+
+## 1 · Catalogue tiles (how the current 55 got here)
+
+Drop the banner's asset-pack PNGs into `_source/`, add the pairing to
+`build/product-images.json`, then:
 
 ```bash
-python3 build/specials.py   # picks up whatever is here
+python3 build/crop-tiles.py    # crops the caption off, writes <slug>.webp
+python3 build/specials.py
 ./check.sh
 ```
 
-Anything without a photo keeps its brand-coloured silhouette, so a part-finished
-set still looks deliberate. Upload five or fifty - both work.
+Pairings are written **by hand**, never fuzzy-matched. A fuzzy pass put
+Glenfiddich's bottle against The Glenlivet's price; on a page carrying prices
+that is worse than no photograph. Check a contact sheet before shipping.
 
-## Rules
+`_source/` never reaches the live site - `publish.sh` strips it.
 
-| | |
-|---|---|
-| Format | `.webp` preferred, then `.png`, `.jpg`, `.avif` |
-| Background | White or transparent. The cards sit on white. |
-| Size | Roughly 600&times;1000px. Bigger is fine; it is scaled down. |
-| Weight | Under 150KB each if you can - this folder ships to every visitor |
-| Naming | Exactly the slug below, all lowercase, hyphens only |
+## 2 · Your own photographs
 
-Do not use the images from the product spreadsheet: every one of those URLs
-points at BWS's media server.
+Drop a file in this folder named `<slug>.webp` (or .png/.jpg/.avif) and it is
+used as-is. White or transparent background, roughly 600&times;1000px, under
+150KB. A photo you took that no other Local Liquor store has is worth more to
+Google than the supplier render everyone else uses.
 
-## Filenames
+Cards with an image show no gold price tag - the catalogue tile carries its own
+badge. A card with your own price-free photograph will show no price at all, so
+if you supply one, say so and the tag can be switched back on for it.
 
-Ten marked **&starf;** appear on the homepage - do those first if you are
-picking where to start.
+## Current state
 
 ### Spirits & liqueurs
 
-| File | Product |
-|---|---|
-| `chivas-regal-12yo-blended-scotch-whisky.webp` &starf; | Chivas Regal 12YO Blended Scotch Whisky |
-| `the-glenlivet-12yo-single-malt-scotch-whisky.webp` | The Glenlivet 12YO Single Malt Scotch Whisky |
-| `chivas-regal-crystalgold.webp` | Chivas Regal Crystalgold |
-| `makers-mark-kentucky-straight-bourbon-whisky.webp` &starf; | Maker&rsquo;s Mark Kentucky Straight Bourbon Whisky |
-| `the-macallan-double-cask-12yo.webp` | The Macallan Double Cask 12YO |
-| `st-agnes-vs-brandy.webp` | St Agnes VS Brandy |
-| `cougar-bourbon-vodka-o-or-black-douglas-scotch-whisky.webp` | Cougar Bourbon, Vodka O or Black Douglas Scotch Whisky |
-| `jim-beam-white-label-or-canadian-club-original-whisky.webp` | Jim Beam White Label or Canadian Club Original Whisky |
-| `j-germeister-liqueur.webp` | J&auml;germeister Liqueur |
-| `jameson-blended-irish-whiskey-or-jameson-orange.webp` | Jameson Blended Irish Whiskey or Jameson Orange |
-| `bombay-sapphire-gin.webp` | Bombay Sapphire Gin |
-| `absolut-vodka-or-fireball-whisky.webp` | Absolut Vodka or Fireball Whisky |
-| `jameson-black-barrel-irish-whiskey.webp` | Jameson Black Barrel Irish Whiskey |
-| `patr-n-silver-tequila.webp` | Patr&oacute;n Silver Tequila |
-| `glenfiddich-12yo-single-malt-scotch-whisky.webp` &starf; | Glenfiddich 12YO Single Malt Scotch Whisky |
-| `glenmorangie-the-original.webp` | Glenmorangie The Original |
-| `the-balvenie-doublewood-12yo-single-malt-scotch-whisky.webp` | The Balvenie DoubleWood 12YO Single Malt Scotch Whisky |
+| File | Product | |
+|---|---|---|
+| `chivas-regal-12yo-blended-scotch-whisky.webp` | Chivas Regal 12YO Blended Scotch Whisky | photo |
+| `the-glenlivet-12yo-single-malt-scotch-whisky.webp` | The Glenlivet 12YO Single Malt Scotch Whisky | photo |
+| `chivas-regal-crystalgold.webp` | Chivas Regal Crystalgold | photo |
+| `makers-mark-kentucky-straight-bourbon-whisky.webp` | Maker&rsquo;s Mark Kentucky Straight Bourbon Whisky | photo |
+| `the-macallan-double-cask-12yo.webp` | The Macallan Double Cask 12YO | photo |
+| `st-agnes-vs-brandy.webp` | St Agnes VS Brandy | photo |
+| `cougar-bourbon-vodka-o-or-black-douglas-scotch-whisky.webp` | Cougar Bourbon, Vodka O or Black Douglas Scotch Whisky | photo |
+| `jim-beam-white-label-or-canadian-club-original-whisky.webp` | Jim Beam White Label or Canadian Club Original Whisky | photo |
+| `jagermeister-liqueur.webp` | J&auml;germeister Liqueur | photo |
+| `jameson-blended-irish-whiskey-or-jameson-orange.webp` | Jameson Blended Irish Whiskey or Jameson Orange | photo |
+| `bombay-sapphire-gin.webp` | Bombay Sapphire Gin | photo |
+| `absolut-vodka-or-fireball-whisky.webp` | Absolut Vodka or Fireball Whisky | photo |
+| `jameson-black-barrel-irish-whiskey.webp` | Jameson Black Barrel Irish Whiskey | photo |
+| `patron-silver-tequila.webp` | Patr&oacute;n Silver Tequila | photo |
+| `glenfiddich-12yo-single-malt-scotch-whisky.webp` | Glenfiddich 12YO Single Malt Scotch Whisky | photo |
+| `glenmorangie-the-original.webp` | Glenmorangie The Original | photo |
+| `the-balvenie-doublewood-12yo-single-malt-scotch-whisky.webp` | The Balvenie DoubleWood 12YO Single Malt Scotch Whisky | photo |
 
 ### Premix & RTDs
 
-| File | Product |
-|---|---|
-| `fellr.webp` | FELLR 4% Range |
-| `four-pillars-tin.webp` | Four Pillars 5.1% Tin Range |
-| `hard-rated.webp` | Hard Rated 4.5% Range |
-| `kirin-hyoketsu-mango.webp` &starf; | Kirin Hyoketsu Mango 6% |
-| `jameson-ultra-dry-and-lime.webp` | Jameson Ultra Dry &amp; Lime 10% |
-| `jim-beam-white-or-canadian-club.webp` &starf; | Jim Beam White or Canadian Club 4.8% Ranges |
-| `woodstock-bourbon-and-cola-or-vodka-cruiser-mixed.webp` | Woodstock Bourbon &amp; Cola 4.8% or Vodka Cruiser Mixed 4.6% |
-| `suntory-196.webp` &starf; | Suntory -196 6% Range |
-| `woodstock-bourbon-and-cola-special.webp` | Woodstock Bourbon &amp; Cola 6% Special |
+| File | Product | |
+|---|---|---|
+| `fellr.webp` | FELLR 4% Range | photo |
+| `four-pillars-tin.webp` | Four Pillars 5.1% Tin Range | photo |
+| `hard-rated.webp` | Hard Rated 4.5% Range | photo |
+| `kirin-hyoketsu-mango.webp` | Kirin Hyoketsu Mango 6% | photo |
+| `jameson-ultra-dry-and-lime.webp` | Jameson Ultra Dry &amp; Lime 10% | photo |
+| `jim-beam-white-or-canadian-club.webp` | Jim Beam White or Canadian Club 4.8% Ranges | photo |
+| `woodstock-bourbon-and-cola-or-vodka-cruiser-mixed.webp` | Woodstock Bourbon &amp; Cola 4.8% or Vodka Cruiser Mixed 4.6% | photo |
+| `suntory-196.webp` | Suntory -196 6% Range | photo |
+| `woodstock-bourbon-and-cola-special.webp` | Woodstock Bourbon &amp; Cola 6% Special | photo |
 
 ### Beer & cider
 
-| File | Product |
-|---|---|
-| `strongbow-cider.webp` | Strongbow Cider 5% Range |
-| `jervis-bay-brewing-co-11-days-pale-ale.webp` | Jervis Bay Brewing Co. 11 Days Pale Ale |
-| `4-pines-pacific-ale.webp` | 4 Pines Pacific Ale |
-| `stone-and-wood-pacific-ale.webp` &starf; | Stone &amp; Wood Pacific Ale |
-| `corona-extra.webp` | Corona Extra |
-| `tooheys-extra-dry.webp` | Tooheys Extra Dry |
-| `great-northern-super-crisp.webp` | Great Northern Super Crisp |
-| `heineken-lager-or-tooheys-new.webp` &starf; | Heineken Lager or Tooheys New |
-| `coopers-mild-ale.webp` | Coopers Mild Ale 3.5% |
-| `hahn-superdry.webp` | Hahn SuperDry 4.6% |
-| `victoria-bitter.webp` | Victoria Bitter |
-| `carlton-dry.webp` | Carlton Dry 3.5% |
-| `xxxx-gold.webp` | XXXX Gold |
-| `peroni-nastro-azzurro.webp` | Peroni Nastro Azzurro |
-| `great-northern-original.webp` &starf; | Great Northern Original |
+| File | Product | |
+|---|---|---|
+| `strongbow-cider.webp` | Strongbow Cider 5% Range | **silhouette** |
+| `jervis-bay-brewing-co-11-days-pale-ale.webp` | Jervis Bay Brewing Co. 11 Days Pale Ale | photo |
+| `4-pines-pacific-ale.webp` | 4 Pines Pacific Ale | photo |
+| `stone-and-wood-pacific-ale.webp` | Stone &amp; Wood Pacific Ale | photo |
+| `corona-extra.webp` | Corona Extra | photo |
+| `tooheys-extra-dry.webp` | Tooheys Extra Dry | photo |
+| `great-northern-super-crisp.webp` | Great Northern Super Crisp | photo |
+| `heineken-lager-or-tooheys-new.webp` | Heineken Lager or Tooheys New | photo |
+| `coopers-mild-ale.webp` | Coopers Mild Ale 3.5% | photo |
+| `hahn-superdry.webp` | Hahn SuperDry 4.6% | photo |
+| `victoria-bitter.webp` | Victoria Bitter | photo |
+| `carlton-dry.webp` | Carlton Dry 3.5% | photo |
+| `xxxx-gold.webp` | XXXX Gold | photo |
+| `peroni-nastro-azzurro.webp` | Peroni Nastro Azzurro | photo |
+| `great-northern-original.webp` | Great Northern Original | photo |
 
 ### Wine
 
-| File | Product |
-|---|---|
-| `the-drover.webp` | The Drover Range |
-| `mcguigan-black-label.webp` | McGuigan Black Label Range |
-| `winesmiths-traditional.webp` | Winesmiths Traditional Range |
-| `stones-ginger-wine.webp` | Stones Ginger Wine |
-| `st-hallett-faith.webp` | St Hallett Faith Range |
-| `wynns-the-siding.webp` | Wynns The Siding Range |
-| `angove-organic.webp` | Angove Organic Range |
-| `yarra-burn-prosecco-or-grant-burge-5th-generation.webp` | Yarra Burn Prosecco or Grant Burge 5th Generation Ranges |
-| `villa-maria-private-bin.webp` | Villa Maria Private Bin Range (excl. Pinot Noir) |
-| `jacobs-creek-double-barrel.webp` | Jacob&rsquo;s Creek Double Barrel Range |
-| `devils-corner.webp` | Devil&rsquo;s Corner Range |
-| `bird-in-hand-sparkling.webp` | Bird In Hand Sparkling |
-| `little-yering-or-xanadu-circa-77.webp` | Little Yering or Xanadu Circa 77 Ranges |
-| `penfolds-bin-389-cabernet-shiraz.webp` &starf; | Penfolds Bin 389 Cabernet Shiraz |
+| File | Product | |
+|---|---|---|
+| `the-drover.webp` | The Drover Range | photo |
+| `mcguigan-black-label.webp` | McGuigan Black Label Range | photo |
+| `winesmiths-traditional.webp` | Winesmiths Traditional Range | photo |
+| `stoneleigh-marlborough.webp` | Stoneleigh Marlborough Range | photo |
+| `stones-ginger-wine.webp` | Stones Ginger Wine | photo |
+| `st-hallett-faith.webp` | St Hallett Faith Range | photo |
+| `wynns-the-siding.webp` | Wynns The Siding Range | photo |
+| `angove-organic.webp` | Angove Organic Range | photo |
+| `yarra-burn-prosecco-or-grant-burge-5th-generation.webp` | Yarra Burn Prosecco or Grant Burge 5th Generation Ranges | photo |
+| `villa-maria-private-bin.webp` | Villa Maria Private Bin Range (excl. Pinot Noir) | photo |
+| `jacobs-creek-double-barrel.webp` | Jacob&rsquo;s Creek Double Barrel Range | photo |
+| `devils-corner.webp` | Devil&rsquo;s Corner Range | photo |
+| `bird-in-hand-sparkling.webp` | Bird In Hand Sparkling | photo |
+| `little-yering-or-xanadu-circa-77.webp` | Little Yering or Xanadu Circa 77 Ranges | photo |
+| `penfolds-bin-389-cabernet-shiraz.webp` | Penfolds Bin 389 Cabernet Shiraz | photo |
 
+## Not published
+
+In the pack, priced, but absent from the NSW/ACT/VIC P37 pages - the asset pack
+is national. Confirm with the store before adding:
+
+- `LLP37_BentSpoke_Crankshaft_IPA_2_FOR_40.png` - 2 FOR $40
+- `LLP37_Vodka_Cruiser_X_10percent_Range_22.99.png` - $22.99 4pk
+- `LLP37_Tamnavulin_Double_Cask_Single_Malt_Scotch_Whisky_69.99.png` - $69.99 ea
+- `LLP37_Tamnavulin_Sherry_Cask_Single_Malt_Scotch_Whisky_69.99.png` - $69.99 ea
+- `LLP37_Ara_Single_Estate_Range_18.99.png` - $18.99 ea

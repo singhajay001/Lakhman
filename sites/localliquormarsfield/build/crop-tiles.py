@@ -59,7 +59,7 @@ def main():
     for slug, f in sorted(m["map"].items()):
         im = cut(SRC / f)
         dest = OUT / (slug + ".webp")
-        im.save(dest, "WEBP", quality=QUALITY, method=6)
+        im.save(dest, "WEBP", quality=QUALITY, method=4)
         total += dest.stat().st_size
     print("%d card images, %.0f KB total, %.1f KB average"
           % (len(m["map"]), total / 1024, total / 1024 / len(m["map"])))
