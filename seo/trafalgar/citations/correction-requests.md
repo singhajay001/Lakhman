@@ -93,7 +93,7 @@ Send to the Friendly Grocer / Metcash marketing or store-support contact.
 > Address: Shop 5, 1 Trafalgar Place, Marsfield NSW 2122
 > Phone: (02) 9868 1070
 > Website: https://trafalgarsupermarketandcellars.com.au/supermarket
-> Hours: Sun–Wed 8am–9pm, Thu–Sat 8am–10pm
+> Hours: Mon–Wed 8am–9pm, Thu–Sat 8am–10pm, Sun 8am–9pm
 >
 > Please note the store opens at **8am**, not 9am — the current hours are an hour
 > late.
@@ -120,8 +120,8 @@ For aussie-hours, Shopfully, openinghoursau and any other directory publishing a
 > Your listing for Trafalgar Supermarket and Cellars, 1 Trafalgar Place,
 > Marsfield NSW 2122, shows a 9:00am opening. The store opens at **8:00am**.
 >
-> Correct hours: Sunday to Wednesday 8:00am–9:00pm, Thursday to Saturday
-> 8:00am–10:00pm.
+> Correct hours: Monday to Wednesday 8:00am–9:00pm, Thursday to Saturday
+> 8:00am–10:00pm, Sunday 8:00am–9:00pm.
 >
 > Verification: https://maps.app.goo.gl/wyZ4GMVoe18M1fkK6
 >

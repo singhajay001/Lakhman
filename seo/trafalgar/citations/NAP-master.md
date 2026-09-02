@@ -29,7 +29,7 @@ https://trafalgarsupermarketandcellars.com.au/supermarket
 | Primary category | Supermarket |
 | Google profile | https://maps.app.goo.gl/wyZ4GMVoe18M1fkK6 |
 
-**Hours** — Sun–Wed 8:00am–9:00pm · Thu–Sat 8:00am–10:00pm
+**Hours** — Mon–Wed 8:00am–9:00pm · Thu–Sat 8:00am–10:00pm · Sun 8:00am–9:00pm
 
 ---
 
@@ -61,6 +61,9 @@ https://trafalgarsupermarketandcellars.com.au/local-liquor
 
 > Sunday opens at 10:00am, two hours after the supermarket. This is NSW
 > packaged-liquor trading restriction, not an error. Never "correct" it to match.
+>
+> Sunday is the **only** day the two differ. Every other day both trade
+> identically, so a mismatch on any other day is a data error.
 
 ---
 

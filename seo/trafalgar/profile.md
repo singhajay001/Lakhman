@@ -18,7 +18,7 @@
 | Grocery banner | **Friendly Grocer** (Metcash) — banner site carries two duplicate pages | friendlygrocer.com.au |
 | Council area | City of Ryde, Sydney | Wheree |
 | Phone | +61 2 9868 1070 | Yelp, mapsus, dlook |
-| Supermarket hours | Sun–Wed 08:00–21:00 · Thu–Sat 08:00–22:00 | owner |
+| Supermarket hours | Mon–Wed 08:00–21:00 · Thu–Sat 08:00–22:00 · Sun 08:00–21:00 | owner |
 | ⚠️ Directory error | aussie-hours, Shopfully, openinghoursau all publish `09:00` open — **one hour late, every day** | — |
 | Existing domain | `trafalgarsupermarketandcellars.com.au` | search result; also the owner's email domain |
 | Under-construction site | `trafalgar-grocery.myfoodlink.com` | supplied by owner |
