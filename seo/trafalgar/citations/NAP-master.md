@@ -58,6 +58,7 @@ https://trafalgarsupermarketandcellars.com.au/local-liquor
 | Store code | `03435376679661119338` |
 | Primary category | Liquor Store |
 | Google profile | https://g.page/r/CenxQG-m-gUkEBI |
+| Website | `https://localliquormarsfield.com.au` — registered 2026-09-02, apex canonical |
 | Liquor licence | `LIQP700301260` — Packaged Liquor Licence (Bottle Shops & Delivery) |
 | Licence name | **Trafalgar Cellars of Marsfield** — the legal name, not the trading name |
 | Licensee / ABN | Ajaypaul Singh · ABN 62 685 087 110 |

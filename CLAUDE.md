@@ -64,8 +64,9 @@ can change later without touching markup.
 
 **Bottle shop — platform constraint.** MyFoodLink cannot host a separate liquor
 site: it is integrated to the POS via Friendly Grocer. The `/local-liquor` path
-plan is dead. Local Liquor Marsfield gets its own small non-ecommerce site,
-recommended at `localliquormarsfield.com.au`. A redirect-only domain was
+plan is dead. Local Liquor Marsfield gets its own small non-ecommerce site at
+**`localliquormarsfield.com.au` — registered 2026-09-02**, apex canonical, no
+`www`. Hosting: Cloudflare Pages (free). A redirect-only domain was
 considered and rejected — it adds no indexable content, which is the entire
 deficit. See `seo/trafalgar/liquor-site-decision.md`.
 
