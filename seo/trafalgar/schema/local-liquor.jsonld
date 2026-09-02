@@ -30,16 +30,27 @@
         "longitude": 151.10797358280772
       },
       "hasMap": "https://g.page/r/CenxQG-m-gUkEBI",
+      "sameAs": [
+        "https://www.instagram.com/localliquormarsfield"
+      ],
       "openingHoursSpecification": [
         {
           "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Monday", "Tuesday", "Wednesday"],
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday"
+          ],
           "opens": "08:00",
           "closes": "21:00"
         },
         {
           "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Thursday", "Friday", "Saturday"],
+          "dayOfWeek": [
+            "Thursday",
+            "Friday",
+            "Saturday"
+          ],
           "opens": "08:00",
           "closes": "22:00"
         },
@@ -53,11 +64,26 @@
       "currenciesAccepted": "AUD",
       "priceRange": "$$",
       "areaServed": [
-        { "@type": "Place", "name": "Marsfield" },
-        { "@type": "Place", "name": "Macquarie Park" },
-        { "@type": "Place", "name": "North Ryde" },
-        { "@type": "Place", "name": "Eastwood" },
-        { "@type": "Place", "name": "Epping" }
+        {
+          "@type": "Place",
+          "name": "Marsfield"
+        },
+        {
+          "@type": "Place",
+          "name": "Macquarie Park"
+        },
+        {
+          "@type": "Place",
+          "name": "North Ryde"
+        },
+        {
+          "@type": "Place",
+          "name": "Eastwood"
+        },
+        {
+          "@type": "Place",
+          "name": "Epping"
+        }
       ]
     }
   ]

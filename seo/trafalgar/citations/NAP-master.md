@@ -74,9 +74,18 @@ year — a "hours may differ" label on a public holiday costs visits.
 shorter. Publish the *trading* hours; the licensed hours belong only on the
 compliance notice.
 
-**Social accounts** — Facebook, TikTok and Threads are all `trafalgarsupermarket`
-and belong to the **supermarket** entity. They are set as `sameAs` on the parent
-Organization, never on the LiquorStore, so the two entities are not conflated.
+**Social accounts are split by entity, and must stay that way.**
+
+| Entity | Accounts |
+|---|---|
+| Local Liquor Marsfield | Instagram `@localliquormarsfield` |
+| Trafalgar Supermarket and Cellars | Facebook, Instagram, TikTok, Threads — all `trafalgarsupermarket` |
+
+`sameAs` carries the account to its own entity only. Putting the supermarket's
+Facebook on the LiquorStore would tell Google they are one business, undoing the
+separation the distinct suites, names and phone numbers establish. The bottle
+shop's site links the group accounts as the parent brand's, in plain HTML, not
+in its schema.
 
 > Sunday opens at 10:00am, two hours after the supermarket. This is NSW
 > packaged-liquor trading restriction, not an error. Never "correct" it to match.
