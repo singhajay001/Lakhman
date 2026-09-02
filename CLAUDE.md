@@ -51,13 +51,16 @@ Verify current Google Merchant Center alcohol policy for Australia before
 building any Shopping strategy — do not assume a general e-commerce playbook
 applies. Treat this as a live constraint, not a footnote.
 
-## Open decision blocking Trafalgar work
+## Domain decisions — SETTLED
 
-Three hostnames are in play — `trafalgarsupermarketandcellars.com.au` (existing),
-`trafalgar-grocery.myfoodlink.com` (under construction), and `trafalgar.net.au`
-(proposed). Only one may be canonical; the others must 301 to it. Do not start
-content or technical work on Trafalgar until this is settled — it would need
-redoing. See `seo/trafalgar/profile.md`.
+**Trafalgar.** `trafalgarsupermarketandcellars.com.au` is canonical.
+`trafalgar.net.au` is a permanent 301 into it and is never published on.
+`trafalgar-grocery.myfoodlink.com` is `noindex` while under construction, then
+301s to canonical at launch.
+
+**Spirithaus.** `spirithaus.com.au` with **`www` as the primary host**. Schema
+uses `canonical_url` / `request.origin` rather than a hardcoded host, so this
+can change later without touching markup.
 
 Note the name collision: **IGA Trafalgar, 5 McCrorey St, Trafalgar VIC 3824** is
 an unrelated business. Never merge their data.

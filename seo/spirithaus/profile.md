@@ -7,10 +7,11 @@
 
 | Field | Value |
 |---|---|
-| Website | TODO |
+| Website | `spirithaus.com.au` — **`www` is the primary host**, canonicals carry the www prefix |
 | Platform | **Shopify** — Dawn theme v16.0.0 (verified) |
 | Theme repo | `singhajay001/spirithaus-theme` @ `7ae5c95` |
-| Catalogue size | TODO |
+| Catalogue size | 1 product imported so far; barcode column exists in the import CSV |
+| Store status | **password-protected, theme is a draft** — external validators cannot crawl it |
 | Ships to | TODO — AU-wide? VIC only? click-and-collect? |
 | Physical presence | TODO — if yes, this also needs a local profile |
 
@@ -26,7 +27,12 @@ anywhere in the shipping radius. The queries that matter are commercial:
 
 The battleground is **product and collection pages**, not blog posts.
 
-## Confirmed finding — product schema is thin
+## Status: product schema RESOLVED
+
+Fixed. See `schema/APPLY.md` and `schema/product-schema.patch`. Summary below
+kept for the record.
+
+## Original finding — product schema was thin
 
 `sections/main-product.liquid:855` emits structured data via Shopify's built-in
 filter:
@@ -52,7 +58,9 @@ Treat it as the first concrete task.
 
 ## Priority order
 
-1. **Product schema enrichment** — GTIN first, then returns/shipping, then reviews.
+1. ~~**Product schema enrichment**~~ — done. Remaining: supply real returns and
+   shipping terms so `hasMerchantReturnPolicy` / `shippingDetails` can be added
+   without inventing data.
 2. **Collection page architecture** — by category, brand, region, price band.
    These are the pages that rank for head terms; most Shopify stores leave them
    as bare product grids with no copy.

@@ -1,0 +1,126 @@
+{%- comment -%}
+  Product JSON-LD for Spirithaus.
+
+  REPLACES Shopify's `{{ product | structured_data }}`. That filter is opaque —
+  properties cannot be added to its output — so enriching it means replacing it.
+  Do not emit both: two Product blocks on one page compete and Google may pick
+  the thinner one.
+
+  Beyond the built-in filter this adds: gtin (from variant barcode), per-variant
+  offers, aggregateRating from the reviews metafield, brand from the producer
+  metafield, and the spec metafields as additionalProperty.
+
+  Host is never hardcoded. `canonical_url` and `request.origin` follow the
+  store's primary domain, so the www-vs-apex decision can change later without
+  touching this file.
+
+  Accepts: product (required)
+{%- endcomment -%}
+
+{%- liquid
+  assign p = product
+  assign m = p.metafields.custom
+  assign v = p.selected_or_first_available_variant
+
+  assign brand_name = m.producer.value | default: p.vendor
+
+  assign rating = p.metafields.reviews.rating.value
+  assign rating_count = p.metafields.reviews.rating_count | plus: 0
+-%}
+
+{%- comment -%} Digits-only barcode check. Liquid has no regex: strip every
+  digit and test for an empty remainder. An invalid or absent GTIN is omitted
+  entirely — a malformed one is worse than none. {%- endcomment -%}
+{%- capture gtin_property -%}
+  {%- assign bc = v.barcode | default: '' | strip | remove: ' ' | remove: '-' -%}
+  {%- if bc != blank -%}
+    {%- assign bc_residue = bc | remove: '0' | remove: '1' | remove: '2' | remove: '3' | remove: '4' | remove: '5' | remove: '6' | remove: '7' | remove: '8' | remove: '9' -%}
+    {%- if bc_residue == blank -%}
+      {%- assign bc_len = bc | size -%}
+      {%- if bc_len == 8 or bc_len == 12 or bc_len == 13 or bc_len == 14 -%}gtin{{ bc_len }}|{{ bc }}{%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endcapture -%}
+{%- assign gtin_parts = gtin_property | strip | split: '|' -%}
+
+{%- capture spec_properties -%}
+  {%- if m.abv.value != blank -%}{"@type":"PropertyValue","name":"Alcohol by volume","value":{{ m.abv.value | json }},"unitText":"% ABV"},{%- endif -%}
+  {%- if m.volume_ml.value != blank -%}{"@type":"PropertyValue","name":"Volume","value":{{ m.volume_ml.value | json }},"unitCode":"MLT"},{%- endif -%}
+  {%- if m.standard_drinks.value != blank -%}{"@type":"PropertyValue","name":"Standard drinks","value":{{ m.standard_drinks.value | json }}},{%- endif -%}
+  {%- if m.style.value != blank -%}{"@type":"PropertyValue","name":"Style","value":{{ m.style.value | json }}},{%- endif -%}
+  {%- if m.region.value != blank -%}{"@type":"PropertyValue","name":"Region","value":{{ m.region.value | json }}},{%- endif -%}
+  {%- if m.country.value != blank -%}{"@type":"PropertyValue","name":"Country","value":{{ m.country.value | json }}},{%- endif -%}
+{%- endcapture -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ p.title | strip_html | json }},
+  "url": {{ canonical_url | default: p.url | json }}
+  {%- if p.description != blank -%}
+    ,"description": {{ p.description | strip_html | truncate: 5000 | json }}
+  {%- endif -%}
+  {%- if p.images.size > 0 -%}
+    ,"image": [
+      {%- for image in p.images limit: 5 -%}
+        {{ image | image_url: width: 1200 | prepend: 'https:' | json }}{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  {%- endif -%}
+  {%- if brand_name != blank -%}
+    ,"brand": {"@type":"Brand","name": {{ brand_name | json }}}
+  {%- endif -%}
+  {%- if v.sku != blank -%}
+    ,"sku": {{ v.sku | json }}
+  {%- endif -%}
+  {%- if gtin_parts.size == 2 -%}
+    ,{{ gtin_parts[0] | json }}: {{ gtin_parts[1] | json }}
+  {%- endif -%}
+  {%- assign specs = spec_properties | strip -%}
+  {%- if specs != blank -%}
+    ,"additionalProperty": [{{ specs | remove_last: ',' }}]
+  {%- endif -%}
+  {%- comment -%} Only emit ratings that actually exist. Never invent them. {%- endcomment -%}
+  {%- if rating != blank and rating_count > 0 -%}
+    ,"aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": {{ rating.rating | json }},
+      "bestRating": {{ rating.scale_max | json }},
+      "worstRating": {{ rating.scale_min | json }},
+      "ratingCount": {{ rating_count | json }}
+    }
+  {%- endif -%}
+  {%- comment -%} Alcohol: signal the audience restriction. {%- endcomment -%}
+  ,"audience": {"@type":"PeopleAudience","suggestedMinAge":18}
+  ,"offers": [
+    {%- for variant in p.variants -%}
+      {
+        "@type": "Offer",
+        "url": {{ request.origin | append: variant.url | json }},
+        "priceCurrency": {{ cart.currency.iso_code | json }},
+        "price": "{{ variant.price | divided_by: 100.0 }}",
+        "availability": "https://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+        "itemCondition": "https://schema.org/NewCondition"
+        {%- if variant.sku != blank -%}
+          ,"sku": {{ variant.sku | json }}
+        {%- endif -%}
+        {%- capture v_gtin -%}
+          {%- assign vbc = variant.barcode | default: '' | strip | remove: ' ' | remove: '-' -%}
+          {%- if vbc != blank -%}
+            {%- assign vbc_residue = vbc | remove: '0' | remove: '1' | remove: '2' | remove: '3' | remove: '4' | remove: '5' | remove: '6' | remove: '7' | remove: '8' | remove: '9' -%}
+            {%- if vbc_residue == blank -%}
+              {%- assign vbc_len = vbc | size -%}
+              {%- if vbc_len == 8 or vbc_len == 12 or vbc_len == 13 or vbc_len == 14 -%}gtin{{ vbc_len }}|{{ vbc }}{%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endcapture -%}
+        {%- assign v_gtin_parts = v_gtin | strip | split: '|' -%}
+        {%- if v_gtin_parts.size == 2 -%}
+          ,{{ v_gtin_parts[0] | json }}: {{ v_gtin_parts[1] | json }}
+        {%- endif -%}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}
+</script>

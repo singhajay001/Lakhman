@@ -1,0 +1,30 @@
+diff --git a/sections/featured-product.liquid b/sections/featured-product.liquid
+index e7c9456..b91a866 100644
+--- a/sections/featured-product.liquid
++++ b/sections/featured-product.liquid
+@@ -498,9 +498,7 @@
+     <script src="{{ 'product-model.js' | asset_url }}" defer></script>
+   {%- endif -%}
+ 
+-  <script type="application/ld+json">
+-    {{ product | structured_data }}
+-  </script>
++  {%- render 'product-structured-data', product: product -%}
+ 
+   {% if product.media.size > 0 %}
+     <script src="{{ 'product-modal.js' | asset_url }}" defer="defer"></script>
+diff --git a/sections/main-product.liquid b/sections/main-product.liquid
+index 3ba7f5a..eeafef4 100644
+--- a/sections/main-product.liquid
++++ b/sections/main-product.liquid
+@@ -852,9 +852,7 @@
+         endif
+       -%}
+ 
+-      <script type="application/ld+json">
+-        {{ product | structured_data }}
+-      </script>
++      {%- render 'product-structured-data', product: product -%}
+     </div>
+   </product-component>
+ </product-info>

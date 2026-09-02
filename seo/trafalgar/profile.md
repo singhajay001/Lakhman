@@ -16,9 +16,30 @@
 | Hours | Open 7 days | Facebook, dlook |
 | Existing domain | `trafalgarsupermarketandcellars.com.au` | search result; also the owner's email domain |
 | Under-construction site | `trafalgar-grocery.myfoodlink.com` | supplied by owner |
-| Proposed new domain | `trafalgar.net.au` | supplied by owner — **see risk below** |
+| **Canonical domain (DECIDED)** | `trafalgarsupermarketandcellars.com.au` | owner decision |
+| Short domain | `trafalgar.net.au` — permanent 301 into canonical, **never published on** | owner decision |
 | Instagram | `@trafalgarsupermarket` | confirmed |
 | Facebook | page id 61580472953531 | confirmed |
+
+## Domain decision — SETTLED
+
+`trafalgarsupermarketandcellars.com.au` is canonical. `trafalgar.net.au` is
+acquired as the short spoken/print form and **permanently 301s into the
+canonical domain**. Nothing is ever published on it.
+
+Owner's reasoning, recorded because it should survive this session:
+
+- `.com.au` carries more trust than `.net.au` in Australian retail, where
+  `.net.au` is rare enough to read as a fallback.
+- The long domain matches the registered business name exactly, which is what
+  feeds the NAP consistency Google uses for local ranking. A physical store's
+  traffic arrives through Maps and GBP, not typed URLs — so domain length costs
+  almost nothing.
+- Switching canonical after indexing means 301ing everything and taking a
+  temporary hit for no gain.
+
+`trafalgar-grocery.myfoodlink.com` must be `noindex` while under construction,
+then 301 to the canonical domain at launch.
 
 ## ⚠️ Name collision — the defining SEO problem
 
@@ -42,15 +63,10 @@ Whereas `trafalgarsupermarketandcellars.com.au` is **entity-exact**, already
 associated with the business (it is the owner's email domain), already appears
 in search results, and disambiguates from IGA Trafalgar automatically.
 
-**Recommendation: keep `trafalgarsupermarketandcellars.com.au` as the canonical
-domain.** If `trafalgar.net.au` is wanted for being short and memorable, own it
-and **301-redirect it** to the canonical domain rather than making it the primary.
-That keeps the brand shortcut without discarding entity clarity or splitting
-authority across three hostnames.
-
-This is a recommendation, not a veto. If the decision is to move to
-`trafalgar.net.au` regardless, the migration plan below applies and must be
-followed precisely.
+Do not expect to own the word "Trafalgar" as a standalone brand term — it
+collides with Trafalgar Square, the Battle of Trafalgar, Trafalgar Tours (a
+large travel company) and IGA Trafalgar VIC. Target the full business name plus
+locality instead: "Trafalgar Supermarket Marsfield", "bottle shop Marsfield".
 
 ## Three hostnames is the real risk
 
@@ -106,18 +122,15 @@ Competes with Woolworths and Coles on convenience, not on catalogue.
 
 ## Priority order
 
-1. **Settle the domain question.** Everything else is wasted effort until the
-   canonical hostname is decided — including any content work, because it would
-   need redoing.
-2. **Google Business Profile.** Categories, hours, attributes, photos, products.
+1. **Google Business Profile.** Categories, hours, attributes, photos, products.
    Confirm the listing is claimed and verified.
-3. **Citation cleanup.** Several listings carry inconsistent data — e.g.
+2. **Citation cleanup.** Several listings carry inconsistent data — e.g.
    `cellars.com.au` lists the business as "Trafalgar Cellars" at "Shiop 5/1"
    (sic). Name and address must match GBP exactly, everywhere.
-4. **Entity disambiguation from IGA Trafalgar VIC.** Consistent use of the full
+3. **Entity disambiguation from IGA Trafalgar VIC.** Consistent use of the full
    name plus "Marsfield" / "NSW" across site, schema, and citations.
-5. **`LocalBusiness` / `Store` schema** matching GBP byte-for-byte.
-6. **Reviews** — velocity and response rate.
+4. **`LocalBusiness` / `Store` schema** matching GBP byte-for-byte.
+5. **Reviews** — velocity and response rate.
 
 ## Explicitly deprioritised
 
