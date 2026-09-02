@@ -59,7 +59,12 @@ position. Google has seen this text already, on a far stronger site.
 
 If the range pages need copy, it has to be written fresh.
 
-### 3. Confirm this is actual shelf stock
+### 3. ~~Confirm this is actual shelf stock~~ — CONFIRMED
+
+Owner confirmed 2026-09-02 that this is the real shelf. The counts on the site
+are now published rather than gated.
+
+### 3. Original concern, kept for the record
 
 The file is named for **Trafalgar Cellars** — the retired trading name — and the
 media comes from BWS. That pattern suggests a supplier or wholesaler catalogue
@@ -107,3 +112,42 @@ Ranked by how hard a chain is to beat on each:
 - `Tags` appears twice as a column header.
 - 235 rows have no `Alcohol %`; 343 have no `Standard Drinks`. Both are
   displayed to customers under the Food Standards Code, so fill them before use.
+
+
+## Curation for the website (2026-09-02)
+
+The owner asked for a premium, spirits-led selection with wine trimmed. 1,161 of
+4,700 lines are featured — spirits 52%, wine 32%, craft beer 16%. Wine is cut
+from 2,153 to 366, keeping 17%.
+
+### Price is only a quality signal where pack size is constant
+
+The rule that matters. Median prices: whisky $73, gin $71, tequila $81 — but
+Australian Beer p75 is $57 and Premixed p90 is $142. Those are **carton prices**,
+not premium products. Filtering beer or premixed on price would have promoted
+slabs of mainstream lager as "premium".
+
+So the thresholds differ by category:
+
+| Category | Rule |
+|---|---|
+| Spirits | price ≥ $60, or an age statement, or an award |
+| Wine | price ≥ $50, or an award and ≥ $30 |
+| Beer | Craft Beer sub-category with an award or ≥ $70 — **never price alone** |
+| Premixed | excluded entirely — RTD cartons are not a premium story |
+
+### Bottles are named, not just categories
+
+89 specific bottles are named across the two pages — Hakushu 12, Hibiki Harmony,
+Royal Salute 21, Glenlivet 18 and so on. Every one was verified to exist in the
+source spreadsheet. Naming actual bottles is what makes the site findable for
+searches a category page cannot reach, and it is the substance a chain's generic
+page does not have.
+
+Picks are spread one-per-brand, prestige-first, so no single distiller dominates.
+
+### No prices on the site
+
+Prices move, and a static page with stale prices creates disputes at the counter.
+The pages say to ring for today's price — which also creates a call, which is a
+conversion a price list does not.
