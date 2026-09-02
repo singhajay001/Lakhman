@@ -10,7 +10,7 @@ script will silently revert it. Change the JSON and re-run.
 The promo window in the JSON is what check.sh guard 10 reads to refuse a
 publish once the specials have expired.
 """
-import datetime, html, json, pathlib, re
+import datetime, html, json, pathlib, re, unicodedata
 
 HERE = pathlib.Path(__file__).resolve().parent
 SITE = HERE.parent
@@ -37,6 +37,19 @@ VESSEL = {
                '<path d="M50 62v92" stroke="#fff" stroke-opacity=".25" stroke-width="2"/>'),
 }
 LABEL = {"can": (32, 72, 36), "bottle": (30, 78, 40), "carton": (18, 82, 44)}
+
+
+def slug(name):
+    """Filename-safe product key. Transliterates first, so Jagermeister and
+    Patron do not become j-germeister and patr-n."""
+    s = unicodedata.normalize("NFKD", html.unescape(name))
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    s = re.sub(r"\b\d+(\.\d+)?%\s*", "", s)
+    s = re.sub(r"\s+Ranges?\b", "", s)
+    s = s.replace("&", "and").replace("\u2019", "").replace("'", "")
+    s = re.sub(r"\(.*?\)", "", s)
+    s = re.sub(r"[^a-zA-Z0-9]+", "-", s).strip("-").lower()
+    return re.sub(r"-+", "-", s)
 
 
 def ink(hexc):
@@ -98,9 +111,15 @@ def photo(it, alt):
 def card(it):
     alt = html.unescape(it["name"] + " " + it["pack"])
     shot = photo(it, alt)
-    if shot is None:
-        body = (VESSEL[it["vessel"]] + label(it)).format(c=it["accent"])
-        shot = '<svg viewBox="0 0 100 170" role="img" aria-label="%s">%s</svg>' % (alt, body)
+    if shot is not None:
+        # The catalogue tile already carries the price, the pack roundel and any
+        # NEW / HOT PRICE flash. Repeating them beside it would show the price
+        # twice, so the card contributes only the name and pack size as text.
+        return ('\n  <article class="special has-shot">\n    <div class="shot">%s</div>\n'
+                '    <h3>%s</h3>\n    <p>%s</p>\n  </article>'
+                % (shot, it["name"], it["pack"]))
+    body = (VESSEL[it["vessel"]] + label(it)).format(c=it["accent"])
+    shot = '<svg viewBox="0 0 100 170" role="img" aria-label="%s">%s</svg>' % (alt, body)
     badge = ""
     if it.get("badge"):
         badge = ('\n    <span class="pack">%s<small>%s</small></span>'

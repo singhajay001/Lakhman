@@ -33,8 +33,10 @@ for path in "${PUBLISH[@]}"; do
   cp -R "$path" dist/
 done
 
-# assets/products/README.md documents the naming convention for whoever is
-# adding pack shots. It is not part of the site.
+# assets/products/_source/ holds the 600x600 catalogue tiles that
+# build/crop-tiles.py cuts the card images from - ~18MB that must not ship.
+# README.md documents the naming convention; also not part of the site.
+rm -rf dist/assets/products/_source
 find dist -name '*.md' -delete
 
 echo
