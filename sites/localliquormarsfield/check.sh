@@ -101,7 +101,33 @@ if bad:
 print("OK     every footer matches the template")
 PYEOF
 
-# 10. JSON-LD must parse.
+# 10. Catalogue specials expire, and the generated blocks drift the moment
+# someone hand-edits the HTML instead of build/specials.json. Fail on both.
+python3 - <<'PYEOF' || fail=1
+import datetime, importlib.util, json, pathlib, sys
+
+data = json.loads(pathlib.Path("build/specials.json").read_text())
+end = datetime.date.fromisoformat(data["to"])
+if datetime.date.today() > end:
+    print("FAIL   specials expired %s (%s) - load the new catalogue into "
+          "build/specials.json and re-run build/specials.py" % (end, data["promo"]))
+    sys.exit(1)
+
+spec = importlib.util.spec_from_file_location("sp", "build/specials.py")
+sp = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(sp)
+idx = pathlib.Path("index.html").read_text()
+i, j = idx.find(sp.BEGIN), idx.find(sp.END)
+if i < 0 or j < 0:
+    print("FAIL   index.html: generated specials block is missing"); sys.exit(1)
+if idx[i:j + len(sp.END)] != sp.home_block():
+    print("FAIL   index.html specials block was hand-edited - change "
+          "build/specials.json and re-run build/specials.py"); sys.exit(1)
+n = sum(len(g["items"]) for g in data["groups"])
+print("OK     %d specials, current until %s (%s)" % (n, end, data["promo"]))
+PYEOF
+
+# 11. JSON-LD must parse.
 python3 - <<'PY' || fail=1
 import re, json, sys, glob
 ok = True

@@ -21,7 +21,8 @@ AC = ' aria-current="page"'
 # Extensionless: Cloudflare's auto-trailing-slash serves /about from about.html
 # and 301s /about.html -> /about, so publishing .html would point every canonical
 # at a redirect.
-NAV = [("/", "Home", "home"), ("/spirits", "Spirits", "spirits"),
+NAV = [("/", "Home", "home"), ("/specials", "Specials", "specials"),
+       ("/spirits", "Spirits", "spirits"),
        ("/range", "Full range", "range"), ("/services", "Services", "services"),
        ("/visit", "Visit us", "visit"),
        ("/about", "About", "about"), ("/contact", "Contact", "contact")]
