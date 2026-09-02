@@ -39,7 +39,7 @@ https://trafalgarsupermarketandcellars.com.au/supermarket
 
 ```
 Local Liquor Marsfield
-Shop 5A, 1 Trafalgar Place
+5A, 1 Trafalgar Place
 Marsfield NSW 2122
 Australia
 0452 480 487
@@ -49,7 +49,7 @@ https://trafalgarsupermarketandcellars.com.au/local-liquor
 | Field | Value |
 |---|---|
 | Name | `Local Liquor Marsfield` |
-| Street | `Shop 5A, 1 Trafalgar Place` |
+| Street | `5A, 1 Trafalgar Place` |
 | Suburb / State / Postcode | `Marsfield` · `NSW` · `2122` |
 | Phone (local) | `0452 480 487` — **the bottle shop's own line, not the supermarket's** |
 | Phone (international) | `+61 452 480 487` |

@@ -5,7 +5,7 @@ Two profiles are in play:
 | # | Link | Identified as |
 |---|---|---|
 | 1 | `maps.app.goo.gl/wyZ4GMVoe18M1fkK6` | **Trafalgar Supermarket and Cellars** — Shop 5, 1 Trafalgar Place, Marsfield NSW 2122 · `-33.767749, 151.108628` · **Verified** |
-| 2 | `g.page/r/CenxQG-m-gUkEBI` | **Local Liquor Marsfield** — Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122 · `-33.767734, 151.107974` · plus code `64J5+R5` · store code `03435376679661119338` · **Verified** |
+| 2 | `g.page/r/CenxQG-m-gUkEBI` | **Local Liquor Marsfield** — 5A, 1 Trafalgar Place, Marsfield NSW 2122 · `-33.767734, 151.107974` · plus code `64J5+R5` · store code `03435376679661119338` · **Verified** |
 
 Both verified. Phones are **separate**: supermarket (02) 9868 1070, bottle shop
 **0452 480 487**. That separation is useful — Google reads phone as an entity
@@ -25,7 +25,7 @@ for Shop 5 and Shop 5A. No risk of Google collapsing them on proximity.
 Different field order **and** `Place` vs `Pl`. Google normalises internally, but
 every downstream citation copies whatever it sees, so this seeds the same
 fragmentation the rest of this document is about. Normalise the liquor profile to
-`Shop 5A, 1 Trafalgar Place` so both read identically. The schema files already
+`5A, 1 Trafalgar Place` so both read identically. The schema files already
 use that form.
 
 ### 🔴 Every directory has your opening time wrong by an hour

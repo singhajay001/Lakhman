@@ -26,7 +26,7 @@ fi
 # Tracked separately so this result is reported whatever else failed.
 nap=0
 for f in *.html; do
-  grep -q 'Shop 5A, 1 Trafalgar Place' "$f" || { say FAIL "$f missing exact street address"; nap=1; }
+  grep -q '5A, 1 Trafalgar Place' "$f" || { say FAIL "$f missing exact street address"; nap=1; }
   grep -q 'Marsfield NSW 2122' "$f"        || { say FAIL "$f missing suburb/state/postcode"; nap=1; }
   grep -q '+61452480487' "$f"              || { say FAIL "$f missing tel: link"; nap=1; }
 done

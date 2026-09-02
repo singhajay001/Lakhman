@@ -18,7 +18,7 @@
       "telephone": "+61452480487",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Shop 5A, 1 Trafalgar Place",
+        "streetAddress": "5A, 1 Trafalgar Place",
         "addressLocality": "Marsfield",
         "addressRegion": "NSW",
         "postalCode": "2122",

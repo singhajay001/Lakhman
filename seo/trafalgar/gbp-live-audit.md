@@ -62,7 +62,7 @@ site, the schema and every citation to match.
 Live: `5A, 1 Trafalgar Pl` — abbreviated, no "Shop", "Pl" not "Place".
 
 Every directory that scrapes the profile copies that string. Change it to
-**`Shop 5A, 1 Trafalgar Place`** so it matches the site, the schema and the NAP
+**`5A, 1 Trafalgar Place`** so it matches the site, the schema and the NAP
 master byte-for-byte.
 
 ## ⚠️ A website is already linked

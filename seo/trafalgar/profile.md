@@ -11,7 +11,7 @@
 |---|---|---|
 | Business name | **FRAGMENTED — see gbp-checklist.md.** Five names in use across the web | multiple |
 | GBP 1 — supermarket | **Trafalgar Supermarket and Cellars**, Shop 5, 1 Trafalgar Place · `-33.767749, 151.108628` · Verified | owner |
-| GBP 2 — bottle shop | **Local Liquor Marsfield**, Shop 5A, 1 Trafalgar Place · `-33.767734, 151.107974` · plus code `64J5+R5` · store code `03435376679661119338` · Verified | owner |
+| GBP 2 — bottle shop | **Local Liquor Marsfield**, 5A, 1 Trafalgar Place · `-33.767734, 151.107974` · plus code `64J5+R5` · store code `03435376679661119338` · Verified | owner |
 | Pin separation | 60.5 m — two distinct locations in one complex | computed |
 | Bottle shop hours | Mon–Wed 08:00–21:00 · Thu–Sat 08:00–22:00 · Sun 10:00–21:00 | owner |
 | Address | **Shop 5** (supermarket) and **Shop 5A** (liquor), 1 Trafalgar Place, Marsfield NSW 2122 | owner (confirmed) |

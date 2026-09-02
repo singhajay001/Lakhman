@@ -25,7 +25,7 @@ Log each send in `tracker.md`.
 > Could you update the listing to:
 >
 > Name: Local Liquor Marsfield
-> Address: Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122
+> Address: 5A, 1 Trafalgar Place, Marsfield NSW 2122
 > Phone: 0452 480 487
 > Website: https://trafalgarsupermarketandcellars.com.au/local-liquor
 > Hours: Mon–Wed 8am–9pm, Thu–Sat 8am–10pm, Sun 10am–9pm
@@ -54,7 +54,7 @@ Log each send in `tracker.md`.
 > has changed and I would like the listing updated rather than removed.
 >
 > Name: Local Liquor Marsfield
-> Address: Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122
+> Address: 5A, 1 Trafalgar Place, Marsfield NSW 2122
 > Phone: 0452 480 487
 > Website: https://trafalgarsupermarketandcellars.com.au/local-liquor
 > Hours: Mon–Wed 8am–9pm, Thu–Sat 8am–10pm, Sun 10am–9pm

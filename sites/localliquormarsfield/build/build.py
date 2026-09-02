@@ -19,7 +19,8 @@ DEFAULT_SOURCE = SITE.parent.parent / "seo/trafalgar/range-data/liquor-products.
 e = html.escape
 AC = ' aria-current="page"'
 NAV = [("/", "Home", "home"), ("/spirits.html", "Spirits", "spirits"),
-       ("/range.html", "Full range", "range"), ("/visit.html", "Visit us", "visit"),
+       ("/range.html", "Full range", "range"), ("/services.html", "Services", "services"),
+       ("/visit.html", "Visit us", "visit"),
        ("/about.html", "About", "about"), ("/contact.html", "Contact", "contact")]
 
 PRICE_SORTS_QUALITY = {"Whisky", "Gin", "Tequila", "Rum", "Cognac", "Brandy", "Vodka",

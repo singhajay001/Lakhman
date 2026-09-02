@@ -117,3 +117,20 @@ purchase path is a structured-data mismatch and risks a manual action.
 
 Prices stay as plain page content. The `LiquorStore` schema on the homepage is
 the correct markup for this site and already carries `priceRange`.
+
+## ⚠️ Unresolved before publishing: the wine count
+
+The owner's own About copy says **"Wine — Over 120 Local & Imported Labels"**.
+`range.html` says **"There are over 2,100 wines in store"**, taken from the
+supplied product spreadsheet, which counted 2,153.
+
+Those cannot both be right, and 120 is far more plausible for a suburban bottle
+shop. The likely explanation is that the spreadsheet is the **orderable** range
+available through the group, not what is physically on the shelf — the same
+concern the BWS image URLs raised earlier.
+
+**Do not publish until this is settled.** A page claiming 2,100 wines when the
+shop holds 120 is exactly the failure the range page exists to prevent: someone
+drives over for a bottle that was never there.
+
+Once decided, rebuild — the numbers live in `build/build.py`, not in the HTML.
