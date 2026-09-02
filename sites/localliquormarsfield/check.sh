@@ -74,7 +74,18 @@ for f in *.html; do
 done
 [ $fail -eq 0 ] && say OK "social preview and favicon on every page"
 
-# 8. JSON-LD must parse.
+# 8. URLs must stay extensionless. Cloudflare's auto-trailing-slash 301s
+# /about.html to /about, so a published .html URL points at a redirect. This
+# caught a live 404 once; it must not come back.
+if grep -rnE '(href="/[a-z-]+\.html"|localliquormarsfield\.com\.au/[a-z-]+\.html)' \
+     --include='*.html' --include='*.xml' --include='*.py' . >/dev/null 2>&1; then
+  say FAIL "published .html URL found — these must be extensionless"
+  fail=1
+else
+  say OK "all published URLs extensionless"
+fi
+
+# 9. JSON-LD must parse.
 python3 - <<'PY' || fail=1
 import re, json, sys, glob
 ok = True

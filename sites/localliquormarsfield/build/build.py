@@ -18,10 +18,13 @@ DEFAULT_SOURCE = SITE.parent.parent / "seo/trafalgar/range-data/liquor-products.
 
 e = html.escape
 AC = ' aria-current="page"'
-NAV = [("/", "Home", "home"), ("/spirits.html", "Spirits", "spirits"),
-       ("/range.html", "Full range", "range"), ("/services.html", "Services", "services"),
-       ("/visit.html", "Visit us", "visit"),
-       ("/about.html", "About", "about"), ("/contact.html", "Contact", "contact")]
+# Extensionless: Cloudflare's auto-trailing-slash serves /about from about.html
+# and 301s /about.html -> /about, so publishing .html would point every canonical
+# at a redirect.
+NAV = [("/", "Home", "home"), ("/spirits", "Spirits", "spirits"),
+       ("/range", "Full range", "range"), ("/services", "Services", "services"),
+       ("/visit", "Visit us", "visit"),
+       ("/about", "About", "about"), ("/contact", "Contact", "contact")]
 
 PRICE_SORTS_QUALITY = {"Whisky", "Gin", "Tequila", "Rum", "Cognac", "Brandy", "Vodka",
                        "Liqueurs", "Other Spirits", "Red Wine", "White Wine",
@@ -173,7 +176,7 @@ def main():
     o = head("Spirits | Local Liquor Marsfield &mdash; whisky, gin &amp; tequila",
              "A full spirits wall at Local Liquor Marsfield, 5A 1 Trafalgar Place, Marsfield "
              "NSW. Single malt scotch, Japanese whisky, Australian gin and agave tequila.",
-             "/spirits.html", "spirits")
+             "/spirits", "spirits")
     o += ('\n<h1>Spirits</h1>\n<p class="lede">\n  Spirits are what this shop is built around. '
           'A full spirits wall &mdash; single\n  malt scotch, Japanese whisky, Australian '
           'botanical gin and 100% agave\n  tequila &mdash; alongside the everyday pouring '
@@ -200,17 +203,17 @@ def main():
     # ---- range.html ----
     o = head("Our range | Local Liquor Marsfield &mdash; spirits, craft beer &amp; wine",
              "Beer, wine, spirits, RTDs and non-alcoholic options at Local Liquor Marsfield, "
-             "5A 1 Trafalgar Place, Marsfield NSW 2122. Over 120 wine labels, deep craft beer.", "/range.html", "range")
+             "5A 1 Trafalgar Place, Marsfield NSW 2122. Over 120 wine labels, deep craft beer.", "/range", "range")
     o += ('\n<h1>Our range</h1>\n<p class="lede">\n  Beer, wine, spirits, RTDs, mixers and '
           'non-alcoholic options &mdash; from the\n  everyday brands people actually buy to '
           'independent NSW makers and imported\n  labels you will not find in a chain store.\n</p>\n\n'
-          '<div class="actions">\n  <a class="btn btn-primary" href="/spirits.html">Browse spirits</a>\n'
+          '<div class="actions">\n  <a class="btn btn-primary" href="/spirits">Browse spirits</a>\n'
           '  <a class="btn btn-secondary" href="tel:+61452480487">Ring the shop</a>\n</div>\n\n'
           '<h2>Spirits &mdash; where we go deepest</h2>\n<p>\n  A full spirits wall: whisky, bourbon, '
           'gin, vodka, rum, tequila, brandy and\n  liqueurs. Major international brands alongside '
           'Australian independents such\n  as Karu Distillery, in everyday 700ml through to gifting '
           'formats.\n</p>\n'
-          '<p><a href="/spirits.html"><strong>See the full spirits range &rarr;</strong></a></p>\n\n'
+          '<p><a href="/spirits"><strong>See the full spirits range &rarr;</strong></a></p>\n\n'
           '<h2>Craft beer</h2>\n<p>\n  A deep independent beer range covering NSW breweries and '
           'imported lagers from\n  more than twenty countries &mdash; singles, six-packs, slabs and '
           'mixed packs.\n  The fridges are stocked and cold every day, not just on Friday afternoon.\n</p>\n'
