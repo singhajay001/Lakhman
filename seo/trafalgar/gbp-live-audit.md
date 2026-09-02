@@ -65,6 +65,18 @@ Every directory that scrapes the profile copies that string. Change it to
 **`5A, 1 Trafalgar Place`** so it matches the site, the schema and the NAP
 master byte-for-byte.
 
+## Owner actions completed — 2026-09-02
+
+- ✅ **Website field set** on the Google Business Profile. It previously fell
+  through to Instagram; the profile now points at `localliquormarsfield.com.au`.
+- ✅ **All four reviews replied to.** Response rate is itself a ranking signal
+  and the base was 5.0 from four reviews.
+
+⚠️ **Consequence:** the profile now links to a site returning 404 at the root.
+Until the Cloudflare `html_handling` setting is corrected, every visitor who taps
+Website lands on an error page. That is worse than the empty field it replaced,
+so fixing it is urgent rather than merely pending.
+
 ## 🚀 SITE IS LIVE — 2026-09-02
 
 `https://localliquormarsfield.com.au` is deployed on Cloudflare Workers static
