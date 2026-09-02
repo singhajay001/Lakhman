@@ -129,6 +129,71 @@ For aussie-hours, Shopfully, openinghoursau and any other directory publishing a
 > [name] — [role], Trafalgar Supermarket and Cellars
 > (02) 9868 1070
 
+
+---
+
+# Where to send these
+
+**I could not verify a single email address.** Two reasons, both worth knowing:
+
+1. This session's network egress is blocked, so I cannot open any of these
+   contact pages to read the address off them. Search results gave me page URLs,
+   not inbox addresses.
+2. Directory sites deliberately obfuscate emails against scrapers. Pink Pages'
+   address, for instance, comes back redacted in every search result.
+
+So below are **verified contact routes** — pages and a phone number that appear
+in search results — not invented addresses. Guessing `info@…` and having you fire
+correction requests into a dead inbox is worse than telling you to spend two
+minutes on the contact page.
+
+Open each page, take the address or use the form, then log it in `tracker.md` so
+the next person does not repeat this.
+
+| # | Target | Route | Verified? |
+|---|---|---|---|
+| 1 | cellars.com.au | `cellars.com.au/contact-us/` · also `cellars.com.au/contact/` | ✅ page exists |
+| 2 | Pink Pages | `pinkpages.com.au/contact_us` · ☎ **+61 8 7665 8103** · 246 Churchill Ave, Subiaco WA 6008 | ✅ page + phone |
+| 3 | Friendly Grocer | `friendlygrocer.com.au/contact-us` · Head office PO Box 1188, Browns Plains QLD 4118 | ✅ page + postal |
+| 4 | Shopfully | `shopfully.com.au` — no contact route found | ❌ not found |
+| 4 | aussie-hours · openinghoursau | no contact route found | ❌ not found |
+
+## Prefer the on-site form over email, where one exists
+
+A form submission lands in the queue the site actually processes. A generic
+`info@` mailbox at a small directory often goes unread for months. Where both
+exist, use the form and keep the email as the follow-up.
+
+## #3 — the contact form is the weak route
+
+A generic web form will not get two pages merged. Every bannered store has a
+**Metcash state account manager or field representative**. That person can raise
+it internally with whoever runs friendlygrocer.com.au, and one call from them
+beats ten form submissions.
+
+Use your account manager first. Fall back to the contact page only if that fails.
+
+## #4 — mostly do not bother emailing
+
+Shopfully, aussie-hours and openinghoursau are **aggregators**. They largely
+re-scrape from Google and other upstream feeds rather than maintaining hours by
+hand. Emailing them is low-yield, and I could not find a contact route for any of
+the three anyway.
+
+**Fix Google first, then wait.** Most of these correct themselves within weeks of
+the source changing. Check back in a month; chase only the ones still wrong, and
+only if they rank for your name.
+
+The 9am→8am error is genuinely costly, but the cure is the Google Business
+Profile, not a mail-out.
+
+## Before you send anything
+
+Fill in `[name]` and `[role]` — an unsigned request from a generic address reads
+as spam. Send from an address on `trafalgarsupermarketandcellars.com.au` if you
+have one; a matching domain is treated as far stronger proof of ownership than
+the same text from a Gmail account.
+
 ---
 
 ## Notes
