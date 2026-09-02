@@ -9,11 +9,14 @@
 
 | Field | Value found | Source |
 |---|---|---|
-| Business name | Trafalgar Supermarket and Cellars | Facebook, Yelp, Instagram |
-| Address | Shop 5/1 Trafalgar Pl, **Marsfield NSW 2122** | Yelp, Facebook, Cylex, dlook |
+| Business name | **FRAGMENTED — see gbp-checklist.md.** Five names in use across the web | multiple |
+| Google Business Profile 1 | `maps.app.goo.gl/wyZ4GMVoe18M1fkK6` — unidentified, egress-blocked | owner |
+| Google Business Profile 2 | **Local Liquor Marsfield** — `g.page/r/CenxQG-m-gUkEBI` | owner |
+| Address | `1 Trafalgar Place` **or** `Shop 5/1 Trafalgar Place`, Marsfield NSW 2122 — inconsistent across sources | Yelp, Facebook, Cylex, dlook, Shopfully |
+| Grocery banner | **Friendly Grocer** (Metcash) — banner site carries two duplicate pages | friendlygrocer.com.au |
 | Council area | City of Ryde, Sydney | Wheree |
 | Phone | +61 2 9868 1070 | Yelp, mapsus, dlook |
-| Hours | Open 7 days | Facebook, dlook |
+| Hours | **09:00–21:00, seven days** — agrees across three sources, still confirm against the door | aussie-hours, Shopfully, openinghoursau |
 | Existing domain | `trafalgarsupermarketandcellars.com.au` | search result; also the owner's email domain |
 | Under-construction site | `trafalgar-grocery.myfoodlink.com` | supplied by owner |
 | **Canonical domain (DECIDED)** | `trafalgarsupermarketandcellars.com.au` | owner decision |
@@ -108,6 +111,17 @@ canonical tags, redirects, and custom domain support.
 
 Ask MyFoodLink support directly. Do not assume Shopify-equivalent control.
 
+## Current work
+
+| Artefact | Status |
+|---|---|
+| `gbp-checklist.md` | Google Business Profile plan, prioritised |
+| `schema/localbusiness.jsonld` | `GroceryStore` + `department: LiquorStore`, placeholders marked |
+
+**Blocking question:** which of the two profiles is which, and what is the exact
+name and street address on each? The schema placeholders cannot be filled, and
+citations cannot be converged, until the canonical name is chosen.
+
 ## What winning looks like
 
 This is a **physical store in Marsfield, Sydney** with an online grocery
@@ -124,13 +138,16 @@ Competes with Woolworths and Coles on convenience, not on catalogue.
 
 1. **Google Business Profile.** Categories, hours, attributes, photos, products.
    Confirm the listing is claimed and verified.
-2. **Citation cleanup.** Several listings carry inconsistent data — e.g.
-   `cellars.com.au` lists the business as "Trafalgar Cellars" at "Shiop 5/1"
-   (sic). Name and address must match GBP exactly, everywhere.
-3. **Entity disambiguation from IGA Trafalgar VIC.** Consistent use of the full
+2. **Converge the name.** Five names are in use: Local Liquor Marsfield (the
+   GBP), Trafalgar Supermarket and Cellars, Trafalgar Cellars, Friendly Grocer
+   Marsfield, and Trafalgar Supermarket. Pick one canonical trading name and
+   apply it byte-for-byte everywhere. This is the top-priority fix.
+3. **Citation cleanup.** `cellars.com.au` says "Trafalgar Cellars" at "Shiop 5/1"
+   (sic); `friendlygrocer.com.au` carries two duplicate pages for the one store.
+4. **Entity disambiguation from IGA Trafalgar VIC.** Consistent use of the full
    name plus "Marsfield" / "NSW" across site, schema, and citations.
-4. **`LocalBusiness` / `Store` schema** matching GBP byte-for-byte.
-5. **Reviews** — velocity and response rate.
+5. **`LocalBusiness` / `Store` schema** matching GBP byte-for-byte.
+6. **Reviews** — velocity and response rate.
 
 ## Explicitly deprioritised
 
