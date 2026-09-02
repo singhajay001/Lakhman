@@ -76,14 +76,50 @@ feature IDs, not place IDs. Converting them needs the API anyway.
 
 ## 2. Places API key (for live rank scans)
 
+### The onboarding questionnaire is cosmetic
+
+First time into the Maps Platform console you get a "Welcome - take 30 seconds"
+wizard asking your industry, use cases, platform and framework. It only decides
+which tutorials Google shows you. **Skip for now** is fine. If you answer it,
+tick only *Add API Key*; nothing there provisions anything.
+
+### This is a server-side key, not a web key
+
+The wizard asks which platform you are building on, and the honest answer for
+this toolkit is *none of them*. It is a Python script on a laptop calling the
+REST API directly - not a web page, not a mobile app.
+
+That distinction matters at exactly one place: **key restrictions**. If you
+answer "Web" and follow the wizard's suggestion, you can end up with a key
+restricted by **HTTP referrer**. A referrer-restricted key rejects every
+server-side call with `REQUEST_DENIED` / `API_KEY_HTTP_REFERRER_BLOCKED`, and
+the error does not say "you picked the wrong restriction type".
+
+So:
+
+* **Application restrictions:** *None*, or *IP addresses* if you scan from a
+  fixed address. Never *HTTP referrers* and never *Android/iOS apps*.
+* **API restrictions:** *Places API (New)* only. Always set this - an
+  unrestricted key that leaks is a billable key.
+
+### Steps
+
 1. <https://console.cloud.google.com> - create a project (or reuse one) and
    enable billing on it.
 2. **APIs & Services -> Library -> "Places API (New)" -> Enable.** The legacy
    "Places API" is a different SKU; this toolkit does not use it.
 3. **APIs & Services -> Credentials -> Create credentials -> API key.**
-4. Restrict the key: **API restrictions -> Places API (New)**. Add an IP
-   restriction too if you scan from a fixed address.
-5. Put it in `.env` as `GOOGLE_MAPS_API_KEY`.
+4. Restrict it as above.
+5. Put it in `.env` as `GOOGLE_MAPS_API_KEY`. Never commit it - `.env` is
+   gitignored and a test fails the build if a key-shaped string appears
+   anywhere in the tree.
+
+### This is not the same as GBP API access
+
+The Maps Platform console and the Business Profile API access form are separate
+systems. Enabling Places here does nothing for section 3 below, and being
+approved there does nothing for rank scanning here. You need both, and you can
+start both today - one takes five minutes, the other takes weeks.
 
 Cost control is in the tool, not in your memory of it: every scan prints an
 estimate and stops for confirmation above `COST_CEILING_USD`, hard-stops at
