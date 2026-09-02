@@ -4,14 +4,50 @@ Two profiles are in play:
 
 | # | Link | Identified as |
 |---|---|---|
-| 1 | `https://maps.app.goo.gl/wyZ4GMVoe18M1fkK6` | **unresolved** — this session's egress proxy blocks the fetch |
-| 2 | `https://g.page/r/CenxQG-m-gUkEBI` | **Local Liquor Marsfield** (from the review-link text) |
+| 1 | `maps.app.goo.gl/wyZ4GMVoe18M1fkK6` | **Trafalgar Supermarket** — Shop 5, 1 Trafalgar Place, Marsfield NSW 2122 |
+| 2 | `g.page/r/CenxQG-m-gUkEBI` | **Local Liquor Marsfield** — Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122 |
 
-Confirm which is which before acting. The whole plan below turns on it.
+Confirmed by the owner. One item still open: whether profile 1 reads exactly
+"Trafalgar Supermarket" or "Trafalgar Supermarket and Cellars". Match the schema
+to whatever is on the profile, not the other way round.
+
+## ✅ Shop 5 and Shop 5A settles the two-listing question
+
+The two businesses occupy **distinct suites**. That is the strongest possible
+basis for two separate profiles — distinct premises, distinct names, distinct
+categories. This is not a department sharing one address that Google might merge;
+it is two addressable locations.
+
+Practical consequences:
+
+- Model them as **two independent entities**, not one with a `department`. The
+  schema files do exactly that, sharing one parent `Organization`.
+- Keep `Shop 5` and `Shop 5A` **exact** everywhere. The suite letter is the thing
+  distinguishing them; drop it and they collapse into one address.
+- Most existing citations show `Shop 5/1 Trafalgar Place` — those are the
+  **supermarket**. The bottle shop is largely uncited, so its citation profile is
+  being built from scratch rather than corrected.
+
+## 🔴 Each profile needs its own landing page
+
+Both profiles must not point at the homepage. A GBP whose website link lands on a
+generic homepage converts worse and gives Google nothing to tie the entity to.
+
+| Profile | Website link | Schema |
+|---|---|---|
+| Trafalgar Supermarket | `/supermarket` | `schema/supermarket.jsonld` |
+| Local Liquor Marsfield | `/local-liquor` | `schema/local-liquor.jsonld` |
+
+Each page carries the exact profile name in its `<h1>`, its own address with the
+suite number, its own hours, and the matching JSON-LD. The homepage carries the
+umbrella `Organization` and links to both.
+
+If MyFoodLink cannot host two distinct pages with custom JSON-LD, that is a
+material constraint — establish it early with their support.
 
 ---
 
-## 🔴 The finding that matters most: five names, one shop
+## 🔴 Still the biggest problem: five names, one address
 
 The business is listed under **five different names** across the web. This is
 almost certainly the single largest thing suppressing local ranking, and no
@@ -47,10 +83,20 @@ use it byte-for-byte everywhere — GBP, website, schema, every citation.
 The tension: the GBP says "Local Liquor Marsfield" while the domain and most
 citations say "Trafalgar Supermarket and Cellars". One has to give.
 
-**Recommendation:** make **Trafalgar Supermarket and Cellars** canonical for the
-supermarket, and keep **Local Liquor Marsfield** as the bottle shop's own name.
-It matches the registered business name, the canonical domain, and the largest
-group of existing citations — so it is the cheapest to converge on.
+**Revised recommendation, now that the suites are known.** Do not force a single
+name across both. Use a three-tier identity:
+
+| Tier | Name | Where |
+|---|---|---|
+| Umbrella / legal | Trafalgar Supermarket and Cellars | domain, `Organization` schema, homepage |
+| Location 1 | whatever profile 1 says — likely **Trafalgar Supermarket** | GBP 1, `/supermarket`, citations |
+| Location 2 | **Local Liquor Marsfield** | GBP 2, `/local-liquor`, citations |
+
+This is cleaner than my earlier advice to make "Trafalgar Supermarket and
+Cellars" canonical for the supermarket. With two real premises, each location
+should carry its own exact-match name and the combined name works as the parent
+brand. Retire "Trafalgar Cellars" and the duplicate "Trafalgar Supermarket" page
+on the banner site — those are the two that add nothing.
 
 ⚠️ GBP names must reflect real-world signage. Do not add keywords ("Trafalgar
 Supermarket and Cellars Marsfield Bottle Shop") — that is a name-spam violation
@@ -81,7 +127,10 @@ merged or filtered.
 ### 1. Claim and verify both profiles — blocks everything else
 Unverified profiles cannot be edited and rank poorly. Confirm ownership of both.
 
-### 2. Fix the categories
+### 2. Point each profile at its own landing page
+Not the homepage. See the table above.
+
+### 3. Fix the categories
 Primary category is the strongest single ranking lever in the pack.
 
 | Profile | Primary | Secondary |
@@ -91,11 +140,11 @@ Primary category is the strongest single ranking lever in the pack.
 
 One primary each. Do not stack unrelated secondaries.
 
-### 3. Hours, including public holidays
+### 4. Hours, including public holidays
 NSW public holidays especially. A "hours might differ" label on a holiday
 suppresses confidence and costs visits. Set special hours ahead of each one.
 
-### 4. Converge the name and address everywhere
+### 5. Converge the name and address everywhere
 Work through, highest authority first — GBP, then the website, then:
 Facebook · Instagram · Apple Maps · Bing Places · Yelp · Yellow Pages · True
 Local · Cylex · dlook · Pink Pages · cellars.com.au (fix the `Shiop` typo) ·
@@ -105,16 +154,16 @@ Tiendeo · Shopfully · openinghoursau · aussie-hours · wheree.
 The `friendlygrocer.com.au` duplicate is worth chasing: a banner site is an
 authoritative citation, and it currently contradicts itself.
 
-### 5. Photos
+### 6. Photos
 Storefront with signage, street view, interior, aisles, the bottle shop section,
 staff. Geotagging images does nothing — Google strips EXIF. Photo *recency* and
 volume do matter.
 
-### 6. Products and services
+### 7. Products and services
 The liquor profile especially — list stocked ranges. Feeds "near me" matching for
 specific brands.
 
-### 7. Reviews
+### 8. Reviews
 Steady velocity beats bursts. Respond to **all**, including negatives — response
 rate is itself a quality signal.
 
@@ -126,11 +175,11 @@ not offer anything in exchange for a review, and do not post reviews for your ow
 business. All three violate Google's policies and risk removal of every review on
 the profile, not just the offending ones.
 
-### 8. Q&A
+### 9. Q&A
 Seed the genuinely common questions and answer them from the business account:
 parking, bottle shop hours vs supermarket hours, delivery, accepted payment.
 
-### 9. Posts
+### 10. Posts
 Weekly is enough. Specials, seasonal ranges, holiday hours.
 
 ---

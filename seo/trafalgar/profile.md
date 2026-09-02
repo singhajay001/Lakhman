@@ -10,9 +10,9 @@
 | Field | Value found | Source |
 |---|---|---|
 | Business name | **FRAGMENTED — see gbp-checklist.md.** Five names in use across the web | multiple |
-| Google Business Profile 1 | `maps.app.goo.gl/wyZ4GMVoe18M1fkK6` — unidentified, egress-blocked | owner |
-| Google Business Profile 2 | **Local Liquor Marsfield** — `g.page/r/CenxQG-m-gUkEBI` | owner |
-| Address | `1 Trafalgar Place` **or** `Shop 5/1 Trafalgar Place`, Marsfield NSW 2122 — inconsistent across sources | Yelp, Facebook, Cylex, dlook, Shopfully |
+| GBP 1 — supermarket | **Trafalgar Supermarket**, Shop 5, 1 Trafalgar Place | owner (confirmed) |
+| GBP 2 — bottle shop | **Local Liquor Marsfield**, Shop 5A, 1 Trafalgar Place | owner (confirmed) |
+| Address | **Shop 5** (supermarket) and **Shop 5A** (liquor), 1 Trafalgar Place, Marsfield NSW 2122 | owner (confirmed) |
 | Grocery banner | **Friendly Grocer** (Metcash) — banner site carries two duplicate pages | friendlygrocer.com.au |
 | Council area | City of Ryde, Sydney | Wheree |
 | Phone | +61 2 9868 1070 | Yelp, mapsus, dlook |
@@ -116,11 +116,14 @@ Ask MyFoodLink support directly. Do not assume Shopify-equivalent control.
 | Artefact | Status |
 |---|---|
 | `gbp-checklist.md` | Google Business Profile plan, prioritised |
-| `schema/localbusiness.jsonld` | `GroceryStore` + `department: LiquorStore`, placeholders marked |
+| `schema/supermarket.jsonld` | `GroceryStore` @ Shop 5, shared parent `Organization` |
+| `schema/local-liquor.jsonld` | `LiquorStore` @ Shop 5A, same parent `Organization` |
 
-**Blocking question:** which of the two profiles is which, and what is the exact
-name and street address on each? The schema placeholders cannot be filled, and
-citations cannot be converged, until the canonical name is chosen.
+Two independent entities rather than one with a `department`: the distinct suite
+numbers make them separately addressable, which is the stronger model.
+
+**Still open:** exact name on GBP 1, geo coordinates for both, bottle-shop hours,
+and whether the bottle shop has its own phone line.
 
 ## What winning looks like
 

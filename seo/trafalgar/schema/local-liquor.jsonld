@@ -1,0 +1,55 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://trafalgarsupermarketandcellars.com.au/#organisation",
+      "name": "Trafalgar Supermarket and Cellars",
+      "url": "https://trafalgarsupermarketandcellars.com.au/"
+    },
+    {
+      "@type": "LiquorStore",
+      "@id": "https://trafalgarsupermarketandcellars.com.au/local-liquor#store",
+      "name": "Local Liquor Marsfield",
+      "parentOrganization": {
+        "@id": "https://trafalgarsupermarketandcellars.com.au/#organisation"
+      },
+      "url": "https://trafalgarsupermarketandcellars.com.au/local-liquor",
+      "telephone": "CONFIRM_same_as_supermarket_or_dedicated_line",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Shop 5A, 1 Trafalgar Place",
+        "addressLocality": "Marsfield",
+        "addressRegion": "NSW",
+        "postalCode": "2122",
+        "addressCountry": "AU"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "REPLACE_FROM_GBP",
+        "longitude": "REPLACE_FROM_GBP"
+      },
+      "hasMap": "https://g.page/r/CenxQG-m-gUkEBI",
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday", "Tuesday", "Wednesday", "Thursday",
+            "Friday", "Saturday", "Sunday"
+          ],
+          "opens": "REPLACE_LIQUOR_OPEN",
+          "closes": "REPLACE_LIQUOR_CLOSE"
+        }
+      ],
+      "currenciesAccepted": "AUD",
+      "priceRange": "$$",
+      "areaServed": [
+        { "@type": "Place", "name": "Marsfield" },
+        { "@type": "Place", "name": "Macquarie Park" },
+        { "@type": "Place", "name": "North Ryde" },
+        { "@type": "Place", "name": "Eastwood" },
+        { "@type": "Place", "name": "Epping" }
+      ]
+    }
+  ]
+}
