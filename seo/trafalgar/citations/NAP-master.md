@@ -148,6 +148,20 @@ under another is ordinary; do not delete the licensed name from legal contexts.
 Friendly Grocer is the **banner**, not the business name. It belongs in the page
 body ("a proud Friendly Grocer store"), never in the name field.
 
+## ⚠️ Brand artwork says Shop 5, not 5A
+
+The supplied Local Liquor Marsfield brand card reads
+**"SHOP 5, 1 TRAFALGAR PLACE"**. The Google Business Profile, the licence
+premises reference, the website and every artefact in this workspace use
+**5A** for the bottle shop; **Shop 5** is the supermarket.
+
+Whoever produced the artwork appears to have taken the supermarket's unit. If
+that card is printed, posted or used on social, it puts a fifth address format
+into circulation and undermines the suite distinction that keeps the two Google
+listings separate.
+
+**Get the artwork corrected to `Shop 5A` before it is used anywhere.**
+
 ## Address formats to never use
 
 `Shop 5/1 Trafalgar Place` · `1 Trafalgar Pl, 5A` · `Shiop 5/1` · `1 Trafalgar Place`
