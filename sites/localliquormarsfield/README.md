@@ -1,4 +1,8 @@
-# localliquormarsfield.com.au
+# localliquormarsfield.com.au — **LIVE**
+
+Deployed 2026-09-02 on Cloudflare Workers static assets. Apex canonical, no `www`.
+Update by editing files, running `./check.sh`, then Cloudflare → the project →
+**New deployment** → drag the new zip.
 
 Static site for Local Liquor Marsfield. Five pages, one stylesheet, no build
 step, no JavaScript, no dependencies. Drop it on any host.

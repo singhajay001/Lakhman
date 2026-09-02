@@ -65,6 +65,15 @@ Every directory that scrapes the profile copies that string. Change it to
 **`5A, 1 Trafalgar Place`** so it matches the site, the schema and the NAP
 master byte-for-byte.
 
+## 🚀 SITE IS LIVE — 2026-09-02
+
+`https://localliquormarsfield.com.au` is deployed on Cloudflare Workers static
+assets, custom domain connected, apex canonical. The deficit the ranking
+diagnosis identified — a verified profile with nothing on the web corroborating
+the business — is closed.
+
+**The remaining action is one field.** See below.
+
 ## ✅ No website is set — the button falls through to Instagram
 
 Owner confirmed the website field is **empty**. The Website button on the
