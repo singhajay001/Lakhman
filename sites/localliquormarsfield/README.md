@@ -161,3 +161,26 @@ be wrong in the way a count can.
 
 **If you want numbers back, supply shelf counts for beer and spirits** and they
 go straight in — they are persuasive when true.
+
+
+## Images: none of the shop, one of the brand
+
+No storefront or interior photography. The shop's own photos live on the Google
+Business Profile, which is where people actually look at a bottle shop, and a
+text-only site stays fast on a phone with nothing to re-shoot when the shelves
+change.
+
+The one image that is not a store photo, and does matter:
+
+`assets/og-image.png` — a 1200×630 typographic card used as the social preview.
+Without it, every share of this site on Facebook, WhatsApp, Instagram DM or
+Messenger renders as a bare blue link. With it, the shop name, tagline, address
+and phone appear in the preview. It is a share and click-through asset, not
+decoration, and it needs no camera.
+
+Plus `favicon-32.png` and `apple-touch-icon.png` for the browser tab and iOS home
+screen.
+
+To restyle any of them, edit the generator block in the commit that added them —
+they are drawn in Pillow from the site's own palette, so they stay consistent
+with the CSS.

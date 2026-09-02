@@ -66,7 +66,15 @@ else
   say OK "no catalogue-derived counts"
 fi
 
-# 7. JSON-LD must parse.
+# 7. Social preview + icon must be on every page. They were added once and a
+# rebuild silently dropped them before the generator was taught to emit them.
+for f in *.html; do
+  grep -q 'og:image"' "$f" || { say FAIL "$f missing og:image"; fail=1; }
+  grep -q 'rel="icon"' "$f" || { say FAIL "$f missing favicon"; fail=1; }
+done
+[ $fail -eq 0 ] && say OK "social preview and favicon on every page"
+
+# 8. JSON-LD must parse.
 python3 - <<'PY' || fail=1
 import re, json, sys, glob
 ok = True
