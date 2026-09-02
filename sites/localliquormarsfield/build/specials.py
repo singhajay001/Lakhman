@@ -10,7 +10,7 @@ script will silently revert it. Change the JSON and re-run.
 The promo window in the JSON is what check.sh guard 10 reads to refuse a
 publish once the specials have expired.
 """
-import datetime, json, pathlib, re
+import datetime, html, json, pathlib, re
 
 HERE = pathlib.Path(__file__).resolve().parent
 SITE = HERE.parent
@@ -75,10 +75,32 @@ def label(it):
             % (x, y, w, h, txt))
 
 
+PHOTOS = SITE / "assets" / "products"
+IMG_EXT = (".webp", ".png", ".jpg", ".jpeg", ".avif")
+
+
+def photo(it, alt):
+    """Use a real pack shot when one has been dropped in assets/products/.
+
+    Named after the product's slug, so adding imagery is copying a file in -
+    no edit to this script or to specials.json. Anything without a photo keeps
+    the brand-coloured silhouette, so a part-finished set still looks
+    deliberate rather than broken.
+    """
+    for ext in IMG_EXT:
+        f = PHOTOS / (it["slug"] + ext)
+        if f.exists():
+            return ('<img src="/assets/products/%s" alt="%s" loading="lazy" '
+                    'decoding="async">' % (f.name, alt))
+    return None
+
+
 def card(it):
-    body = (VESSEL[it["vessel"]] + label(it)).format(c=it["accent"])
-    alt = re.sub("&[a-z]+;", "&", it["name"] + " " + it["pack"])
-    shot = ('<svg viewBox="0 0 100 170" role="img" aria-label="%s">%s</svg>' % (alt, body))
+    alt = html.unescape(it["name"] + " " + it["pack"])
+    shot = photo(it, alt)
+    if shot is None:
+        body = (VESSEL[it["vessel"]] + label(it)).format(c=it["accent"])
+        shot = '<svg viewBox="0 0 100 170" role="img" aria-label="%s">%s</svg>' % (alt, body)
     badge = ""
     if it.get("badge"):
         badge = ('\n    <span class="pack">%s<small>%s</small></span>'

@@ -33,6 +33,10 @@ for path in "${PUBLISH[@]}"; do
   cp -R "$path" dist/
 done
 
+# assets/products/README.md documents the naming convention for whoever is
+# adding pack shots. It is not part of the site.
+find dist -name '*.md' -delete
+
 echo
 echo "dist/ assembled:"
 find dist -type f | sort | sed 's/^/  /'
