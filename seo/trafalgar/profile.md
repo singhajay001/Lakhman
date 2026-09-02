@@ -10,13 +10,15 @@
 | Field | Value found | Source |
 |---|---|---|
 | Business name | **FRAGMENTED — see gbp-checklist.md.** Five names in use across the web | multiple |
-| GBP 1 — supermarket | **Trafalgar Supermarket**, Shop 5, 1 Trafalgar Place | owner (confirmed) |
-| GBP 2 — bottle shop | **Local Liquor Marsfield**, Shop 5A, 1 Trafalgar Place | owner (confirmed) |
+| GBP 1 — supermarket | **Trafalgar Supermarket and Cellars**, Shop 5, 1 Trafalgar Place · `-33.767749, 151.108628` · Verified | owner |
+| GBP 2 — bottle shop | **Local Liquor Marsfield**, Shop 5A, 1 Trafalgar Place · `-33.767734, 151.107974` · plus code `64J5+R5` · store code `03435376679661119338` · Verified | owner |
+| Pin separation | 60.5 m — two distinct locations in one complex | computed |
+| Bottle shop hours | Mon–Wed 08:00–21:00 · Thu–Sat 08:00–22:00 · Sun 10:00–21:00 | owner |
 | Address | **Shop 5** (supermarket) and **Shop 5A** (liquor), 1 Trafalgar Place, Marsfield NSW 2122 | owner (confirmed) |
 | Grocery banner | **Friendly Grocer** (Metcash) — banner site carries two duplicate pages | friendlygrocer.com.au |
 | Council area | City of Ryde, Sydney | Wheree |
 | Phone | +61 2 9868 1070 | Yelp, mapsus, dlook |
-| Hours | **09:00–21:00, seven days** — agrees across three sources, still confirm against the door | aussie-hours, Shopfully, openinghoursau |
+| Supermarket hours | `09:00–21:00` — **third-party sources only, unconfirmed.** Doubtful given the bottle shop opens 08:00 | aussie-hours, Shopfully, openinghoursau |
 | Existing domain | `trafalgarsupermarketandcellars.com.au` | search result; also the owner's email domain |
 | Under-construction site | `trafalgar-grocery.myfoodlink.com` | supplied by owner |
 | **Canonical domain (DECIDED)** | `trafalgarsupermarketandcellars.com.au` | owner decision |
@@ -122,8 +124,8 @@ Ask MyFoodLink support directly. Do not assume Shopify-equivalent control.
 Two independent entities rather than one with a `department`: the distinct suite
 numbers make them separately addressable, which is the stronger model.
 
-**Still open:** exact name on GBP 1, geo coordinates for both, bottle-shop hours,
-and whether the bottle shop has its own phone line.
+Both files are complete except the supermarket's trading hours, which remain
+`CONFIRM_*` placeholders pending owner confirmation.
 
 ## What winning looks like
 

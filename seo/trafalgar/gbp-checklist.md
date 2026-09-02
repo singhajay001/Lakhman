@@ -4,12 +4,34 @@ Two profiles are in play:
 
 | # | Link | Identified as |
 |---|---|---|
-| 1 | `maps.app.goo.gl/wyZ4GMVoe18M1fkK6` | **Trafalgar Supermarket** — Shop 5, 1 Trafalgar Place, Marsfield NSW 2122 |
-| 2 | `g.page/r/CenxQG-m-gUkEBI` | **Local Liquor Marsfield** — Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122 |
+| 1 | `maps.app.goo.gl/wyZ4GMVoe18M1fkK6` | **Trafalgar Supermarket and Cellars** — Shop 5, 1 Trafalgar Place, Marsfield NSW 2122 · `-33.767749, 151.108628` · **Verified** |
+| 2 | `g.page/r/CenxQG-m-gUkEBI` | **Local Liquor Marsfield** — Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122 · `-33.767734, 151.107974` · plus code `64J5+R5` · store code `03435376679661119338` · **Verified** |
 
-Confirmed by the owner. One item still open: whether profile 1 reads exactly
-"Trafalgar Supermarket" or "Trafalgar Supermarket and Cellars". Match the schema
-to whatever is on the profile, not the other way round.
+Both verified. Phone **02 9868 1070**, shared.
+
+**Pin separation: 60.5 m.** Measured from the supplied coordinates. Far enough
+apart to read as two locations, close enough to be one complex — exactly right
+for Shop 5 and Shop 5A. No risk of Google collapsing them on proximity.
+
+### ⚠️ The two profiles format their address differently
+
+| Profile | As entered |
+|---|---|
+| Trafalgar Supermarket and Cellars | `Shop 5, 1 Trafalgar Place` |
+| Local Liquor Marsfield | `1 Trafalgar Pl, 5A` |
+
+Different field order **and** `Place` vs `Pl`. Google normalises internally, but
+every downstream citation copies whatever it sees, so this seeds the same
+fragmentation the rest of this document is about. Normalise the liquor profile to
+`Shop 5A, 1 Trafalgar Place` so both read identically. The schema files already
+use that form.
+
+### ⚠️ Supermarket hours are still unconfirmed
+
+The bottle shop hours are owner-supplied. The supermarket's `09:00–21:00` comes
+only from third-party directories, and the bottle shop opening at 08:00 makes an
+09:00 supermarket opening look doubtful. `schema/supermarket.jsonld` leaves them
+as `CONFIRM_*` placeholders — publishing wrong hours costs visits and trust.
 
 ## ✅ Shop 5 and Shop 5A settles the two-listing question
 
@@ -83,20 +105,21 @@ use it byte-for-byte everywhere — GBP, website, schema, every citation.
 The tension: the GBP says "Local Liquor Marsfield" while the domain and most
 citations say "Trafalgar Supermarket and Cellars". One has to give.
 
-**Revised recommendation, now that the suites are known.** Do not force a single
-name across both. Use a three-tier identity:
+**Settled.** Profile 1 reads **Trafalgar Supermarket and Cellars**, which matches
+the canonical domain and the largest citation cluster. So the identity is:
 
 | Tier | Name | Where |
 |---|---|---|
 | Umbrella / legal | Trafalgar Supermarket and Cellars | domain, `Organization` schema, homepage |
-| Location 1 | whatever profile 1 says — likely **Trafalgar Supermarket** | GBP 1, `/supermarket`, citations |
+| Location 1 | **Trafalgar Supermarket and Cellars** | GBP 1, `/supermarket`, citations |
 | Location 2 | **Local Liquor Marsfield** | GBP 2, `/local-liquor`, citations |
 
-This is cleaner than my earlier advice to make "Trafalgar Supermarket and
-Cellars" canonical for the supermarket. With two real premises, each location
-should carry its own exact-match name and the combined name works as the parent
-brand. Retire "Trafalgar Cellars" and the duplicate "Trafalgar Supermarket" page
-on the banner site — those are the two that add nothing.
+The umbrella and the supermarket share a name, which is fine and in fact
+convenient — it means the domain, the `Organization`, the supermarket profile and
+most existing citations already agree. The convergence work is therefore smaller
+than first estimated: retire **Trafalgar Cellars** (cellars.com.au, Pink Pages)
+and get **friendlygrocer.com.au** to merge its two duplicate pages. That is most
+of it.
 
 ⚠️ GBP names must reflect real-world signage. Do not add keywords ("Trafalgar
 Supermarket and Cellars Marsfield Bottle Shop") — that is a name-spam violation
