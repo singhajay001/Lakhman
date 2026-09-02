@@ -75,3 +75,45 @@ is what is genuinely in Shop 5A before removing that box and publishing.
 
 See `seo/trafalgar/range-data/ANALYSIS.md` for the full read, including why the
 supplied image URLs and product descriptions must not be used.
+
+## Regenerating the range pages
+
+`spirits.html` and `range.html` are **generated**, not hand-edited. Editing them
+directly means the next rebuild silently discards your changes.
+
+```bash
+python3 build/build.py                      # current live state, no prices
+python3 build/build.py --prices             # step 2
+python3 build/build.py --source fresh.xlsx  # a newer stock export
+```
+
+Verified to reproduce the committed pages byte-for-byte, so a rebuild is safe.
+The other four pages are hand-written and untouched by the build.
+
+## Step 2 — adding prices
+
+Prices are deliberately omitted for now. `--prices` is built and tested; it adds
+the price to each named bottle and swaps the "ring for today's price" note for
+one saying prices were current at the last update.
+
+**Before turning it on, decide who re-runs the build and how often.** A price
+list is a promise. Stale prices cause arguments at the counter and are worse than
+no prices at all, so the honest sequence is:
+
+1. Export current stock and prices.
+2. `python3 build/build.py --source <export>.xlsx --prices`
+3. `./check.sh`, then publish.
+4. Repeat on a set cadence — monthly at minimum, and after any major price move.
+
+If nobody owns that cadence, leave prices off. "Ring for today's price" is
+accurate forever and produces a phone call, which converts better than a number
+on a page.
+
+### Do not add Product/Offer schema with those prices
+
+Tempting, and wrong here. Google's product structured data expects a way to buy —
+this is a brochure site with no cart. Marking up `Offer` with a price and no
+purchase path is a structured-data mismatch and risks a manual action.
+
+Prices stay as plain page content. The `LiquorStore` schema on the homepage is
+the correct markup for this site and already carries `priceRange`.
