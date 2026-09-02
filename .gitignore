@@ -1,0 +1,6 @@
+
+# Claude SEO runtime artifacts (provisioned per-session, never committed)
+.claude/seo-toolkit/.venv/
+.claude/seo-toolkit/runtime-state.json
+.claude/seo-toolkit/.setup.lock
+.claude/seo-toolkit/ms-playwright/
