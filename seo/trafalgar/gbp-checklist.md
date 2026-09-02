@@ -26,12 +26,29 @@ fragmentation the rest of this document is about. Normalise the liquor profile t
 `Shop 5A, 1 Trafalgar Place` so both read identically. The schema files already
 use that form.
 
-### ⚠️ Supermarket hours are still unconfirmed
+### 🔴 Every directory has your opening time wrong by an hour
 
-The bottle shop hours are owner-supplied. The supermarket's `09:00–21:00` comes
-only from third-party directories, and the bottle shop opening at 08:00 makes an
-09:00 supermarket opening look doubtful. `schema/supermarket.jsonld` leaves them
-as `CONFIRM_*` placeholders — publishing wrong hours costs visits and trust.
+Owner-confirmed hours:
+
+| Day | Supermarket | Local Liquor |
+|---|---|---|
+| Mon–Wed | 08:00–21:00 | 08:00–21:00 |
+| Thu–Sat | 08:00–22:00 | 08:00–22:00 |
+| **Sun** | **08:00**–21:00 | **10:00**–21:00 |
+
+The two differ **only on Sunday morning**, and that difference is licence-driven:
+NSW restricts packaged-liquor trading on Sunday mornings. Set the profiles
+accordingly — it is a real operational difference, and it reinforces that these
+are two genuinely distinct businesses.
+
+**The problem:** aussie-hours, Shopfully and openinghoursau all publish
+`09:00–21:00`. The real opening is **08:00**. Every one of them is an hour late,
+seven days a week.
+
+This costs money directly rather than in rankings — someone checking at 8:15am is
+told you are shut. Fix the profiles first, then work the directories; most re-scrape
+from Google over time, but the stale ones need correcting by hand. It is the
+highest-value item on this list that has nothing to do with SEO.
 
 ## ✅ Shop 5 and Shop 5A settles the two-listing question
 

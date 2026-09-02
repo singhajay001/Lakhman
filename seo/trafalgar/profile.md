@@ -18,7 +18,8 @@
 | Grocery banner | **Friendly Grocer** (Metcash) — banner site carries two duplicate pages | friendlygrocer.com.au |
 | Council area | City of Ryde, Sydney | Wheree |
 | Phone | +61 2 9868 1070 | Yelp, mapsus, dlook |
-| Supermarket hours | `09:00–21:00` — **third-party sources only, unconfirmed.** Doubtful given the bottle shop opens 08:00 | aussie-hours, Shopfully, openinghoursau |
+| Supermarket hours | Sun–Wed 08:00–21:00 · Thu–Sat 08:00–22:00 | owner |
+| ⚠️ Directory error | aussie-hours, Shopfully, openinghoursau all publish `09:00` open — **one hour late, every day** | — |
 | Existing domain | `trafalgarsupermarketandcellars.com.au` | search result; also the owner's email domain |
 | Under-construction site | `trafalgar-grocery.myfoodlink.com` | supplied by owner |
 | **Canonical domain (DECIDED)** | `trafalgarsupermarketandcellars.com.au` | owner decision |
@@ -124,8 +125,7 @@ Ask MyFoodLink support directly. Do not assume Shopify-equivalent control.
 Two independent entities rather than one with a `department`: the distinct suite
 numbers make them separately addressable, which is the stronger model.
 
-Both files are complete except the supermarket's trading hours, which remain
-`CONFIRM_*` placeholders pending owner confirmation.
+Both files are complete. No placeholders remain; every value is owner-confirmed.
 
 ## What winning looks like
 
