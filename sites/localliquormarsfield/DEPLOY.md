@@ -67,7 +67,11 @@ Registrars bundle add-ons at a cheap first year that renews expensive. You need
 3. Name the project `localliquormarsfield`.
 4. Drag in **`localliquormarsfield-site.zip`** — or unzip it first and drag the
    folder. Either works.
-5. Click **Deploy**.
+5. **Expand "Advanced settings" and set HTML handling to `auto-trailing-slash`.**
+   Do not use `none`: it stops `/` mapping to `index.html`, so the homepage
+   returns 404 while `/index.html` still loads. This setting is baked into each
+   deployment, so it must be set on every upload.
+6. Click **Deploy**.
 
 It will give you a temporary address like
 `localliquormarsfield.pages.dev`. **Open it.** The site is already live there,

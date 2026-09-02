@@ -1,5 +1,22 @@
 # localliquormarsfield.com.au — **LIVE**
 
+> ## ⚠️ EVERY DEPLOYMENT: set HTML handling to `auto-trailing-slash`
+>
+> On the Cloudflare upload screen, expand **Advanced settings** and set
+> **HTML handling** to **`auto-trailing-slash`** before clicking Deploy.
+>
+> This is **per-deployment configuration, not a site setting.** Changing it in
+> the Settings tab afterwards does not fix a deployment already running, and a
+> new upload silently defaults it back.
+>
+> `none` looks correct — it serves `.html` files exactly as named — but it also
+> stops `/` mapping to `index.html`, so **the homepage returns 404 while
+> `/index.html` loads fine.** That exact mistake cost two rounds of debugging
+> here, with the Google profile pointing at a 404 page in between.
+>
+> `check.sh` cannot catch this. It validates the files, and the files are fine;
+> the fault lives in Cloudflare's deployment config, outside the repository.
+
 Deployed 2026-09-02 on Cloudflare Workers static assets. Apex canonical, no `www`.
 Update by editing files, running `./check.sh`, then Cloudflare → the project →
 **New deployment** → drag the new zip.
