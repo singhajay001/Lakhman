@@ -8,19 +8,20 @@ Steps 1–4 are one sitting, about an hour. Steps 5–8 are ongoing.
 
 ---
 
-## 1 · Deploy the site · you · 15 min
+## 1 · Deploy the site · ✅ done
 
-Full instructions: `sites/localliquormarsfield/DEPLOY.md`.
+The site moved to its own repository, **singhajay001/localliquormarsfield**, and
+Cloudflare Workers now builds and deploys it on every push to `main`. No more
+zips, and `html_handling` lives in `wrangler.jsonc` rather than in a dashboard
+field that resets on every upload — that field is what 404'd the homepage the
+first time.
 
-The one thing that breaks it: in Cloudflare Pages, **Advanced settings → HTML
-handling → `auto-trailing-slash`**. It is set per deployment, not per project, so
-it must be set again on every upload. Setting it to `none` is what produced the
-404 on the homepage last time.
+`publish.sh` runs `check.sh` first, so an expired promotion, a drifted footer or
+an inconsistent address fails the build instead of going live.
 
-Upload `sites/localliquormarsfield/localliquormarsfield-site.zip`.
-
-**Done when:** all eight pages load at the `pages.dev` address, including
-`/specials`.
+**Still to check:** open the `localliquormarsfield1.singhajay001.workers.dev`
+address and click through all nine pages, `/specials` especially, plus a junk
+URL to confirm the 404 page. Do this before step 2.
 
 ## 2 · Point the domain at it · you · 10 min + DNS wait
 
