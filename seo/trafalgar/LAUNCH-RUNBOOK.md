@@ -33,18 +33,27 @@ against itself.
 **Done when:** `https://localliquormarsfield.com.au` loads with a padlock, and
 typing `www.` in front redirects.
 
-## 3 · 🔴 Set the website on the Google Business Profile · you · 2 min
+## 3 · Set the website on the Google Business Profile · ✅ done 2026-09-02
 
-**This is the highest-value single action in this entire workspace.**
+`https://localliquormarsfield.com.au` is now on the profile. The field had been
+empty, so the Website button fell through to Instagram — people who found the
+shop on Maps and wanted the hours landed on a social feed. This was the
+highest-value single action in this workspace and it is done.
 
-Profile → Edit → Website → `https://localliquormarsfield.com.au`
+**It changes the risk on step 2.** The domain still resolves to the old
+Cloudflare Pages project, and the profile now sends traffic there, so the
+handover has a live audience. Move it at a quiet hour, and check
+`localliquormarsfield.com.au/specials` first: if that 404s, the old project is
+serving a build from before the specials page existed and the move is worth
+doing sooner rather than later.
 
-The field is currently empty, so the profile's Website button falls through to
-Instagram. Your most motivated visitors — people who found you on Maps and
-wanted to know more — land on a social feed instead of a page with your hours,
-address, range and a tap-to-call button.
+**Two follow-ups now that the field is set:**
 
-Everything else on this list is worth less than this one field.
+- Add the same URL to the Instagram bio and any other profile that currently
+  has no link.
+- Watch **Insights → Website clicks** on the profile. It was structurally zero
+  before today, so any number at all is new. Give it a fortnight before reading
+  anything into the shape of it.
 
 ## 4 · Search Console · you · 10 min + verification wait
 
