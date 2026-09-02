@@ -1,0 +1,37 @@
+# Local Liquor Marsfield — Apache config.
+# Works on GoDaddy cPanel/Linux hosting and any other Apache host.
+# Ignored by Cloudflare Pages / Netlify, so it is safe to ship either way.
+
+# --- Force HTTPS -------------------------------------------------------------
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# --- One canonical host: apex, matching the <link rel="canonical"> tags -------
+# Every page declares https://localliquormarsfield.com.au/... so www must 301
+# to the apex or the two hosts compete and Google picks for you.
+RewriteCond %{HTTP_HOST} ^www\.localliquormarsfield\.com\.au$ [NC]
+RewriteRule ^(.*)$ https://localliquormarsfield.com.au/$1 [R=301,L]
+
+# --- Default document --------------------------------------------------------
+DirectoryIndex index.html
+
+# --- Caching -----------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html            "access plus 1 hour"
+  ExpiresByType text/css             "access plus 1 year"
+  ExpiresByType image/png            "access plus 1 year"
+  ExpiresByType application/xml      "access plus 1 day"
+</IfModule>
+
+# --- Compression -------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/xml application/xml text/plain
+</IfModule>
+
+# --- Modest security headers -------------------------------------------------
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

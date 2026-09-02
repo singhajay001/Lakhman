@@ -43,10 +43,50 @@ a customer who drives over for something you never had.
 
 ## Deploying
 
-Any static host works — Cloudflare Pages, Netlify, or plain cPanel hosting.
+The whole site is **14 files, 168 KB** of static HTML, CSS and PNG. No server
+code, no database, no build step at runtime. Any static host works.
+
+### GoDaddy — yes, but only the right product
+
+| GoDaddy product | Works? |
+|---|---|
+| **Web Hosting (cPanel / Linux)** | ✅ Yes. Upload to `public_html` via File Manager or FTP. |
+| **Domain registration only** | ❌ Not hosting. Point the DNS somewhere that is. |
+| **Website Builder / Managed WordPress** | ❌ No. Neither accepts hand-written HTML uploads. |
+
+If it is cPanel hosting:
+
+1. cPanel → **File Manager** → `public_html`
+2. Upload everything except `build/`, `check.sh` and `README.md` — those are
+   development files and do not belong on the server
+3. Confirm **SSL is active** and HTTPS loads. Some GoDaddy plans include a
+   certificate, some charge for it. HTTPS is not optional.
+4. `.htaccess` (included) forces HTTPS, 301s `www` to the apex, and sets caching
+   and compression. It is read automatically by Apache.
+
+### Two honest caveats
+
+**Speed.** GoDaddy shared hosting is slower than a CDN. For 168 KB of static
+files it will still be fine, but Cloudflare Pages or Netlify would serve it from
+an edge node for free and score better on Core Web Vitals.
+
+**Cost.** You would be paying for hosting to serve fourteen static files. If you
+already pay for GoDaddy hosting, use it — one less account. If you do not,
+Cloudflare Pages is free, includes SSL, and takes about five minutes.
+
+**Do not let this decision delay launch.** An unpublished site is worth nothing,
+and moving a static site between hosts later is a twenty-minute job. Pick
+whichever you can do this week.
+
+### Canonical host
+
+Every page declares `https://localliquormarsfield.com.au/...` — the **apex**, no
+`www`. Whatever host you choose must 301 `www` to the apex, or the two compete
+and Google chooses for you. The bundled `.htaccess` does this on Apache; on
+Cloudflare Pages or Netlify set it in the dashboard's redirect rules.
 
 1. Point `localliquormarsfield.com.au` at the host.
-2. Serve `www` and apex from one canonical host; 301 the other.
+2. Serve apex as canonical; 301 `www` to it (see above).
 3. Force HTTPS.
 4. Publish, then **check the live site for `noindex` one more time**.
 5. Add the domain to Google Search Console as a **Domain property**, and submit
