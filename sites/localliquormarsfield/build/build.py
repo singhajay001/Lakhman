@@ -134,7 +134,7 @@ def section(F, key, heading, blurb, limit=10, prices=False):
              if prices and x["price"] >= 1 else ""
         lis.append("\n    <li><strong>%s</strong> &mdash; %s%s%s</li>"
                    % (e(x["brand"]), e(x["name"]), origin, pr))
-    aw = " %d of them have won a medal." % d["awarded"] if d["awarded"] else ""
+    aw = ""  # medal tallies came from the catalogue, not the shelf
     anchor = key.lower().replace(" ", "-").replace("&", "and")
     return ('\n<h2 id="%s">%s</h2>\n<p>%s%s</p>\n'
             '<p><strong>Brands we carry include:</strong> %s.</p>\n<ul>%s\n</ul>\n'
@@ -164,16 +164,16 @@ def main():
 
     # ---- spirits.html ----
     o = head("Spirits | Local Liquor Marsfield &mdash; whisky, gin &amp; tequila",
-             "Over %d premium spirits at Local Liquor Marsfield, Shop 5A Trafalgar Place, "
-             "Marsfield NSW. Single malt scotch, Japanese whisky, Australian gin, agave tequila." % sp,
+             "A full spirits wall at Local Liquor Marsfield, 5A 1 Trafalgar Place, Marsfield "
+             "NSW. Single malt scotch, Japanese whisky, Australian gin and agave tequila.",
              "/spirits.html", "spirits")
     o += ('\n<h1>Spirits</h1>\n<p class="lede">\n  Spirits are what this shop is built around. '
-          'Over %d premium bottles on the\n  shelf &mdash; single malt scotch, Japanese whisky, '
-          'Australian botanical gin and\n  100%% agave tequila &mdash; alongside the everyday '
-          'pouring bottles.\n</p>\n\n<div class="actions">\n'
+          'A full spirits wall &mdash; single\n  malt scotch, Japanese whisky, Australian '
+          'botanical gin and 100% agave\n  tequila &mdash; alongside the everyday pouring '
+          'bottles.\n</p>\n\n<div class="actions">\n'
           '  <a class="btn btn-primary" href="tel:+61452480487">Ask what&rsquo;s in stock</a>\n'
           '  <a class="btn btn-secondary" href="https://g.page/r/CenxQG-m-gUkEBI">Get directions</a>\n'
-          '</div>\n' % sp)
+          '</div>\n')
     o += price_note(a.prices)
     for k, h2, bl, lim in [
         ("Whisky", "Whisky", "Our deepest shelf. Speyside, Highland and Islay single malts, aged blends, plus Japanese, Irish and American whiskey.", 10),
@@ -192,31 +192,29 @@ def main():
 
     # ---- range.html ----
     o = head("Our range | Local Liquor Marsfield &mdash; spirits, craft beer &amp; wine",
-             "Premium spirits, 450+ craft beers and a curated wine selection at Local Liquor "
-             "Marsfield, Shop 5A Trafalgar Place, Marsfield NSW 2122.", "/range.html", "range")
-    o += ('\n<h1>Our range</h1>\n<p class="lede">\n  Around %s lines in store. Below is the pick of '
-          'it &mdash; the premium\n  spirits, the craft beer and the wines worth making room for. '
-          'The everyday\n  bottles are all on the shelf too; this page is the good stuff.\n</p>\n\n'
+             "Beer, wine, spirits, RTDs and non-alcoholic options at Local Liquor Marsfield, "
+             "5A 1 Trafalgar Place, Marsfield NSW 2122. Over 120 wine labels, deep craft beer.", "/range.html", "range")
+    o += ('\n<h1>Our range</h1>\n<p class="lede">\n  Beer, wine, spirits, RTDs, mixers and '
+          'non-alcoholic options &mdash; from the\n  everyday brands people actually buy to '
+          'independent NSW makers and imported\n  labels you will not find in a chain store.\n</p>\n\n'
           '<div class="actions">\n  <a class="btn btn-primary" href="/spirits.html">Browse spirits</a>\n'
           '  <a class="btn btn-secondary" href="tel:+61452480487">Ring the shop</a>\n</div>\n\n'
-          '<h2>Spirits &mdash; where we go deepest</h2>\n<p>\n  Over %d premium spirits, led by %d '
-          'whiskies and %d gins. Single malt scotch by\n  region, Japanese whisky, Australian '
-          'botanical gin and agave tequila.\n</p>\n'
+          '<h2>Spirits &mdash; where we go deepest</h2>\n<p>\n  A full spirits wall: whisky, bourbon, '
+          'gin, vodka, rum, tequila, brandy and\n  liqueurs. Major international brands alongside '
+          'Australian independents such\n  as Karu Distillery, in everyday 700ml through to gifting '
+          'formats.\n</p>\n'
           '<p><a href="/spirits.html"><strong>See the full spirits range &rarr;</strong></a></p>\n\n'
-          '<h2>Craft beer</h2>\n<p>\n  Over %d craft beers &mdash; a deeper independent range than '
-          'most bottle shops\n  our size carry, and the first thing we would point a chain shopper '
-          'to.\n  %d of the ones we feature have won a medal.\n</p>\n'
+          '<h2>Craft beer</h2>\n<p>\n  A deep independent beer range covering NSW breweries and '
+          'imported lagers from\n  more than twenty countries &mdash; singles, six-packs, slabs and '
+          'mixed packs.\n  The fridges are stocked and cold every day, not just on Friday afternoon.\n</p>\n'
           '<p><strong>Breweries include:</strong> %s.</p>\n'
-          '<p>\n  Alongside them: around 270 Australian mainstream lines, 120 imports, 130 ciders,\n'
-          '  and roughly 50 low-carb, mid-strength and zero-alcohol beers for whoever is driving.\n</p>\n\n'
-          '<h2>Wine &mdash; a tighter selection</h2>\n<p>\n  There are over 2,100 wines in store. '
-          'Rather than list them all, these are the\n  ones we would actually recommend: %d reds, '
-          '%d whites and %d sparkling that are\n  either award winners or genuinely worth the '
-          'money.\n</p>\n'
-          % (f"{round(len(data), -2):,}", sp, F["Whisky"]["count"], F["Gin"]["count"],
-             450, F["Craft Beer"]["awarded"],
-             ", ".join(e(b) for b in F["Craft Beer"]["brands"][:10]),
-             F["Red Wine"]["count"], F["White Wine"]["count"], F["Champagne & Sparkling"]["count"]))
+          '<p>\n  Alongside them: mainstream Australian cartons, imports, cider, and low-carb,\n'
+          '  mid-strength and zero-alcohol beer for whoever is driving.\n</p>\n\n'
+          '<h2>Wine &mdash; over 120 local &amp; imported labels</h2>\n<p>\n  Hunter Valley, Orange, '
+          'Barossa, McLaren Vale and Margaret River alongside\n  French, Italian, Spanish and New '
+          'Zealand labels. Everyday drinking wines\n  through to bottles worth bringing to dinner, '
+          'with chilled whites, ros&eacute;s and\n  sparkling ready to take straight to the table.\n</p>\n'
+          % ", ".join(e(b) for b in F["Craft Beer"]["brands"][:10]))
     for k, h2, bl in [
         ("Red Wine", "Red wine", "Shiraz, cabernet, pinot and grenache &mdash; Barossa, McLaren Vale, Coonawarra and the Yarra."),
         ("White Wine", "White wine", "Chardonnay, riesling, sauvignon blanc and pinot gris from Adelaide Hills, Clare Valley and Marlborough."),

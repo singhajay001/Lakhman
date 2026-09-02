@@ -54,7 +54,19 @@ else
   say OK "no supermarket landline on this site"
 fi
 
-# 6. JSON-LD must parse.
+# 6. Catalogue-derived counts must not return. The supplied spreadsheet is the
+# orderable range, not the shelf: the owner confirmed wine is ~120, not 2,153.
+if grep -rnE '\b(4,?700|2,?15[0-9]|2,?1[0-9]{2} wines|1,?49[0-9]|45[0-9]\+? craft|219 whisk|157 gin|591 premium)\b' \
+     --include='*.html' --include='*.py' . >/dev/null 2>&1; then
+  say FAIL "catalogue-derived counts found — these describe orderable range, not shelf stock"
+  grep -rlnE '\b(4,?700|2,?15[0-9]|1,?49[0-9]|45[0-9]\+? craft|219 whisk|157 gin|591 premium)\b' \
+    --include='*.html' --include='*.py' . | sed 's/^/         /'
+  fail=1
+else
+  say OK "no catalogue-derived counts"
+fi
+
+# 7. JSON-LD must parse.
 python3 - <<'PY' || fail=1
 import re, json, sys, glob
 ok = True

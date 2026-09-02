@@ -72,6 +72,12 @@ deficit. See `seo/trafalgar/liquor-site-decision.md`.
 Note the name collision: **IGA Trafalgar, 5 McCrorey St, Trafalgar VIC 3824** is
 an unrelated business. Never merge their data.
 
+## Spirithaus is tracked separately
+
+Owner's instruction, 2026-09-02: keep Spirithaus separate from the Trafalgar
+work. Its product-schema change is open as a pull request on
+`singhajay001/spirithaus-theme` and is not a dependency of anything here.
+
 ## Environment limitation in remote sessions
 
 This session's egress proxy blocks direct page fetches (`EGRESS_BLOCKED`), so

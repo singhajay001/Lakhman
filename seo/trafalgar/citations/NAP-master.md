@@ -97,7 +97,15 @@ in its schema.
 
 ## ⚠️ Two conflicts introduced by the licence document
 
-### The licensed premises is Shop 5/1, not Shop 5A
+### ~~The licensed premises is Shop 5/1, not Shop 5A~~ — SETTLED
+
+Owner confirmed 2026-09-02: **use 5A everywhere, no compliance issue.** The
+trading address matches the Google profile; the licence document keeps its own
+wording on the compliance notice, quoted verbatim. Nothing further to resolve.
+
+Original note kept below for the record.
+
+### Original: the licensed premises is Shop 5/1, not Shop 5A
 
 | Source | Address |
 |---|---|

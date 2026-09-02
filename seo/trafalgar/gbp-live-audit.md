@@ -10,7 +10,7 @@ Observed 2026-09-02 from the owner's own Google search result. This is what is
 | Address | `5A, 1 Trafalgar Pl, Marsfield NSW 2122` | ⚠️ format |
 | **Phone** | **0452 480 487** | ✅ resolved — site now matches |
 | Rating | **5.0 from 4 reviews** | new information |
-| Website | a Website button is present | ⚠️ unknown target |
+| Website | **empty** — button falls through to Instagram | ⚠️ set at launch |
 | Mon–Wed | 8am–9pm | ✅ |
 | Thu–Sat | 8am–10pm | ✅ |
 | Sun | 10am–9pm | ✅ |
@@ -65,14 +65,18 @@ Every directory that scrapes the profile copies that string. Change it to
 **`5A, 1 Trafalgar Place`** so it matches the site, the schema and the NAP
 master byte-for-byte.
 
-## ⚠️ A website is already linked
+## ✅ No website is set — the button falls through to Instagram
 
-The profile shows a Website button, so the field is populated. Earlier work
-assumed it was empty.
+Owner confirmed the website field is **empty**. The Website button on the
+listing resolves to the Instagram account, which is Google's fallback, not a
+configured link.
 
-Find out where it points. If it goes to the supermarket site or the
-under-construction MyFoodLink page, that is a weak signal now and should be
-repointed to `localliquormarsfield.com.au` at launch.
+So this is an **add**, not a replace. The moment
+`localliquormarsfield.com.au` is live, put it in the website field. Until then
+the profile is sending its most motivated visitors to a social feed instead of a
+page with hours, address, range and click-to-call.
+
+This is the single most valuable thing the new site unlocks.
 
 ## 4 reviews at 5.0 — the real lever
 

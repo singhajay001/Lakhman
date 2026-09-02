@@ -118,7 +118,7 @@ purchase path is a structured-data mismatch and risks a manual action.
 Prices stay as plain page content. The `LiquorStore` schema on the homepage is
 the correct markup for this site and already carries `priceRange`.
 
-## ⚠️ Unresolved before publishing: the wine count
+## ~~Unresolved before publishing: the wine count~~ — RESOLVED
 
 The owner's own About copy says **"Wine — Over 120 Local & Imported Labels"**.
 `range.html` says **"There are over 2,100 wines in store"**, taken from the
@@ -134,3 +134,30 @@ shop holds 120 is exactly the failure the range page exists to prevent: someone
 drives over for a bottle that was never there.
 
 Once decided, rebuild — the numbers live in `build/build.py`, not in the HTML.
+
+
+## Resolved: wine is 120, and that changed every other count
+
+The owner confirmed wine is **over 120 labels**, not the spreadsheet's 2,153.
+
+That single answer settles the provenance question: the supplied spreadsheet is
+the **orderable range** available through the group, not what stands on the
+shelf. Wine being off by a factor of eighteen means craft beer (453), spirits
+(1,493), whisky (219) and gin (157) are from the same source and equally
+unreliable as shelf claims.
+
+So every catalogue-derived count has been removed from the site, not just the
+wine one. What remains is:
+
+- **the owner's own figure** — over 120 wine labels
+- **qualitative range descriptions**, in the owner's own words
+- **89 named bottles**, which are real products and the actual SEO value
+
+The counts were never the valuable part. A page naming Hakushu 12 and Hibiki
+Harmony reaches searches that "over 450 craft beers" never could, and it cannot
+be wrong in the way a count can.
+
+`check.sh` blocks any of those figures returning through a rebuild.
+
+**If you want numbers back, supply shelf counts for beer and spirits** and they
+go straight in — they are persuasive when true.
