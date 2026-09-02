@@ -1,0 +1,48 @@
+# Tracked search terms for the geo-grid rank scanner.
+# Branded and generic are scored separately and never averaged together:
+# branded rank tells you whether the site is indexing and the GBP owns its own
+# name; generic rank tells you whether the content engine is working.
+
+generic:
+  - "bottle shop near me"
+  - "bottle shop marsfield"
+  - "liquor store marsfield"
+  - "bottle shop macquarie park"
+  - "bottle shop macquarie university"
+  - "liquor store north ryde"
+  - "bottle shop eastwood"
+  - "bottle shop epping"
+  - "beer near me"
+  - "cold beer near me"
+  - "wine shop marsfield"
+  - "spirits near me"
+  - "bottle shop open now"
+  - "bottle shop open late"
+  - "ice near me"
+  - "champagne near me"
+  - "craft beer marsfield"
+  - "non alcoholic beer near me"
+  - "gift wine near me"
+  - "liquor delivery marsfield"
+
+branded:
+  - "local liquor marsfield"
+  - "local liquor marsfield specials"
+
+# Content generators draw the local-intent phrase for a post from here.
+# Each must appear naturally in the first 90 characters of the post body.
+content_phrases:
+  - "bottle shop in Marsfield"
+  - "bottle shop near Macquarie University"
+  - "liquor store in Marsfield"
+  - "cold beer in Marsfield"
+  - "wine shop near Macquarie Park"
+  - "craft beer in Marsfield"
+  - "spirits in Marsfield"
+  - "non-alcoholic drinks in Marsfield"
+  - "bottle shop near North Ryde"
+  - "bottle shop near Eastwood"
+
+grid:
+  size: 7               # odd only: 7, 9 or 11
+  spacing_km: 0.6       # 7 x 7 at 0.6 km spans ~3.6 km corner to corner

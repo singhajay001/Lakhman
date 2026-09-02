@@ -1,0 +1,20 @@
+# Competitor set for `audit competitors`.
+# `seeded` is the manual list - resolve place_ids with `audit competitors --resolve`.
+# `discovered` is appended automatically by the Places nearby search and should
+# not be hand-edited; delete the block to force a re-discovery.
+
+search:
+  radius_m: 5000
+  included_types:
+    - "liquor_store"
+  keywords:
+    - "bottle shop"
+    - "liquor store"
+    - "cellars"
+
+seeded: []
+  # - name: ""
+  #   place_id: null
+  #   note: ""
+
+discovered: []

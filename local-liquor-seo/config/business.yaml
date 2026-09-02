@@ -1,0 +1,145 @@
+# Single source of truth for Local Liquor Marsfield.
+# Nothing in src/ may hardcode NAP, URLs, licence details or hours - it all comes from here.
+# Fields marked "TODO" must be filled before the relevant phase can run live.
+
+identity:
+  trading_name: "Local Liquor Marsfield"
+  short_name: "Local Liquor"
+  positioning: >-
+    Independent local bottle shop. Range depth, staff who know the products,
+    no queue, cold stock, fast in-and-out. We do not compete on price with the
+    big chains and copy must never imply that we do.
+  instagram_handle: "@localliquormarsfield"
+
+address:
+  line1: "Shop 5A, 1 Trafalgar Place"
+  suburb: "Marsfield"
+  state: "NSW"
+  postcode: "2122"
+  country_code: "AU"
+  # Exactly as it must appear on the site, on the GBP and in every citation.
+  formatted: "Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122"
+
+contact:
+  phone_display: "0452 480 487"
+  phone_e164: "+61452480487"
+
+geo:
+  # TODO(operator): fill from the Places API details response for place_id below.
+  # Required only for `rank scan` / `rank grid`; every other command works without it.
+  lat: null
+  lng: null
+  verified: false
+
+website:
+  canonical_url: "https://localliquormarsfield.com.au/"
+  host: "localliquormarsfield.com.au"
+  # Hosts a generated link is allowed to use. Keep the canonical host first.
+  allowed_hosts:
+    - "localliquormarsfield.com.au"
+  # Re-crawled from sitemap.xml before every content run (`audit site --refresh-paths`).
+  # A CTA pointing at anything not in this list is a build failure.
+  site_paths:
+    - "/"
+    - "/specials"
+    - "/spirits"
+    - "/full-range"
+    - "/services"
+    - "/visit-us"
+    - "/about"
+    - "/contact"
+  site_paths_source: "seeded-manually"
+  site_paths_crawled_at: null
+
+google:
+  # TODO(operator): from the GBP dashboard or a Places API text search. Blocks Part B only.
+  place_id: null
+  # TODO(operator): confirm in the GBP dashboard. If this is a supermarket/grocery
+  # category rather than a liquor category it is the single biggest map-pack lever.
+  primary_category: null
+  secondary_categories: []
+  # TODO(operator): has Google approved localPosts write access for this project yet?
+  # One of: unknown | requested | granted | denied. Keeps PUBLISH_MODE honest.
+  api_write_access: "unknown"
+  location_resource_name: null   # accounts/{account}/locations/{location}
+
+licence:
+  # NSW packaged liquor licence.
+  number: "LIQP700301260"
+  type: "Packaged liquor licence"
+  # TODO(operator): confirm the licensee name exactly as it appears on the licence
+  # record. NSW liquor advertising must carry the licensee name plus the number.
+  licensee_name: "Local Liquor Marsfield"
+  licensee_name_verified: false
+
+hours:
+  # What customers see. Advertise these and only these.
+  actual:
+    mon: ["08:00", "21:00"]
+    tue: ["08:00", "21:00"]
+    wed: ["08:00", "21:00"]
+    thu: ["08:00", "22:00"]
+    fri: ["08:00", "22:00"]
+    sat: ["08:00", "22:00"]
+    sun: ["10:00", "21:00"]
+  # The legal ceiling. Never advertised, never published as opening hours.
+  licensed:
+    mon: ["05:00", "24:00"]
+    tue: ["05:00", "24:00"]
+    wed: ["05:00", "24:00"]
+    thu: ["05:00", "24:00"]
+    fri: ["05:00", "24:00"]
+    sat: ["05:00", "24:00"]
+    sun: ["10:00", "22:00"]
+  # Liquor sales cannot start before this time on a Sunday, whatever the door says.
+  sunday_sales_start: "10:00"
+  timezone: "Australia/Sydney"
+
+services:
+  delivery:
+    - name: "Uber Eats"
+      url: null
+  click_and_collect: false          # do not generate copy implying it exists
+  parking: "Free parking on site"
+  payments: ["EFTPOS", "Visa", "Mastercard", "Amex", "Cash"]
+
+catchment:
+  primary_suburbs:
+    - "Marsfield"
+    - "Macquarie Park"
+    - "North Ryde"
+    - "Denistone"
+    - "Eastwood"
+    - "Epping"
+    - "Ryde"
+    - "East Ryde"
+  demand_drivers:
+    - "Macquarie University students and staff"
+    - "Macquarie Park office workers"
+    - "local families"
+    - "walk-up convenience trade"
+    - "weekend top-ups"
+
+compliance:
+  # Verbatim, mandated wording. compliance_check() requires this string on every
+  # piece of alcohol-promoting copy.
+  responsible_service_line: >-
+    It is against the law to sell or supply alcohol to, or to obtain alcohol on
+    behalf of, a person under the age of 18 years.
+  # Surfaces that must carry the licence footer on alcohol copy. GBP Q&A answers
+  # are deliberately excluded - a footer reads as spam in an answer - but they are
+  # still checked against every other rule. Add "qanda" here to tighten that.
+  footer_surfaces: ["post", "product", "photo_caption"]
+  # {licensee} / {licence_number} / {rsa_line} are substituted by compliance.footer().
+  footer_template: |-
+    {rsa_line}
+    {licensee} | Licence No. {licence_number}
+  # Vague or open-ended trading claims. Rejected regardless of the real hours.
+  forbidden_hours_phrases:
+    - "open 24 hours"
+    - "24/7"
+    - "always open"
+    - "open till late"
+    - "open til late"
+    - "open until late"
+    - "open all night"

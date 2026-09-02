@@ -1,0 +1,4 @@
+review_id,author,rating,published_at,text,replied,review_url
+r_0001,A. Customer,5,2026-08-14,"Great range and the staff knew exactly what I wanted.",false,
+r_0002,B. Customer,4,2026-08-20,"Good shop, wish the cold room had more of the local stuff.",false,
+r_0003,C. Customer,2,2026-08-28,"Was refused service for no ID. Not happy.",false,

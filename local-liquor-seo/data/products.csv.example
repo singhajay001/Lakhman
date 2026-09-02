@@ -1,0 +1,5 @@
+name,category,size,price,supplier,is_local,is_zero_alc,notes
+Example Pale Ale,Beer,4x375ml,24.99,Example Brewing Co,true,false,House favourite; always in the cold room
+Example Shiraz 2022,Wine,750ml,21.00,Example Wines,false,false,Staff pick for BBQ
+Example Dry Gin,Spirits,700ml,59.00,Example Distillery,true,false,NSW distilled
+Example Zero Lager,Zero Alcohol,6x330ml,18.50,Example Brewing Co,false,true,0.0% - stocked chilled

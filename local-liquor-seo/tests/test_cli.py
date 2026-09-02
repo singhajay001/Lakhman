@@ -1,0 +1,113 @@
+"""The CLI surface is part of the contract: every command is discoverable from
+`--help` even while its implementation is still on the build plan."""
+
+from __future__ import annotations
+
+import pytest
+from typer.testing import CliRunner
+
+from llm_seo.cli import app
+from llm_seo.compliance import footer
+
+runner = CliRunner()
+
+GROUPS = [
+    "config", "compliance", "calendar", "posts", "products", "qanda",
+    "reviews", "photos", "rank", "audit", "report",
+]
+
+
+def test_help_lists_every_command_group():
+    result = runner.invoke(app, ["--help"])
+    assert result.exit_code == 0
+    for group in GROUPS:
+        assert group in result.stdout
+
+
+@pytest.mark.parametrize("group", GROUPS)
+def test_each_group_has_at_least_one_command(group):
+    result = runner.invoke(app, [group, "--help"])
+    assert result.exit_code == 0
+
+
+def test_commands_prints_the_flat_tree():
+    result = runner.invoke(app, ["commands"])
+    assert result.exit_code == 0
+    for expected in ("rank scan", "audit site", "posts generate", "report weekly",
+                     "reviews draft", "photos plan", "qanda build", "products build",
+                     "calendar build", "compliance check", "config validate"):
+        assert expected in result.stdout
+
+
+def test_version():
+    result = runner.invoke(app, ["version"])
+    assert result.exit_code == 0 and result.stdout.strip()
+
+
+def test_config_validate_passes_on_the_shipped_config():
+    result = runner.invoke(app, ["config", "validate"])
+    assert result.exit_code == 0
+    assert "config OK" in result.stdout
+
+
+def test_config_validate_strict_fails_while_gaps_remain():
+    result = runner.invoke(app, ["config", "validate", "--strict"])
+    assert result.exit_code == 1
+
+
+def test_config_show_reports_the_open_gaps():
+    result = runner.invoke(app, ["config", "show"])
+    assert result.exit_code == 0
+    assert "Open gaps" in result.stdout
+
+
+def test_compliance_check_exits_zero_on_clean_copy(biz):
+    text = f"Cold beer in the fridge today.\n\n{footer(biz)}"
+    result = runner.invoke(app, ["compliance", "check", text])
+    assert result.exit_code == 0
+    assert "PASS" in result.stdout
+
+
+def test_compliance_check_exits_one_on_a_violation():
+    result = runner.invoke(app, ["compliance", "check", "Get smashed tonight."])
+    assert result.exit_code == 1
+    assert "R3_IRRESPONSIBLE_CONSUMPTION" in result.stdout
+
+
+def test_compliance_check_reads_stdin():
+    result = runner.invoke(app, ["compliance", "check"], input="Get smashed tonight.")
+    assert result.exit_code == 1
+
+
+def test_compliance_check_reads_a_file(tmp_path, biz):
+    path = tmp_path / "caption.md"
+    path.write_text(f"Cold beer today.\n\n{footer(biz)}", encoding="utf-8")
+    result = runner.invoke(app, ["compliance", "check", "--file", str(path)])
+    assert result.exit_code == 0
+
+
+def test_compliance_check_rejects_an_unknown_surface():
+    result = runner.invoke(app, ["compliance", "check", "hi", "--surface", "billboard"])
+    assert result.exit_code == 2
+
+
+def test_compliance_footer_prints_the_licence_block(biz):
+    result = runner.invoke(app, ["compliance", "footer"])
+    assert result.exit_code == 0
+    assert biz.licence.number in result.stdout
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["calendar", "build"], ["posts", "generate"], ["products", "build"],
+        ["qanda", "build"], ["reviews", "draft"], ["photos", "plan"],
+        ["rank", "grid"], ["rank", "scan"], ["rank", "score"], ["rank", "heatmap"],
+        ["audit", "profile"], ["audit", "site"], ["audit", "competitors"],
+        ["report", "weekly"], ["compliance", "scan", "."],
+    ],
+)
+def test_unbuilt_commands_say_which_phase_they_land_in(argv):
+    result = runner.invoke(app, argv)
+    assert result.exit_code == 2
+    assert "Phase" in result.stderr

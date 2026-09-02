@@ -1,0 +1,145 @@
+# Compliance blocklists. Matched case-insensitively on word boundaries against
+# whitespace-normalised copy. Multi-word entries tolerate any run of whitespace.
+#
+# NSW Liquor Promotion Guidelines: a promotion must not encourage rapid,
+# excessive or irresponsible consumption, and must not have a special appeal
+# to minors.
+
+# Rule 3 - rapid / excessive / irresponsible consumption.
+irresponsible_consumption:
+  - "smashed"
+  - "wasted"
+  - "get on it"
+  - "drink up"
+  - "bottomless"
+  - "all you can drink"
+  - "all-you-can-drink"
+  - "skol"
+  - "skolled"
+  - "sculled"
+  - "scull"
+  - "big night"
+  - "hangover cure"
+  - "pre-drinks"
+  - "predrinks"
+  - "pre drinks"
+  - "session it"
+  - "sessionable night"
+  - "boozy"
+  - "booze up"
+  - "binge"
+  - "shots on shots"
+  - "unlimited"
+  - "free drinks"
+  - "free booze"
+  - "drink for free"
+  - "two for one shots"
+  - "keep them coming"
+  - "one more won't hurt"
+  - "get messy"
+  - "write-off"
+  - "loosen up"
+  - "liquid courage"
+  - "drink the pain away"
+  - "chug"
+  - "shoey"
+  - "goon"
+  - "necked"
+  - "hammered"
+  - "plastered"
+  - "trashed"
+  - "blind drunk"
+  - "off your face"
+
+# Rule 4 - special appeal to minors.
+minor_appeal:
+  - "schoolies"
+  - "school holidays"
+  - "hsc"
+  - "year 12"
+  - "back to school"
+  - "muck up day"
+  - "formal after party"
+  - "under 18"
+  - "under-18s welcome"
+  - "kid approved"
+  - "kids love"
+  - "candy"
+  - "lollies"
+  - "gummy"
+  - "bubblegum"
+  - "cartoon"
+  - "mascot"
+  - "superhero"
+  - "anime"
+  - "tiktok dance"
+  - "slushie"
+  - "juice box"
+  - "milkshake vibes"
+  - "toy"
+  - "sticker pack"
+  - "collect them all"
+
+# Rule 5 - time pressure / extreme discount framing.
+urgency_discount:
+  - "last hour"
+  - "beat the clock"
+  - "while you can"
+  - "before it's too late"
+  - "before its too late"
+  - "power hour"
+  - "happy hour"
+  - "hurry before we run dry"
+  - "final call"
+  - "last drinks"
+  - "drink faster"
+  - "one hour only"
+  - "60 minutes only"
+  - "race you"
+  - "stock up before you can't"
+  - "cheapest in sydney"
+  - "cheaper than anyone"
+
+# Rule 6 - zero-alcohol copy positioned as a way to still get drunk.
+zero_alcohol_substitute:
+  - "still get you drunk"
+  - "all the buzz"
+  - "same buzz"
+  - "same kick"
+  - "drunk without the hangover"
+  - "get drunk without"
+  - "buzz without the booze"
+  - "still gets you there"
+  - "spike it"
+  - "add vodka"
+
+# Rule 10 - inducements in review replies. Never offer product as compensation.
+inducement:
+  - "free drink"
+  - "free beer"
+  - "free wine"
+  - "free bottle"
+  - "drink on us"
+  - "bottle on us"
+  - "free case"
+  - "complimentary bottle"
+  - "complimentary drink"
+
+# Phrases that legitimately contain a blocked token. Masked out before scanning.
+# Keep this list short and justify every entry - it is a hole in the validator.
+allow_phrases:
+  - "smashed avocado"
+  - "unlimited range"      # only ever used about breadth of range, never about drinking
+
+# Rule 11 - claims about services the store does not actually offer. The key
+# matches a boolean under `services:` in business.yaml; the phrases are only
+# blocked while that boolean is false.
+service_claims:
+  click_and_collect:
+    - "click and collect"
+    - "click & collect"
+    - "click-and-collect"
+    - "order online for pickup"
+    - "order online for pick up"
+    - "reserve online"
+    - "buy online collect in store"
