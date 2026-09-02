@@ -143,10 +143,10 @@ def section(F, key, heading, blurb, limit=10, prices=False):
 def price_note(prices):
     if prices:
         return ('\n<div class="note">\n  <p>\n    Prices shown were current when this page '
-                'was last updated and can change. Ring\n    <a href="tel:+61298681070">'
-                '(02) 9868 1070</a> to confirm before making a trip.\n  </p>\n</div>\n')
+                'was last updated and can change. Ring\n    <a href="tel:+61452480487">'
+                '0452 480 487</a> to confirm before making a trip.\n  </p>\n</div>\n')
     return ('\n<div class="note">\n  <p>\n    Prices are not listed here because they move. Ring\n'
-            '    <a href="tel:+61298681070">(02) 9868 1070</a> and we will give you today&rsquo;s\n'
+            '    <a href="tel:+61452480487">0452 480 487</a> and we will give you today&rsquo;s\n'
             '    price and check the bottle is on the shelf while you wait.\n  </p>\n</div>\n')
 
 
@@ -170,7 +170,7 @@ def main():
           'Over %d premium bottles on the\n  shelf &mdash; single malt scotch, Japanese whisky, '
           'Australian botanical gin and\n  100%% agave tequila &mdash; alongside the everyday '
           'pouring bottles.\n</p>\n\n<div class="actions">\n'
-          '  <a class="btn btn-primary" href="tel:+61298681070">Ask what&rsquo;s in stock</a>\n'
+          '  <a class="btn btn-primary" href="tel:+61452480487">Ask what&rsquo;s in stock</a>\n'
           '  <a class="btn btn-secondary" href="https://g.page/r/CenxQG-m-gUkEBI">Get directions</a>\n'
           '</div>\n' % sp)
     o += price_note(a.prices)
@@ -185,7 +185,7 @@ def main():
         o += section(F, k, h2, bl, lim, a.prices)
     o += ('\n<h2>Looking for something specific?</h2>\n<p>\n  We carry a great deal more than fits '
           'on this page, and we can usually order in\n  what we do not stock. Ring '
-          '<a href="tel:+61298681070">(02) 9868 1070</a> &mdash;\n  someone will walk the aisle '
+          '<a href="tel:+61452480487">0452 480 487</a> &mdash;\n  someone will walk the aisle '
           'for you.\n</p>\n')
     (SITE / "spirits.html").write_text(o + foot)
 
@@ -197,7 +197,7 @@ def main():
           'it &mdash; the premium\n  spirits, the craft beer and the wines worth making room for. '
           'The everyday\n  bottles are all on the shelf too; this page is the good stuff.\n</p>\n\n'
           '<div class="actions">\n  <a class="btn btn-primary" href="/spirits.html">Browse spirits</a>\n'
-          '  <a class="btn btn-secondary" href="tel:+61298681070">Ring the shop</a>\n</div>\n\n'
+          '  <a class="btn btn-secondary" href="tel:+61452480487">Ring the shop</a>\n</div>\n\n'
           '<h2>Spirits &mdash; where we go deepest</h2>\n<p>\n  Over %d premium spirits, led by %d '
           'whiskies and %d gins. Single malt scotch by\n  region, Japanese whisky, Australian '
           'botanical gin and agave tequila.\n</p>\n'
@@ -224,7 +224,7 @@ def main():
     o += ('\n<h2>Also in store</h2>\n<p>\n  Fortified wine and cask, premixed cans and bottles, ice, '
           'mixers and glassware.\n  Everything you would expect from a full bottle shop, whether or '
           'not it made this page.\n</p>\n\n<h2>Can&rsquo;t see what you want?</h2>\n<p>\n  Ring '
-          '<a href="tel:+61298681070">(02) 9868 1070</a>. We will check the shelf while\n  you are '
+          '<a href="tel:+61452480487">0452 480 487</a>. We will check the shelf while\n  you are '
           'on the phone, and order it in if we do not have it.\n</p>\n')
     (SITE / "range.html").write_text(o + foot)
 

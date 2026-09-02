@@ -44,7 +44,17 @@ else
   say OK "no retired address formats"
 fi
 
-# 5. JSON-LD must parse.
+# 5. The supermarket's landline must never appear on the bottle shop's site.
+# It reverted once via a hardcoded string in the generator; this catches a repeat.
+if grep -rn '9868 1070\|61298681070' --include='*.html' --include='*.py' . >/dev/null 2>&1; then
+  say FAIL "supermarket landline found — this site uses 0452 480 487"
+  grep -rln '9868 1070\|61298681070' --include='*.html' --include='*.py' . | sed 's/^/         /'
+  fail=1
+else
+  say OK "no supermarket landline on this site"
+fi
+
+# 6. JSON-LD must parse.
 python3 - <<'PY' || fail=1
 import re, json, sys, glob
 ok = True
