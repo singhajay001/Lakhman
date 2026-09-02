@@ -82,6 +82,58 @@ If something looks wrong, fix it now — this is the free rehearsal.
 
 ---
 
+## Part 2b — Deploying from GitHub instead (better, once set up)
+
+Uploading a zip works, but it is manual, and the HTML-handling setting has to be
+re-chosen on every upload. If Cloudflare is connected to your GitHub account, it
+can deploy this repository automatically instead: push a change, site updates.
+
+**The catch:** Cloudflare cannot convert an existing *Direct Upload* project to a
+Git one. It has to be a **new Pages project**, and the custom domain then moves
+across from the old project to the new — a few minutes of downtime while it does.
+
+### Settings for the new project
+
+| Field | Value |
+|---|---|
+| Repository | `singhajay001/Lakhman` |
+| Production branch | `claude/claude-seo-github-access-6w1ak3` |
+| Root directory | `sites/localliquormarsfield` |
+| Build command | `bash publish.sh` |
+| Build output directory | `dist` |
+
+### What `publish.sh` does
+
+1. Runs `check.sh` and **stops the deploy if it fails.** An expired specials
+   promotion, a drifted footer, a hand-edited generated block or an inconsistent
+   address never reaches the live site — Cloudflare keeps serving the previous
+   deployment instead.
+2. Copies only the publishable files into `dist/`. Pointing Pages straight at
+   the folder would also publish `DEPLOY.md`, `check.sh`, the build scripts, the
+   upload zip and the supplier's catalogue PDF.
+
+### Moving the domain over
+
+Do this once the new project's `pages.dev` address is confirmed working:
+
+1. New project → **Custom domains** → add `localliquormarsfield.com.au`.
+   Cloudflare will refuse: the domain is still attached to the old project.
+2. Old project → **Custom domains** → remove both the apex and `www`.
+3. Back to the new project → add the apex, then `www` as a redirect to it.
+4. Check the site loads, then delete the old project.
+
+The gap between steps 2 and 3 is the downtime. Do it outside trading hours, and
+**not on a day when the Google Business Profile has just started pointing at the
+domain.**
+
+### Afterwards
+
+Nothing to upload ever again. Change files, commit, push — Cloudflare rebuilds.
+`localliquormarsfield-site.zip` becomes dead weight and can be deleted from the
+repository.
+
+---
+
 ## Part 3 — Connect your domain
 
 1. In Cloudflare, still on your Pages project: **Custom domains** → **Set up a
