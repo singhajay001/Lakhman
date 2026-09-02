@@ -75,8 +75,8 @@ Registrars bundle add-ons at a cheap first year that renews expensive. You need
 
 It will give you a temporary address like
 `localliquormarsfield.pages.dev`. **Open it.** The site is already live there,
-before you have touched the domain. Click through all seven pages and check them
-on your phone.
+before you have touched the domain. Click through all eight pages and check them
+on your phone — `/specials` especially, since it is the longest one.
 
 If something looks wrong, fix it now — this is the free rehearsal.
 
@@ -108,7 +108,8 @@ Visit `https://localliquormarsfield.com.au`:
 
 - [ ] the padlock shows — HTTPS is on
 - [ ] typing `www.` in front redirects to the version without it
-- [ ] all seven pages load, and the menu works
+- [ ] all eight pages load, and the menu works
+- [ ] `/specials` shows the current catalogue dates, not an expired promotion
 - [ ] it looks right on a phone
 - [ ] `localliquormarsfield.com.au/sitemap.xml` shows a list of pages
 - [ ] `localliquormarsfield.com.au/robots.txt` loads
@@ -140,11 +141,22 @@ The site earns nothing until Google and your customers know it exists.
 Change the files, then in Cloudflare Pages → your project → **Create deployment**
 → upload the new zip. It goes live in seconds. The address never changes.
 
-To rebuild the two generated pages after a stock change:
+To rebuild the generated pages:
 
 ```bash
-python3 build/build.py
+python3 build/build.py      # spirits.html, range.html — from the product export
+python3 build/specials.py   # specials.html + the homepage block — from build/specials.json
 ./check.sh
 ```
 
 Never upload while `check.sh` says NOT READY.
+
+## When the specials change
+
+The catalogue promotion has an end date baked in. Once it passes, `check.sh`
+fails on purpose so a stale fortnight of prices cannot sit on the homepage.
+
+Edit **`build/specials.json`** — the prices, the products, and the `from` /
+`to` dates — then re-run `build/specials.py`. Never edit the specials markup in
+`index.html` or `specials.html` directly: the generator rewrites both on the next
+run, and `check.sh` now fails if they have drifted apart.
