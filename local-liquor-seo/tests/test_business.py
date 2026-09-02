@@ -295,3 +295,53 @@ def test_geo_without_a_plus_code_skips_the_cross_check(raw):
 
 def test_loader_is_cached(biz):
     assert load_business() is biz
+
+
+# --------------------------------------------------------------------------
+# GBP categories - the biggest map-pack lever
+# --------------------------------------------------------------------------
+
+
+def test_the_shipped_primary_category_is_a_liquor_category(biz):
+    status, _ = biz.google.category_status()
+    assert status == "ok"
+
+
+def test_a_supermarket_primary_category_is_flagged_loudly(raw):
+    google = dict(raw["google"], primary_category="Supermarket")
+    status, message = build(raw, google=google).google.category_status()
+    assert status == "flagged"
+    assert "biggest map-pack lever" in message
+
+
+def test_an_off_list_primary_category_asks_to_be_checked(raw):
+    google = dict(raw["google"], primary_category="Artisanal Bottle Emporium")
+    status, _ = build(raw, google=google).google.category_status()
+    assert status == "unrecognised"
+
+
+def test_an_unset_primary_category_is_reported(raw):
+    google = dict(raw["google"], primary_category=None)
+    status, _ = build(raw, google=google).google.category_status()
+    assert status == "unset"
+
+
+def test_a_category_cannot_be_both_acceptable_and_flagged(raw):
+    google = dict(raw["google"], flagged_primary_categories=["Supermarket", "Liquor store"])
+    with pytest.raises(ValidationError, match="acceptable and flagged"):
+        build(raw, google=google)
+
+
+def test_an_unverified_category_still_asks_for_confirmation(biz):
+    assert biz.google.primary_category_verified is False
+    assert any("dashboard picker" in gap for gap in biz.warnings())
+
+
+def test_a_verified_category_with_secondaries_clears_the_gaps(raw):
+    google = dict(
+        raw["google"],
+        primary_category_verified=True,
+        secondary_categories=["Wine store"],
+    )
+    gaps = " ".join(build(raw, google=google).warnings())
+    assert "category" not in gaps

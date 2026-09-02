@@ -115,6 +115,47 @@ tests/        pytest suite
    the Places API (New) and, if you are on a fixed IP, to that IP.
 4. Put it in `.env` as `GOOGLE_MAPS_API_KEY`.
 
+### Finding the `place_id`
+
+The GBP dashboard does not show it. Three routes, easiest first.
+
+**1. Place ID Finder - no API key, about a minute.** Open
+<https://developers.google.com/maps/documentation/places/web-service/place-id>,
+type the business name into the search box on the embedded map, pick it from the
+autocomplete. The pin's info window shows a `ChIJ...` string - that is the place
+ID. Paste it into `google.place_id` in `config/business.yaml`.
+
+**2. Verify whatever you got.** Open this in a browser:
+
+```
+https://www.google.com/maps/place/?q=place_id:ChIJ...
+```
+
+It resolves to exactly one place. If it lands on the shopping centre, a
+neighbouring tenancy or an old duplicate listing rather than the shop, the ID is
+wrong - that mistake would make every rank scan measure someone else's business
+and still look completely normal.
+
+**3. Places API Text Search - needs `GOOGLE_MAPS_API_KEY`.** Useful if you want
+it scripted:
+
+```bash
+curl -s -X POST 'https://places.googleapis.com/v1/places:searchText'   -H 'Content-Type: application/json'   -H "X-Goog-Api-Key: $GOOGLE_MAPS_API_KEY"   -H 'X-Goog-FieldMask: places.id,places.displayName,places.formattedAddress'   -d '{"textQuery": "<trading name and formatted address from config/business.yaml>"}'
+```
+
+`places[].id` is the place ID. Google prices Text Search by field mask and an
+ID-only mask is the cheapest tier, so keep the mask minimal - and confirm the
+returned `displayName` and `formattedAddress` match `business.yaml` before you
+trust the result.
+
+**Do not** try to dig it out of a Google Maps URL. The hex `0x...:0x...` and
+`!16s/g/11...` fragments in there are internal feature IDs, not place IDs, and
+converting them needs the API anyway.
+
+Two things worth knowing: a place ID can change if Google merges or rebuilds a
+listing, so re-check it if scans suddenly go blank; and the ID must be the
+listing you actually own in GBP, not a duplicate.
+
 ### Google Business Profile APIs - only for Phase 5 publishing
 
 Read access to your own profile and write access to posts are separate things.

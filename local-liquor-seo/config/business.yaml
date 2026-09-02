@@ -58,12 +58,43 @@ website:
   site_paths_crawled_at: null
 
 google:
-  # TODO(operator): from the GBP dashboard or a Places API text search. Blocks Part B only.
+  # TODO(operator): a ChIJ... string. The dashboard does not show it - use the
+  # Place ID Finder, then verify with
+  # https://www.google.com/maps/place/?q=place_id:<id>
+  # See README "Finding the place_id". Blocks Part B only.
   place_id: null
-  # TODO(operator): confirm in the GBP dashboard. If this is a supermarket/grocery
-  # category rather than a liquor category it is the single biggest map-pack lever.
-  primary_category: null
+  # The single biggest map-pack lever. Operator reports it as "Liquor", which is
+  # a liquor category and therefore correct in kind - the win is already banked.
+  # Google's picker label is "Liquor store"; set primary_category_verified: true
+  # once you have read the exact string back off the dashboard.
+  primary_category: "Liquor store"
+  primary_category_as_reported: "Liquor"
+  primary_category_verified: false
   secondary_categories: []
+  # Categories that keep the profile in the liquor pack.
+  acceptable_primary_categories:
+    - "Liquor store"
+    - "Wine store"
+    - "Beer store"
+    - "Alcoholic beverage wholesaler"
+  # Categories that would quietly drop the profile out of "bottle shop near me"
+  # results. If the primary ever lands here, fix it before anything else.
+  flagged_primary_categories:
+    - "Supermarket"
+    - "Grocery store"
+    - "Convenience store"
+    - "Corner store"
+    - "Store"
+    - "Food store"
+    - "Discount store"
+  # Secondaries worth adding, in priority order. Verify each one exists in the
+  # dashboard picker before adding it - Google's list changes without notice,
+  # and a category you cannot select is not a category.
+  candidate_secondary_categories:
+    - "Wine store"
+    - "Beer store"
+    - "Cold drinks shop"
+    - "Beverage distributor"
   # TODO(operator): has Google approved localPosts write access for this project yet?
   # One of: unknown | requested | granted | denied. Keeps PUBLISH_MODE honest.
   api_write_access: "unknown"

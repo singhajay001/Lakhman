@@ -209,9 +209,44 @@ class Services(_Model):
 class GoogleProfile(_Model):
     place_id: str | None = None
     primary_category: str | None = None
+    primary_category_as_reported: str | None = None
+    primary_category_verified: bool = False
     secondary_categories: list[str] = Field(default_factory=list)
+    acceptable_primary_categories: list[str] = Field(default_factory=list)
+    flagged_primary_categories: list[str] = Field(default_factory=list)
+    candidate_secondary_categories: list[str] = Field(default_factory=list)
     api_write_access: Literal["unknown", "requested", "granted", "denied"] = "unknown"
     location_resource_name: str | None = None
+
+    @model_validator(mode="after")
+    def _category_lists_are_disjoint(self) -> "GoogleProfile":
+        clash = set(self.acceptable_primary_categories) & set(self.flagged_primary_categories)
+        if clash:
+            raise ValueError(f"a category cannot be both acceptable and flagged: {sorted(clash)}")
+        return self
+
+    def category_status(self) -> tuple[str, str]:
+        """(status, message) for the primary category.
+
+        Primary category is the single biggest map-pack lever, so the audit
+        reports on it in four distinct states rather than a bare pass/fail.
+        """
+        if not self.primary_category:
+            return "unset", "google.primary_category is unset."
+        if self.primary_category in self.flagged_primary_categories:
+            return "flagged", (
+                f"primary category is {self.primary_category!r}, which is not a liquor "
+                "category. This is the single biggest map-pack lever - fix it before "
+                "anything else in this toolkit will matter."
+            )
+        if self.acceptable_primary_categories and (
+            self.primary_category not in self.acceptable_primary_categories
+        ):
+            return "unrecognised", (
+                f"primary category {self.primary_category!r} is neither on the "
+                "acceptable nor the flagged list - check it against the dashboard picker."
+            )
+        return "ok", f"primary category is {self.primary_category!r}."
 
     def require_place_id(self) -> str:
         if not self.place_id:
@@ -368,10 +403,18 @@ class Business(_Model):
         gaps: list[str] = []
         if not self.google.place_id:
             gaps.append("google.place_id is unset - Part B (rank + audit) cannot run.")
-        if not self.google.primary_category:
+        status, message = self.google.category_status()
+        if status != "ok":
+            gaps.append(message)
+        elif not self.google.primary_category_verified:
             gaps.append(
-                "google.primary_category is unset - the profile audit cannot check "
-                "the single biggest map-pack lever."
+                f"{message} Read the exact label back off the dashboard picker, then "
+                "set google.primary_category_verified: true."
+            )
+        if not self.google.secondary_categories and self.google.candidate_secondary_categories:
+            gaps.append(
+                "no secondary categories set - candidates: "
+                + ", ".join(self.google.candidate_secondary_categories)
             )
         if not self.geo.is_resolved:
             gaps.append("geo.lat/geo.lng are unset - the rank grid cannot be built.")
