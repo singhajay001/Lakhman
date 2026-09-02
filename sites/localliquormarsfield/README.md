@@ -61,3 +61,17 @@ The homepage carries `LiquorStore` JSON-LD identical to
 `seo/trafalgar/schema/local-liquor.jsonld`. After publishing, run the URL through
 the Rich Results Test and the Schema Markup Validator. Before publishing, paste
 the block into validator.schema.org's Code snippet tab.
+
+## Range page numbers
+
+Every figure on `range.html` is derived from `seo/trafalgar/range-data/liquor-products.xlsx`
+and was checked against `summary.json` — 16 claims, all supported.
+
+**They are still gated behind a placeholder**, deliberately. The counts describe
+the spreadsheet, and the spreadsheet may be a supplier catalogue rather than an
+export of actual shelf stock: it is named for the retired "Trafalgar Cellars"
+trading name and every image URL points at BWS's media server. Confirm the range
+is what is genuinely in Shop 5A before removing that box and publishing.
+
+See `seo/trafalgar/range-data/ANALYSIS.md` for the full read, including why the
+supplied image URLs and product descriptions must not be used.

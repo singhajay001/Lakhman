@@ -1,0 +1,50 @@
+{
+  "total": 4700,
+  "by_category": {
+    "Spirits": {
+      "Premixed Drinks": 605,
+      "Whisky": 256,
+      "Gin": 183,
+      "Liqueurs": 134,
+      "Vodka": 88,
+      "Tequila": 74,
+      "Other Spirits": 63,
+      "Rum": 59,
+      "Brandy": 15,
+      "Cognac": 11,
+      "Bourbon": 5
+    },
+    "Beer & Cider": {
+      "Craft Beer": 453,
+      "Australian Beer": 269,
+      "Cider": 131,
+      "Imported Beer": 123,
+      "Low Carb Beer": 24,
+      "Mid Strength Beer": 16,
+      "Full Strength Beer": 16,
+      "Premium Beer": 15,
+      "Non-Alcoholic Beer": 7
+    },
+    "Wine": {
+      "Red Wine": 1111,
+      "White Wine": 667,
+      "Champagne & Sparkling": 290,
+      "Fortified Wine": 85
+    }
+  },
+  "regions": {
+    "Barossa Valley": 127,
+    "Yarra Valley": 85,
+    "McLaren Vale": 83,
+    "Adelaide Hills": 78,
+    "Coonawarra": 64,
+    "Margaret River": 60,
+    "Mornington Peninsula": 57,
+    "Clare Valley": 56,
+    "King Valley": 46,
+    "Geelong": 36,
+    "Tasmania": 36,
+    "Riverland": 31
+  },
+  "awards": 1039
+}
