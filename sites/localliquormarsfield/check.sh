@@ -33,8 +33,11 @@ done
 [ $nap -eq 0 ] && say OK "NAP present and consistent on all pages"
 [ $nap -eq 0 ] || fail=1
 
-# 4. Wrong address formats must not creep back in.
-if grep -rn 'Shop 5/1\|1 Trafalgar Pl,\|Shiop' --include='*.html' . >/dev/null 2>&1; then
+# 4. Wrong address formats must not creep back in. The one legitimate exception is
+# the licensed premises as written on the licence itself, which must be quoted
+# exactly; those lines carry data-licence-verbatim and are skipped.
+if grep -rn 'Shop 5/1\|1 Trafalgar Pl,\|Shiop' --include='*.html' . \
+     | grep -v 'data-licence-verbatim' >/dev/null 2>&1; then
   say FAIL "a retired address format has crept in"
   fail=1
 else
