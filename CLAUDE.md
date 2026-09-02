@@ -62,6 +62,13 @@ applies. Treat this as a live constraint, not a footnote.
 uses `canonical_url` / `request.origin` rather than a hardcoded host, so this
 can change later without touching markup.
 
+**Bottle shop — platform constraint.** MyFoodLink cannot host a separate liquor
+site: it is integrated to the POS via Friendly Grocer. The `/local-liquor` path
+plan is dead. Local Liquor Marsfield gets its own small non-ecommerce site,
+recommended at `localliquormarsfield.com.au`. A redirect-only domain was
+considered and rejected — it adds no indexable content, which is the entire
+deficit. See `seo/trafalgar/liquor-site-decision.md`.
+
 Note the name collision: **IGA Trafalgar, 5 McCrorey St, Trafalgar VIC 3824** is
 an unrelated business. Never merge their data.
 

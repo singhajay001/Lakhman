@@ -121,6 +121,8 @@ Ask MyFoodLink support directly. Do not assume Shopify-equivalent control.
 | `gbp-checklist.md` | Google Business Profile plan, prioritised |
 | `schema/supermarket.jsonld` | `GroceryStore` @ Shop 5, shared parent `Organization` |
 | `schema/local-liquor.jsonld` | `LiquorStore` @ Shop 5A, same parent `Organization` |
+| `liquor-site-decision.md` | Bottle shop needs its own site — MyFoodLink cannot host one |
+| `ranking-diagnosis.md` | Why the bottle shop is not ranking yet |
 
 Two independent entities rather than one with a `department`: the distinct suite
 numbers make them separately addressable, which is the stronger model.
