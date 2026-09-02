@@ -115,6 +115,10 @@ def head(title, desc, path, cur):
             f'<meta property="og:description" content="{desc}">\n'
             f'<meta property="og:url" content="https://localliquormarsfield.com.au{path}">\n'
             '<meta property="og:locale" content="en_AU">\n'
+            '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
+            '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
+            '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
+            'family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap">\n'
             '<link rel="icon" href="/assets/favicon-32.png" sizes="32x32">\n'
             '<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">\n'
             '<meta property="og:image" content="https://localliquormarsfield.com.au/assets/og-image.png">\n'
@@ -123,6 +127,8 @@ def head(title, desc, path, cur):
             '<meta property="og:image:alt" content="Local Liquor Marsfield — real range, honest prices, always cold. 5A, 1 Trafalgar Place, Marsfield NSW.">\n'
             '<meta name="twitter:card" content="summary_large_image">\n'
             '<link rel="stylesheet" href="/assets/style.css">\n</head>\n<body>\n'
+            '<div class="announce">Free parking out front &middot; Open 7 days from 8am '
+            '&middot; <a href="tel:+61452480487">0452 480 487</a></div>\n'
             '<header class="masthead">\n  <div class="wrap">\n'
             '    <a class="brand" href="/">Local Liquor Marsfield'
             '<span>Bottle shop &middot; Marsfield NSW</span></a>\n'
@@ -177,13 +183,14 @@ def main():
              "A full spirits wall at Local Liquor Marsfield, 5A 1 Trafalgar Place, Marsfield "
              "NSW. Single malt scotch, Japanese whisky, Australian gin and agave tequila.",
              "/spirits", "spirits")
-    o += ('\n<h1>Spirits</h1>\n<p class="lede">\n  Spirits are what this shop is built around. '
-          'A full spirits wall &mdash; single\n  malt scotch, Japanese whisky, Australian '
-          'botanical gin and 100% agave\n  tequila &mdash; alongside the everyday pouring '
-          'bottles.\n</p>\n\n<div class="actions">\n'
-          '  <a class="btn btn-primary" href="tel:+61452480487">Ask what&rsquo;s in stock</a>\n'
-          '  <a class="btn btn-secondary" href="https://g.page/r/CenxQG-m-gUkEBI">Get directions</a>\n'
-          '</div>\n')
+    o = o.replace('<main class="wrap">\n',
+          '<section class="band">\n  <div class="wrap">\n    <h1>Spirits</h1>\n'
+          '    <p class="lede">A full spirits wall &mdash; single malt scotch, Japanese '
+          'whisky, Australian botanical gin and 100%% agave tequila, alongside the everyday '
+          'pouring bottles.</p>\n    <div class="actions">\n'
+          '      <a class="btn btn-primary" href="tel:+61452480487">Ask what&rsquo;s in stock</a>\n'
+          '      <a class="btn btn-secondary" href="https://g.page/r/CenxQG-m-gUkEBI">Get directions</a>\n'
+          '    </div>\n  </div>\n</section>\n<main class="wrap">\n')
     o += price_note(a.prices)
     for k, h2, bl, lim in [
         ("Whisky", "Whisky", "Our deepest shelf. Speyside, Highland and Islay single malts, aged blends, plus Japanese, Irish and American whiskey.", 10),
@@ -204,12 +211,15 @@ def main():
     o = head("Our range | Local Liquor Marsfield &mdash; spirits, craft beer &amp; wine",
              "Beer, wine, spirits, RTDs and non-alcoholic options at Local Liquor Marsfield, "
              "5A 1 Trafalgar Place, Marsfield NSW 2122. Over 120 wine labels, deep craft beer.", "/range", "range")
-    o += ('\n<h1>Our range</h1>\n<p class="lede">\n  Beer, wine, spirits, RTDs, mixers and '
-          'non-alcoholic options &mdash; from the\n  everyday brands people actually buy to '
-          'independent NSW makers and imported\n  labels you will not find in a chain store.\n</p>\n\n'
-          '<div class="actions">\n  <a class="btn btn-primary" href="/spirits">Browse spirits</a>\n'
-          '  <a class="btn btn-secondary" href="tel:+61452480487">Ring the shop</a>\n</div>\n\n'
-          '<h2>Spirits &mdash; where we go deepest</h2>\n<p>\n  A full spirits wall: whisky, bourbon, '
+    o = o.replace('<main class="wrap">\n',
+          '<section class="band">\n  <div class="wrap">\n    <h1>Our <em>range</em></h1>\n'
+          '    <p class="lede">Beer, wine, spirits, RTDs, mixers and non-alcoholic options '
+          '&mdash; from the everyday brands people actually buy to independent NSW makers and '
+          'imported labels you will not find in a chain store.</p>\n    <div class="actions">\n'
+          '      <a class="btn btn-primary" href="/spirits">Browse spirits</a>\n'
+          '      <a class="btn btn-secondary" href="tel:+61452480487">Ring the shop</a>\n'
+          '    </div>\n  </div>\n</section>\n<main class="wrap">\n')
+    o += ('\n<h2>Spirits &mdash; where we go deepest</h2>\n<p>\n  A full spirits wall: whisky, bourbon, '
           'gin, vodka, rum, tequila, brandy and\n  liqueurs. Major international brands alongside '
           'Australian independents such\n  as Karu Distillery, in everyday 700ml through to gifting '
           'formats.\n</p>\n'
