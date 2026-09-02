@@ -115,6 +115,15 @@ canonical tags, redirects, and custom domain support.
 
 Ask MyFoodLink support directly. Do not assume Shopify-equivalent control.
 
+## Status — 2026-09-02
+
+**Bottle shop web presence: complete.** `localliquormarsfield.com.au` live on
+Cloudflare, seven pages, validated `LiquorStore` schema, linked from the Google
+Business Profile. All four reviews replied to.
+
+Remaining: Search Console verification and sitemap submission, the `www`
+redirect, citation corrections, and the supermarket profile audit.
+
 ## Current work
 
 | Artefact | Status |

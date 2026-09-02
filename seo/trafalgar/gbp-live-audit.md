@@ -72,10 +72,10 @@ master byte-for-byte.
 - ✅ **All four reviews replied to.** Response rate is itself a ranking signal
   and the base was 5.0 from four reviews.
 
-⚠️ **Consequence:** the profile now links to a site returning 404 at the root.
-Until the Cloudflare `html_handling` setting is corrected, every visitor who taps
-Website lands on an error page. That is worse than the empty field it replaced,
-so fixing it is urgent rather than merely pending.
+✅ **Resolved 2026-09-02.** The 404 was Cloudflare's `html_handling` set to
+`none`, which stops `/` mapping to `index.html`. Redeployed with
+`auto-trailing-slash` and the site serves correctly. The profile's website field
+now points at a working page.
 
 ## 🚀 SITE IS LIVE — 2026-09-02
 
