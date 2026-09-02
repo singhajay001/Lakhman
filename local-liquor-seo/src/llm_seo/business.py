@@ -215,6 +215,7 @@ class GoogleProfile(_Model):
     acceptable_primary_categories: list[str] = Field(default_factory=list)
     flagged_primary_categories: list[str] = Field(default_factory=list)
     candidate_secondary_categories: list[str] = Field(default_factory=list)
+    cloud_project_number: str | int | None = None
     api_write_access: Literal["unknown", "requested", "granted", "denied"] = "unknown"
     location_resource_name: str | None = None
 
@@ -426,7 +427,8 @@ class Business(_Model):
         if self.google.api_write_access != "granted":
             gaps.append(
                 f"google.api_write_access is '{self.google.api_write_access}' - "
-                "PUBLISH_MODE=api will refuse to run."
+                "PUBLISH_MODE=api will refuse to run (see docs/google-access.md). "
+                "Everything else works without it."
             )
         if self.website.site_paths_source != "sitemap":
             gaps.append(

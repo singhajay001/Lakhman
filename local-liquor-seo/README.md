@@ -106,6 +106,10 @@ tests/        pytest suite
 
 ## Google APIs
 
+**Step-by-step walkthroughs live in [docs/google-access.md](docs/google-access.md)**
+- finding the `place_id`, creating a Places API key, and applying for GBP API
+write access. Summary below.
+
 ### Places API (New) - needed for Part B
 
 1. In the Google Cloud console, create (or pick) a project and enable billing.

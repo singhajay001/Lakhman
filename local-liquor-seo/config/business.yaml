@@ -95,8 +95,13 @@ google:
     - "Beer store"
     - "Cold drinks shop"
     - "Beverage distributor"
-  # TODO(operator): has Google approved localPosts write access for this project yet?
-  # One of: unknown | requested | granted | denied. Keeps PUBLISH_MODE honest.
+  # TODO(operator): the numeric project number from the Cloud console dashboard
+  # (not the project ID string). The API access request form asks for it.
+  cloud_project_number: null
+  # TODO(operator): has Google approved Business Profile API access for that
+  # project? One of: unknown | requested | granted | denied. The Phase 5
+  # publisher refuses to run unless this is "granted", so an unapproved project
+  # cannot fail silently halfway through a batch. See docs/google-access.md.
   api_write_access: "unknown"
   location_resource_name: null   # accounts/{account}/locations/{location}
 
