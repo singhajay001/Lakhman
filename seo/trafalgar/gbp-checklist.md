@@ -7,7 +7,9 @@ Two profiles are in play:
 | 1 | `maps.app.goo.gl/wyZ4GMVoe18M1fkK6` | **Trafalgar Supermarket and Cellars** — Shop 5, 1 Trafalgar Place, Marsfield NSW 2122 · `-33.767749, 151.108628` · **Verified** |
 | 2 | `g.page/r/CenxQG-m-gUkEBI` | **Local Liquor Marsfield** — Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122 · `-33.767734, 151.107974` · plus code `64J5+R5` · store code `03435376679661119338` · **Verified** |
 
-Both verified. Phone **02 9868 1070**, shared.
+Both verified. Phones are **separate**: supermarket (02) 9868 1070, bottle shop
+**0452 480 487**. That separation is useful — Google reads phone as an entity
+signal, so distinct numbers reinforce two distinct listings.
 
 **Pin separation: 60.5 m.** Measured from the supplied coordinates. Far enough
 apart to read as two locations, close enough to be one complex — exactly right
@@ -153,7 +155,7 @@ To keep both listings safe:
 
 - distinct **primary categories** — Supermarket / Grocery Store vs Liquor Store
 - distinct **names**, matching real signage
-- **same** address and phone (or a dedicated line for the bottle shop)
+- **distinct phone numbers** — already the case, and a genuine strength
 - both genuinely operating, with their own hours where they differ
 
 If the bottle shop is just an aisle with no separate identity, one listing is the

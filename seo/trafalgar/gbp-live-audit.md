@@ -8,7 +8,7 @@ Observed 2026-09-02 from the owner's own Google search result. This is what is
 | Name | Local Liquor Marsfield | ✅ |
 | Category | Bottle Shop and Liquor Store | ✅ correct type |
 | Address | `5A, 1 Trafalgar Pl, Marsfield NSW 2122` | ⚠️ format |
-| **Phone** | **0452 480 487** | 🔴 **conflicts** |
+| **Phone** | **0452 480 487** | ✅ resolved — site now matches |
 | Rating | **5.0 from 4 reviews** | new information |
 | Website | a Website button is present | ⚠️ unknown target |
 | Mon–Wed | 8am–9pm | ✅ |
@@ -38,8 +38,10 @@ The owner stated the bottle shop shares 02 9868 1070. The live profile says
 otherwise. 28 occurrences of the landline across the site, plus 19 in `tel:`
 links and schema, are affected.
 
-**Do not change anything until this is settled.** A wrong number on a bottle
-shop's website is worse than a slow launch.
+**Resolved 2026-09-02.** The owner confirmed 0452 480 487 is the bottle shop's
+line. The site, the LiquorStore schema, the NAP master, the two bottle-shop
+correction drafts and the pre-launch check now all use it. The supermarket and
+the parent Organization keep (02) 9868 1070.
 
 ### If the mobile is correct, that is good news
 

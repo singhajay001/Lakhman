@@ -26,7 +26,7 @@ Log each send in `tracker.md`.
 >
 > Name: Local Liquor Marsfield
 > Address: Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122
-> Phone: (02) 9868 1070
+> Phone: 0452 480 487
 > Website: https://trafalgarsupermarketandcellars.com.au/local-liquor
 > Hours: Mon–Wed 8am–9pm, Thu–Sat 8am–10pm, Sun 10am–9pm
 >
@@ -38,7 +38,7 @@ Log each send in `tracker.md`.
 >
 > Thank you,
 > [name] — [role], Trafalgar Supermarket and Cellars
-> (02) 9868 1070
+> 0452 480 487
 
 ---
 
@@ -55,7 +55,7 @@ Log each send in `tracker.md`.
 >
 > Name: Local Liquor Marsfield
 > Address: Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122
-> Phone: (02) 9868 1070
+> Phone: 0452 480 487
 > Website: https://trafalgarsupermarketandcellars.com.au/local-liquor
 > Hours: Mon–Wed 8am–9pm, Thu–Sat 8am–10pm, Sun 10am–9pm
 >
@@ -63,7 +63,7 @@ Log each send in `tracker.md`.
 >
 > Thank you,
 > [name] — [role], Trafalgar Supermarket and Cellars
-> (02) 9868 1070
+> 0452 480 487
 
 ---
 

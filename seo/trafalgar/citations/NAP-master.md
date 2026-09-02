@@ -3,7 +3,9 @@
 Copy from here. Never retype. Every character matters: a directory that receives
 `Pl` instead of `Place` becomes another contradictory signal.
 
-Both profiles verified. Phone shared. Last confirmed by owner, 2026-09-02.
+Both profiles verified. **Each entity has its own phone number** — confirmed by
+owner 2026-09-02. A distinct number per business is a deliberate strength here:
+Google treats phone as an entity signal, so it reinforces the two-listing case.
 
 ---
 
@@ -40,7 +42,7 @@ Local Liquor Marsfield
 Shop 5A, 1 Trafalgar Place
 Marsfield NSW 2122
 Australia
-(02) 9868 1070
+0452 480 487
 https://trafalgarsupermarketandcellars.com.au/local-liquor
 ```
 
@@ -49,8 +51,8 @@ https://trafalgarsupermarketandcellars.com.au/local-liquor
 | Name | `Local Liquor Marsfield` |
 | Street | `Shop 5A, 1 Trafalgar Place` |
 | Suburb / State / Postcode | `Marsfield` · `NSW` · `2122` |
-| Phone (local) | `(02) 9868 1070` |
-| Phone (international) | `+61 2 9868 1070` |
+| Phone (local) | `0452 480 487` — **the bottle shop's own line, not the supermarket's** |
+| Phone (international) | `+61 452 480 487` |
 | Coordinates | `-33.767734, 151.107974` |
 | Plus code | `64J5+R5 Marsfield` |
 | Store code | `03435376679661119338` |
