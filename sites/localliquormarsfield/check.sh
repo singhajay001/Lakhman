@@ -85,7 +85,23 @@ else
   say OK "all published URLs extensionless"
 fi
 
-# 9. JSON-LD must parse.
+# 9. Every page's footer must match build/footer.html. services.html was built
+# by appending the template once and then missed several rounds of footer edits,
+# silently shipping a stale footer.
+python3 - <<'PYEOF' || fail=1
+import pathlib, sys
+cur = pathlib.Path("build/footer.html").read_text().strip()
+bad = []
+for f in sorted(pathlib.Path(".").glob("*.html")):
+    s = f.read_text()
+    if "</main>" not in s: continue
+    if s[s.index("</main>"):].strip() != cur: bad.append(f.name)
+if bad:
+    print("FAIL   footer drifted from the template: " + ", ".join(bad)); sys.exit(1)
+print("OK     every footer matches the template")
+PYEOF
+
+# 10. JSON-LD must parse.
 python3 - <<'PY' || fail=1
 import re, json, sys, glob
 ok = True

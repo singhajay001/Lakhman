@@ -132,6 +132,35 @@ For aussie-hours, Shopfully, openinghoursau and any other directory publishing a
 
 ---
 
+## 5 · localliquor.com.au — get listed on the store locator
+
+**The highest-value citation available**, and the easiest: it is your own banner.
+Contact via `localliquor.com.au/contact/`, or ask your ILR state representative,
+who can usually action it faster than a web form.
+
+> **Subject:** Store locator listing — Local Liquor Marsfield
+>
+> Hello,
+>
+> Could you please check our store appears on the Local Liquor store locator, and
+> that the details are correct:
+>
+> Store: Local Liquor Marsfield
+> Address: Shop 5A, 1 Trafalgar Place, Marsfield NSW 2122
+> Phone: 0452 480 487
+> Website: https://localliquormarsfield.com.au
+> Hours: Mon–Wed 8am–9pm, Thu–Sat 8am–10pm, Sun 10am–9pm
+>
+> Please note the shop number is **5A**. Shop 5 is the supermarket next door and
+> has different contact details, so listing us at Shop 5 would send customers to
+> the wrong counter.
+>
+> Thank you,
+> [name] — [role], Local Liquor Marsfield
+> 0452 480 487
+
+---
+
 # Where to send these
 
 **I could not verify a single email address.** Two reasons, both worth knowing:

@@ -14,6 +14,11 @@
       "parentOrganization": {
         "@id": "https://trafalgarsupermarketandcellars.com.au/#organisation"
       },
+      "brand": {
+        "@type": "Brand",
+        "name": "Local Liquor",
+        "url": "https://localliquor.com.au"
+      },
       "url": "https://trafalgarsupermarketandcellars.com.au/local-liquor",
       "telephone": "+61452480487",
       "address": {
