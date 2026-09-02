@@ -15,6 +15,7 @@ from urllib.parse import urlsplit
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from . import plus_code as olc
 from .paths import config_dir
 
 DAYS: tuple[str, ...] = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
@@ -98,7 +99,33 @@ class Contact(_Model):
 class Geo(_Model):
     lat: float | None = None
     lng: float | None = None
+    plus_code: str | None = None
+    source: str | None = None
     verified: bool = False
+
+    @field_validator("lat")
+    @classmethod
+    def _lat_range(cls, value: float | None) -> float | None:
+        if value is not None and not -90.0 <= value <= 90.0:
+            raise ValueError("geo.lat is out of range")
+        return value
+
+    @field_validator("lng")
+    @classmethod
+    def _lng_range(cls, value: float | None) -> float | None:
+        if value is not None and not -180.0 <= value <= 180.0:
+            raise ValueError("geo.lng is out of range")
+        return value
+
+    @field_validator("plus_code")
+    @classmethod
+    def _plus_code_shape(cls, value: str | None) -> str | None:
+        if value is not None and not olc.is_full_code(value):
+            raise ValueError(
+                f"geo.plus_code {value!r} is not a full 10-digit code. Google shows "
+                "the short form; prepend the 4-character area prefix."
+            )
+        return value
 
     @property
     def is_resolved(self) -> bool:
@@ -311,6 +338,26 @@ class Business(_Model):
     services: Services
     catchment: Catchment
     compliance: ComplianceCfg
+    geo_plus_code_tolerance_m: float = 100.0
+
+    @model_validator(mode="after")
+    def _geo_agrees_with_plus_code(self) -> "Business":
+        """A plus code is a free second opinion on the coordinates.
+
+        If both are present they must describe the same place; a transposed or
+        mistyped coordinate would otherwise centre the whole rank grid on the
+        wrong suburb and quietly poison every scan.
+        """
+        if not (self.geo.is_resolved and self.geo.plus_code):
+            return self
+        gap = olc.distance_to_cell_m(self.geo.plus_code, self.geo.lat, self.geo.lng)
+        if gap > self.geo_plus_code_tolerance_m:
+            raise ValueError(
+                f"geo.lat/geo.lng sit {gap:.0f} m from the centre of plus code "
+                f"{self.geo.plus_code} (tolerance {self.geo_plus_code_tolerance_m:.0f} m). "
+                "One of them is wrong."
+            )
+        return self
 
     @property
     def name(self) -> str:

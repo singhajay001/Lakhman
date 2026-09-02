@@ -56,7 +56,7 @@ edits your ads teaches you nothing about the ad you wrote.
 
 | Rule | What it enforces |
 | --- | --- |
-| R1 | Licence number **and** licensee name in the footer of alcohol copy |
+| R1 | Licence number **and** licensee name (the name on the licence, not the trading name) in the footer of alcohol copy |
 | R2 | The mandated under-18 responsible-service line on alcohol copy |
 | R3 | No encouragement of rapid, excessive or irresponsible consumption |
 | R4 | No special appeal to under-18s |
@@ -184,6 +184,11 @@ same treatment when Phase 3 lands.
 * Business facts come from `config/business.yaml` and nowhere else. A test walks
   the tree and fails if the phone number, street address, site host or licence
   number appears in any file outside `config/`.
+* The store's coordinates are cross-checked against its Google plus code
+  (`src/llm_seo/plus_code.py`). If the two disagree by more than
+  `geo_plus_code_tolerance_m`, the config is rejected - a swapped lat/lng or a
+  dropped minus sign would otherwise centre the whole rank grid on the wrong
+  suburb and every scan would look plausible and be wrong.
 * Secrets come from `.env` (via `python-dotenv`). `.env.example` is committed;
   `.env` never is.
 * Every API-calling module gets `--dry-run` and a cached-response mode so the

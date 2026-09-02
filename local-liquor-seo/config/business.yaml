@@ -25,11 +25,17 @@ contact:
   phone_e164: "+61452480487"
 
 geo:
-  # TODO(operator): fill from the Places API details response for place_id below.
-  # Required only for `rank scan` / `rank grid`; every other command works without it.
-  lat: null
-  lng: null
-  verified: false
+  # Grid centre for `rank scan`. Operator-supplied, cross-checked against the
+  # plus code below: the two agree in longitude exactly and sit 20 m apart in
+  # latitude (one 14 m plus-code cell), i.e. the same building. The schema
+  # rejects any pairing more than geo_plus_code_tolerance_m apart, so a
+  # transposed or mistyped coordinate cannot ship.
+  lat: -33.76776563906253
+  lng: 151.10798431534218
+  # Full Open Location Code. Google displays the short form "64J5+R5 Marsfield".
+  plus_code: "4RRH64J5+R5"
+  source: "operator-supplied 2026-09-02 (lat/lng + plus code 64J5+R5 Marsfield)"
+  verified: true
 
 website:
   canonical_url: "https://localliquormarsfield.com.au/"
@@ -67,10 +73,10 @@ licence:
   # NSW packaged liquor licence.
   number: "LIQP700301260"
   type: "Packaged liquor licence"
-  # TODO(operator): confirm the licensee name exactly as it appears on the licence
-  # record. NSW liquor advertising must carry the licensee name plus the number.
-  licensee_name: "Local Liquor Marsfield"
-  licensee_name_verified: false
+  # The name on the licence record, not the trading name. NSW liquor advertising
+  # carries the licensee name plus the licence number.
+  licensee_name: "Ajaypaul Singh"
+  licensee_name_verified: true
 
 hours:
   # What customers see. Advertise these and only these.
@@ -119,6 +125,11 @@ catchment:
     - "local families"
     - "walk-up convenience trade"
     - "weekend top-ups"
+
+# How far apart geo.lat/lng and geo.plus_code may sit before the config is
+# rejected. One plus-code cell is ~14 m; 100 m allows for a pin dropped at the
+# door versus one at the centre of the tenancy, and still catches a real error.
+geo_plus_code_tolerance_m: 100
 
 compliance:
   # Verbatim, mandated wording. compliance_check() requires this string on every

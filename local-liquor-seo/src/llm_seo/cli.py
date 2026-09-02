@@ -120,6 +120,11 @@ def config_show() -> None:
     typer.echo(f"  website   {business.website.canonical_url}")
     typer.echo(f"  licence   {business.licence.number} ({business.licence.licensee_name})")
     typer.echo("  hours     " + "; ".join(f"{label} {window}" for label, window in business.hours.display()))
+    if business.geo.is_resolved:
+        typer.echo(
+            f"  geo       {business.geo.lat:.6f}, {business.geo.lng:.6f}"
+            + (f" ({business.geo.plus_code})" if business.geo.plus_code else "")
+        )
     typer.echo(f"  paths     {', '.join(business.website.site_paths)}")
     gaps = business.warnings()
     if gaps:

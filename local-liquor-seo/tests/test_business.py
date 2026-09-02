@@ -105,6 +105,12 @@ def test_open_gaps_are_reported_not_hidden(biz):
     assert biz.warnings()
 
 
+def test_resolved_values_drop_out_of_the_gap_list(biz):
+    gaps = " ".join(biz.warnings())
+    assert "geo.lat" not in gaps
+    assert "licensee_name" not in gaps
+
+
 # --------------------------------------------------------------------------
 # schema enforcement
 # --------------------------------------------------------------------------
@@ -208,24 +214,83 @@ def test_url_for_refuses_an_unknown_path(biz):
         biz.website.url_for("/beer-deals")
 
 
-def test_missing_place_id_explains_itself(biz):
-    if biz.google.place_id:
-        pytest.skip("place_id has been filled in")
+def test_missing_place_id_explains_itself(raw):
+    unresolved = build(raw, google__place_id=None)
     with pytest.raises(ConfigIncomplete, match="place_id"):
-        biz.google.require_place_id()
+        unresolved.google.require_place_id()
 
 
-def test_missing_geo_explains_itself(biz):
-    if biz.geo.is_resolved:
-        pytest.skip("geo has been filled in")
-    assert biz.geo.is_resolved is False
+def test_a_present_place_id_is_returned(raw):
+    resolved = build(raw, google__place_id="ChIJexample")
+    assert resolved.google.require_place_id() == "ChIJexample"
+
+
+def test_missing_geo_explains_itself(raw):
+    unresolved = build(raw, geo={"lat": None, "lng": None, "verified": False})
+    assert unresolved.geo.is_resolved is False
     with pytest.raises(ConfigIncomplete, match="geo.lat"):
-        biz.geo.require()
+        unresolved.geo.require()
 
 
-def test_resolved_geo_is_returned(raw):
-    resolved = build(raw, geo={"lat": -33.7, "lng": 151.1, "verified": True})
-    assert resolved.geo.require() == (-33.7, 151.1)
+def test_resolved_geo_is_returned(biz):
+    assert biz.geo.require() == (biz.geo.lat, biz.geo.lng)
+
+
+# --------------------------------------------------------------------------
+# geo / plus code cross-check
+# --------------------------------------------------------------------------
+
+
+def test_the_shipped_geo_is_resolved_and_verified(biz):
+    assert biz.geo.is_resolved and biz.geo.verified
+    assert biz.geo.plus_code and biz.geo.source
+
+
+def test_a_swapped_lat_lng_is_rejected(raw, biz):
+    """The classic transposition. Without the plus-code check it would centre
+    the entire rank grid in the Indian Ocean and nothing would look wrong."""
+    geo = dict(raw["geo"], lat=raw["geo"]["lng"], lng=raw["geo"]["lat"])
+    with pytest.raises(ValidationError, match="out of range|plus code"):
+        build(raw, geo=geo)
+
+
+def test_a_dropped_minus_sign_is_rejected(raw):
+    geo = dict(raw["geo"], lat=abs(raw["geo"]["lat"]))
+    with pytest.raises(ValidationError, match="plus code"):
+        build(raw, geo=geo)
+
+
+def test_a_coordinate_a_suburb_away_is_rejected(raw):
+    geo = dict(raw["geo"], lat=raw["geo"]["lat"] - 0.02)
+    with pytest.raises(ValidationError, match="plus code"):
+        build(raw, geo=geo)
+
+
+def test_a_coordinate_inside_the_tolerance_is_accepted(raw):
+    """~20 m north is the pin at the door rather than the centre of the tenancy."""
+    geo = dict(raw["geo"], lat=raw["geo"]["lat"] + 0.0002)
+    assert build(raw, geo=geo).geo.is_resolved
+
+
+def test_an_out_of_range_latitude_is_rejected(raw):
+    with pytest.raises(ValidationError):
+        build(raw, geo=dict(raw["geo"], lat=-99.0))
+
+
+def test_an_out_of_range_longitude_is_rejected(raw):
+    with pytest.raises(ValidationError):
+        build(raw, geo=dict(raw["geo"], lng=400.0))
+
+
+def test_a_short_plus_code_is_rejected(raw):
+    """Google displays '64J5+R5 Marsfield'; the config needs the full code."""
+    with pytest.raises(ValidationError, match="full 10-digit"):
+        build(raw, geo=dict(raw["geo"], plus_code="64J5+R5"))
+
+
+def test_geo_without_a_plus_code_skips_the_cross_check(raw):
+    geo = {k: v for k, v in raw["geo"].items() if k != "plus_code"}
+    assert build(raw, geo=geo).geo.plus_code is None
 
 
 def test_loader_is_cached(biz):
