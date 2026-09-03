@@ -145,6 +145,19 @@ services:
   click_and_collect: false          # do not generate copy implying it exists
   parking: "Free parking on site"
   payments: ["EFTPOS", "Visa", "Mastercard", "Amex", "Cash"]
+  # TODO(operator): answer these and the Q&A generator fills the matching
+  # questions in. Left as null, each one produces a FILL marker and a row in
+  # out/qanda_needs_answer.csv rather than an invented answer.
+  ice: null                 # true/false - bagged ice for sale?
+  gift_wrapping: null       # true/false
+  gift_cards: null          # true/false
+  phone_orders: null        # true/false - can someone ring and reserve?
+  bulk_orders: null         # true/false - party and bulk orders
+  card_surcharge: null      # "none", or e.g. "1.1% on credit"
+  price_match: null         # true/false - be honest here, it is a promise
+  cold_room: true           # walk-in cold room / chilled stock
+  # RSA is not optional and does not vary by store.
+  id_policy: "We ask anyone who looks under 25 for ID, every time."
 
 catchment:
   primary_suburbs:
@@ -156,6 +169,12 @@ catchment:
     - "Epping"
     - "Ryde"
     - "East Ryde"
+  # Named in copy as orientation points. Keep to places a local would actually
+  # use as a landmark.
+  landmarks:
+    - "Macquarie University"
+    - "Macquarie Park"
+    - "Macquarie Centre"
   demand_drivers:
     - "Macquarie University students and staff"
     - "Macquarie Park office workers"

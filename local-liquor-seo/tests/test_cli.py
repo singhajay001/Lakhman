@@ -8,6 +8,9 @@ from typer.testing import CliRunner
 
 from llm_seo.cli import app
 from llm_seo.compliance import footer
+from llm_seo.paths import project_root
+
+ROOT = project_root()
 
 runner = CliRunner()
 
@@ -100,14 +103,74 @@ def test_compliance_footer_prints_the_licence_block(biz):
 @pytest.mark.parametrize(
     "argv",
     [
-        ["calendar", "build"], ["posts", "generate"], ["products", "build"],
-        ["qanda", "build"], ["reviews", "draft"], ["photos", "plan"],
+        ["products", "build"], ["reviews", "draft"], ["photos", "plan"],
         ["rank", "grid"], ["rank", "scan"], ["rank", "score"], ["rank", "heatmap"],
         ["audit", "profile"], ["audit", "site"], ["audit", "competitors"],
-        ["report", "weekly"], ["compliance", "scan", "."],
+        ["report", "weekly"],
     ],
 )
 def test_unbuilt_commands_say_which_phase_they_land_in(argv):
     result = runner.invoke(app, argv)
     assert result.exit_code == 2
     assert "Phase" in result.stderr
+
+
+# --------------------------------------------------------------------------
+# Phase 2 commands
+# --------------------------------------------------------------------------
+
+
+def test_calendar_build_writes_a_plan(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("LLM_SEO_ROOT", str(ROOT))
+    result = runner.invoke(app, ["calendar", "build", "--days", "30", "--start", "2026-09-07"])
+    assert result.exit_code == 0
+    assert "posts planned" in result.stdout
+    assert (ROOT / "out" / "calendar.csv").is_file()
+
+
+def test_calendar_build_surfaces_the_rotation_shortfall():
+    result = runner.invoke(app, ["calendar", "build", "--days", "90", "--start", "2026-09-07"])
+    assert result.exit_code == 0
+    assert "warning" in result.stdout
+
+
+def test_posts_generate_writes_twelve_ready_posts():
+    result = runner.invoke(app, ["posts", "generate", "--weeks", "4", "--start", "2026-09-07"])
+    assert result.exit_code == 0
+    assert "12 posts written" in result.stdout
+    assert "12 ready to paste" in result.stdout
+
+
+def test_posts_lint_passes_on_the_shipped_copy_bank():
+    result = runner.invoke(app, ["posts", "lint"])
+    assert result.exit_code == 0
+    assert "inside the limits" in result.stdout
+
+
+def test_qanda_build_writes_answers_and_a_checklist():
+    result = runner.invoke(app, ["qanda", "build"])
+    assert result.exit_code == 0
+    assert "answers written" in result.stdout
+    assert "need a decision from you" in result.stdout
+
+
+def test_compliance_scan_passes_over_the_generated_posts():
+    runner.invoke(app, ["posts", "generate", "--weeks", "4", "--start", "2026-09-07"])
+    result = runner.invoke(app, ["compliance", "scan"])
+    assert result.exit_code == 0
+    assert "pass every rule" in result.stdout
+
+
+def test_compliance_scan_reports_a_bad_caption(tmp_path):
+    (tmp_path / "2026-01-01_bad.md").write_text(
+        "---\ntheme: occasion\n---\n\nGet smashed this weekend.\n", encoding="utf-8"
+    )
+    result = runner.invoke(app, ["compliance", "scan", str(tmp_path)])
+    assert result.exit_code == 1
+    assert "R3_IRRESPONSIBLE_CONSUMPTION" in result.stderr
+
+
+def test_compliance_scan_explains_an_empty_folder(tmp_path):
+    result = runner.invoke(app, ["compliance", "scan", str(tmp_path / "nope")])
+    assert result.exit_code == 2

@@ -245,9 +245,15 @@ def _time_value(match: re.Match[str]) -> int | None:
 
 
 def _sentences(text: str) -> list[tuple[int, str]]:
+    """Split copy into day-scoping fragments.
+
+    Semicolons count: a published hours line reads "Mon-Wed 8am - 9pm; Thu-Sat
+    8am - 10pm; Sun 10am - 9pm", and treating that as one fragment merges every
+    day range into one scope, so the Thu-Sat close looks like it overruns.
+    """
     spans: list[tuple[int, str]] = []
     start = 0
-    for match in re.finditer(r"[.!?\n|]+", text):
+    for match in re.finditer(r"[.!?;\n|]+", text):
         spans.append((start, text[start : match.start()]))
         start = match.end()
     spans.append((start, text[start:]))

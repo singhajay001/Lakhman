@@ -1,0 +1,473 @@
+# Content engine configuration: the theme taxonomy, the weekly slots, the dated
+# occasions worth posting about, and the copy banks.
+#
+# This is the file to edit when the copy starts sounding like a robot. Nothing
+# here is baked into the code - src/ holds the machinery, config/ holds the words.
+#
+# Template variables available to every headline and body:
+#   {phrase}    a local-intent search phrase from keywords.yaml content_phrases
+#   {a_phrase}  the same phrase with its article ("a bottle shop in Marsfield",
+#               but "cold beer in Marsfield" - the article comes from keywords.yaml)
+#   {A_phrase}  {a_phrase} in sentence case, for the start of a sentence
+#   {suburb}    the store's suburb
+#   {nearby}    a neighbouring suburb from catchment.primary_suburbs
+#   {landmark}  a landmark from catchment.landmarks
+#   {parking}   the parking line from services
+#   {delivery}  the delivery partner's name
+#   {focus}     the product focus for the post (only on themes that need one)
+#
+# A template that needs {focus} must set requires_products: true on its theme,
+# so that a run without data/products.csv holds it back rather than emitting a
+# post with a hole in it.
+
+cadence:
+  posts_per_week: 3
+  # No theme may repeat inside this many days. With 3 posts a week that needs at
+  # least 9 usable themes; the generator warns rather than silently breaking it.
+  min_theme_gap_days: 21
+  slots:
+    - day: "tue"
+      name: "range"
+      note: "Range and product. What we carry and why it is worth the walk."
+    - day: "thu"
+      name: "offer"
+      note: "An offer or a new arrival. The one post a week with a reason to act."
+    - day: "sat"
+      name: "occasion"
+      note: "Occasion or local moment. Weekend-shaped."
+
+# Google's real post types. STANDARD needs nothing extra; OFFER needs a coupon
+# code, terms and a redeem-by date; EVENT needs a title and a start/end datetime.
+post_types:
+  standard: "STANDARD"
+  offer: "OFFER"
+  event: "EVENT"
+
+# CTA button types Google allows, mapped to the page each theme should land on.
+# `Call` is the fallback only when no page fits.
+cta_types: ["Call", "Order online", "Learn more", "Get offer"]
+
+themes:
+  - id: "new_arrival"
+    phrase_kinds: ["place", "product"]
+    label: "New arrival"
+    slots: ["tue", "thu"]
+    kind: "alcohol"
+    requires_products: true
+    cta: {type: "Learn more", path: "/full-range"}
+
+  - id: "staff_pick"
+    phrase_kinds: ["product"]
+    label: "Staff pick"
+    slots: ["tue"]
+    kind: "alcohol"
+    requires_products: true
+    cta: {type: "Learn more", path: "/full-range"}
+
+  - id: "local_maker"
+    phrase_kinds: ["product"]
+    label: "Local brewery or distillery spotlight"
+    slots: ["tue", "sat"]
+    kind: "alcohol"
+    requires_products: true
+    cta: {type: "Learn more", path: "/full-range"}
+
+  - id: "price_value"
+    phrase_kinds: ["product"]
+    label: "Price-value on a specific SKU"
+    slots: ["thu"]
+    kind: "alcohol"
+    requires_products: true
+    post_type: "offer"
+    cta: {type: "Get offer", path: "/specials"}
+
+  - id: "food_pairing"
+    phrase_kinds: ["product"]
+    label: "Food pairing"
+    slots: ["sat", "tue"]
+    kind: "alcohol"
+    requires_products: false
+    cta: {type: "Learn more", path: "/full-range"}
+
+  - id: "occasion"
+    phrase_kinds: ["place", "product"]
+    label: "Occasion - BBQ, dinner party, gift"
+    slots: ["sat"]
+    kind: "alcohol"
+    requires_products: false
+    cta: {type: "Learn more", path: "/full-range"}
+
+  - id: "zero_alcohol"
+    phrase_kinds: ["product"]
+    label: "Zero-alcohol range"
+    slots: ["tue", "thu"]
+    kind: "zero_alcohol"
+    requires_products: false
+    cta: {type: "Learn more", path: "/full-range"}
+
+  - id: "cold_convenience"
+    phrase_kinds: ["place", "product"]
+    label: "Cold stock and convenience"
+    slots: ["tue", "thu"]
+    kind: "alcohol"
+    requires_products: false
+    cta: {type: "Learn more", path: "/visit-us"}
+
+  - id: "student_uni"
+    phrase_kinds: ["place"]
+    label: "Student and uni-term moment"
+    slots: ["sat", "thu"]
+    kind: "alcohol"
+    requires_products: false
+    cta: {type: "Learn more", path: "/visit-us"}
+
+  - id: "seasonal"
+    phrase_kinds: ["place", "product"]
+    label: "Seasonal"
+    slots: ["thu", "sat"]
+    kind: "alcohol"
+    requires_products: false
+    cta: {type: "Learn more", path: "/full-range"}
+
+  - id: "community"
+    phrase_kinds: ["place"]
+    label: "Community"
+    slots: ["sat"]
+    kind: "alcohol"
+    requires_products: false
+    cta: {type: "Learn more", path: "/about"}
+
+  - id: "how_to"
+    phrase_kinds: ["product"]
+    label: "How-to - glassware, serving temp, cocktail build"
+    slots: ["tue"]
+    kind: "alcohol"
+    requires_products: false
+    cta: {type: "Learn more", path: "/spirits"}
+
+# Dated moments. `rule` is one of: fixed (month/day), nth_weekday, easter_offset.
+# A dated occasion pins the nearest slot in its window to that theme.
+occasions:
+  - {id: "australia_day", label: "Australia Day", theme: "occasion", rule: "fixed", month: 1, day: 26}
+  - {id: "easter", label: "Easter", theme: "occasion", rule: "easter_offset", offset_days: -2}
+  - {id: "mothers_day", label: "Mother's Day", theme: "occasion", rule: "nth_weekday", month: 5, weekday: 6, nth: 2}
+  - {id: "fathers_day", label: "Father's Day", theme: "occasion", rule: "nth_weekday", month: 9, weekday: 6, nth: 1}
+  - {id: "melbourne_cup", label: "Melbourne Cup", theme: "occasion", rule: "nth_weekday", month: 11, weekday: 1, nth: 1, post_type: "event"}
+  - {id: "christmas", label: "Christmas", theme: "seasonal", rule: "fixed", month: 12, day: 25}
+  - {id: "new_years_eve", label: "New Year's Eve", theme: "occasion", rule: "fixed", month: 12, day: 31, post_type: "event"}
+
+# Seasons drive the seasonal theme's copy. Southern hemisphere.
+seasons:
+  summer: [12, 1, 2]
+  autumn: [3, 4, 5]
+  winter: [6, 7, 8]
+  spring: [9, 10, 11]
+
+# --------------------------------------------------------------------------
+# Copy bank. Edit freely - this is where the voice lives.
+# Headlines must survive substitution at <= 58 characters.
+# Bodies must land between 150 and 300 characters with {phrase} inside the
+# first 90. `llm-seo posts lint` checks every template against those limits
+# without generating anything.
+# --------------------------------------------------------------------------
+copy_bank:
+  cold_convenience:
+    headlines:
+      - "Cold stock, no queue, free parking"
+      - "The fridge is full in {suburb}"
+      - "Two minutes from counter to car"
+    bodies:
+      - "Looking for {a_phrase}? The cold room is stocked open to close, so what you pick up is already at drinking temperature. No queue, {parking_lower}, and you are back in the car in under five minutes."
+      - "{A_phrase} without the carpark lap. We keep beer, wine and mixers cold all day, the counter is quick, and there is {parking_lower} right out front. Walk in, grab it, done."
+      - "Need {a_phrase} on the way home? Everything worth drinking cold is already cold. Small shop, short queue, and staff who can point you straight at the shelf you want."
+
+  how_to:
+    headlines:
+      - "Serve it at the right temperature"
+      - "The glass changes the drink"
+      - "Ask us how to build it"
+    bodies:
+      - "Looking for {a_phrase}? Half of what a bottle tastes like is how you serve it. Reds a touch cooler than your kitchen, whites out of the fridge ten minutes early, gin in a glass with room for ice."
+      - "{A_phrase}, and a tip that costs nothing: chill your glassware, not just the bottle. A warm glass undoes a cold drink in about a minute. Ask us what we do at home - we will tell you honestly."
+      - "Buying {a_phrase} for a cocktail? Build it in the glass, ice first, spirit second, mixer last and poured down the side. Come in and tell us what you are making and we will match the bottle to it."
+
+  food_pairing:
+    headlines:
+      - "What to drink with dinner tonight"
+      - "Pairings that are not fussy"
+      - "Bring us the menu, we will match it"
+    bodies:
+      - "Looking for {a_phrase} to go with dinner? Tell us what is on the stove. Rich and slow-cooked wants something with grip; anything grilled and charred wants cold and crisp. It is not complicated."
+      - "{A_phrase} and no idea what pairs with it? Spice likes low alcohol and a bit of sweetness. Fat likes acid. Everything else is preference, and we would rather you enjoy it than get it technically right."
+      - "Shopping for {a_phrase} before a dinner party? Bring us the menu. We will match a bottle to the food and the budget, and tell you when the cheaper one is genuinely the better drink."
+
+  occasion:
+    headlines:
+      - "Sorted for the weekend"
+      - "Turning up with something good"
+      - "Dinner party, BBQ or gift"
+    bodies:
+      - "Looking for {a_phrase} before the weekend? BBQ, dinner at a friend's or a gift you would rather not get wrong - tell us the occasion and the budget and we will get you out the door with the right bottle."
+      - "{A_phrase} for something on this weekend? Turning up with a bottle someone actually enjoys costs about the same as turning up with a safe one. We will tell you which is which."
+      - "Need {a_phrase} for a gift? We will find something that looks considered, drinks well and does not need explaining. Ask at the counter - that is the part of the job we like."
+
+  community:
+    headlines:
+      - "Your local, actually local"
+      - "Independent, in {suburb}"
+      - "We live around here too"
+    bodies:
+      - "Looking for {a_phrase}? We are the independent shop around the corner from {landmark}, not a chain running someone else's planogram. What is on our shelves is what our customers actually ask for."
+      - "{A_phrase} from an independent in {suburb}. We stock for this neighbourhood - the students, the office crowd and the families who walk down on a Friday. Tell us what we are missing and we will look into it."
+      - "Buying {a_phrase} locally keeps the choice local. We are a small independent near {landmark}, so if you want something we do not carry, ask - we can usually find out whether we can get it."
+
+  student_uni:
+    headlines:
+      - "Five minutes from {landmark}"
+      - "Between the campus and home"
+      - "The stop on the way back"
+    bodies:
+      - "Looking for {a_phrase}? We are the short detour between {landmark} and home. Cold stock, quick counter, {parking_lower}, and staff who will not upsell you on something you did not ask for."
+      - "{A_phrase}, five minutes from {landmark}. Term time gets busy, so we keep the fridge deep and the queue short. Bring ID - we card, every time, no exceptions and no hard feelings."
+      - "Need {a_phrase} without the trip to a big-box store? We are minutes from {landmark}, open early and late most days, with {parking_lower} out front and a counter that moves."
+
+  seasonal:
+    headlines:
+      - "What we are drinking this {season}"
+      - "{Season} on the shelves"
+      - "Stocked for the season"
+    bodies:
+      - "Looking for {a_phrase} this {season}? The shelves have shifted with the weather - what suits a {season} evening is not what suited three months ago. Come and see what has changed."
+      - "{A_phrase} for {season}. We move the range with the season rather than leaving the same bottles up all year, so there is usually something new worth trying. Ask what came in this week."
+      - "{A_phrase}, {season} edition. Tell us how you are drinking it - long and cold, short and slow, or poured for a table of six - and we will point you at the right shelf."
+
+  zero_alcohol:
+    headlines:
+      - "The zero-alcohol shelf keeps growing"
+      - "Alcohol-free, not an afterthought"
+      - "Zero alcohol, properly stocked"
+    bodies:
+      - "Looking for {a_phrase}? The alcohol-free shelf is a real part of the range now, not two dusty bottles at the end. Zero-alcohol beer, sparkling and spirits, kept cold with everything else."
+      - "{A_phrase} in {suburb}. Alcohol-free options have got genuinely good in the last few years, and we stock the ones worth drinking rather than the ones with the biggest margin. Ask us which."
+      - "{A_phrase}, whether you are driving, taking a break or just not drinking tonight. We keep the zero-alcohol range chilled and ready, same as everything else in the fridge."
+
+  new_arrival:
+    headlines:
+      - "Just landed: {focus}"
+      - "New on the shelf this week"
+      - "New in at your local"
+    bodies:
+      - "Looking for {a_phrase}? {focus} just landed. We bring in small runs when they are worth it, which means when it is gone it is often gone. Come and have a look while there is a shelf full."
+      - "{A_phrase} - and something new. {focus} is in stock now. Ask at the counter what it is like; we will give you the honest version rather than the back-label version."
+      - "New arrival for anyone after {a_phrase}: {focus} is on the shelf from today. If you like knowing what is new before it sells through rather than after, this is the week to drop in and have a look."
+
+  staff_pick:
+    headlines:
+      - "This week's staff pick"
+      - "What we would take home"
+      - "Staff pick: {focus}"
+    bodies:
+      - "Looking for {a_phrase} and want a shortcut? This week we are pointing people at {focus}. It is what we would take home ourselves, which is the only recommendation worth anything."
+      - "{A_phrase}, chosen by the people who stock the shelves. {focus} is the current pick. Come and ask why - the answer is usually more useful than a shelf tag."
+      - "{A_phrase}? Our pick right now is {focus}. Not the biggest brand and not the biggest margin, just the one we keep recommending and keep having to reorder."
+
+  local_maker:
+    headlines:
+      - "Made in NSW: {focus}"
+      - "Local makers on the shelf"
+      - "Spotlight on a NSW maker"
+    bodies:
+      - "Looking for {a_phrase} made closer to home? {focus} is on the shelf now. Stocking NSW makers means the money goes further than a distribution centre, and the stuff is genuinely good."
+      - "{A_phrase} from a local maker: {focus}. Small producers do not get chain shelf space easily, so an independent is usually the only place you will find them. That is the point of us."
+      - "{A_phrase}, made in NSW. {focus} is in stock. Ask us who makes it and where - we can usually tell you, because we deal with a lot of them directly."
+
+  price_value:
+    headlines:
+      - "This week: {focus}"
+      - "Worth the shelf space"
+      - "On special: {focus}"
+    bodies:
+      - "Looking for {a_phrase} without overpaying? {focus} is our pick on value this week. We will not pretend to beat the big chains on price, but on this one the gap is not worth the drive."
+      - "{A_phrase} and watching the budget? {focus} is the one we keep recommending at this price. Honest about it: some things are cheaper at the warehouse stores. This is not one of them."
+      - "{A_phrase}: {focus} is the value pick right now. Ask us what else is punching above its price - there are usually two or three on the shelf at any time."
+
+# --------------------------------------------------------------------------
+# A4 - seeded Q&A. Questions a real customer asks, answered in the shop's voice
+# with a location or service keyword in it naturally.
+#
+#   requires   a services.* field from business.yaml. When that field is null the
+#              answer is not written; the question lands in
+#              out/qanda_needs_answer.csv instead of being invented.
+#   if_yes /   the answer to use for a boolean service, chosen by the config value.
+#   if_no      Bare `yes:`/`no:` keys would parse as booleans in YAML.
+#   answer     used when the question does not depend on a service fact
+#   link       a site path appended to the answer, untagged (GBP answers do not
+#              carry UTMs reliably)
+#   post_as    owner - post it from the business account
+#              ask_from_second_account - Google will not let the owner ask, so
+#              these need a second Google account to post the question first
+# --------------------------------------------------------------------------
+qanda:
+  - id: "opening_hours"
+    question: "What are your opening hours?"
+    answer: "We are open {hours_summary}. Sunday trading starts at {sunday_open} because that is when liquor sales are allowed to begin in NSW."
+    link: "/visit-us"
+    post_as: "ask_from_second_account"
+
+  - id: "open_now_sunday"
+    question: "Are you open on Sunday morning?"
+    answer: "We open at {sunday_open} on Sundays. NSW liquor licensing does not permit packaged liquor sales before then, so nowhere in {suburb} can open earlier for it."
+    link: "/visit-us"
+    post_as: "ask_from_second_account"
+
+  - id: "parking"
+    question: "Is there parking?"
+    answer: "Yes - {parking_lower}, right out the front. You can pull up, walk in and be back in the car in a couple of minutes."
+    link: "/visit-us"
+    post_as: "ask_from_second_account"
+
+  - id: "cold_stock"
+    question: "Do you keep beer and wine cold?"
+    requires: "cold_room"
+    if_yes: "Yes. We keep beer, cider, white wine, sparkling and the zero-alcohol range chilled all day, so what you pick up in our {suburb} store is ready to drink."
+    if_no: "We keep a chilled selection rather than a full cold room - ask at the counter and we will tell you what is cold today."
+    link: "/full-range"
+    post_as: "ask_from_second_account"
+
+  - id: "ice"
+    question: "Do you sell ice?"
+    requires: "ice"
+    if_yes: "Yes, bagged ice is in the freezer by the counter. Handy if you are picking up drinks for a BBQ in {suburb} and had forgotten it."
+    if_no: "We do not stock bagged ice at the moment. Everything in the cold room is already chilled, so for a short trip home you often will not need it."
+    post_as: "ask_from_second_account"
+
+  - id: "gift_wrapping"
+    question: "Do you do gift wrapping?"
+    requires: "gift_wrapping"
+    if_yes: "Yes - ask at the counter and we will wrap it. Useful if you are picking up a bottle on the way to something."
+    if_no: "We do not gift wrap, but we can point you at bottles that already look the part in their own packaging. Ask us what is presenting well at the moment."
+    link: "/full-range"
+    post_as: "ask_from_second_account"
+
+  - id: "gift_cards"
+    question: "Do you sell gift cards?"
+    requires: "gift_cards"
+    if_yes: "Yes, we have gift cards in store. A good answer when you know someone likes good wine and you do not know which."
+    if_no: "We do not do gift cards. If you are buying for someone else, tell us what they usually drink and roughly what you want to spend and we will get it right."
+    link: "/contact"
+    post_as: "ask_from_second_account"
+
+  - id: "phone_orders"
+    question: "Can I order over the phone?"
+    requires: "phone_orders"
+    if_yes: "Yes - call us on {phone} and we will put it aside for you to collect. Easiest way to be certain something is in stock before you drive over."
+    if_no: "We do not take phone orders, but you are welcome to ring on {phone} to check we have something in stock before you come down."
+    link: "/contact"
+    post_as: "ask_from_second_account"
+
+  - id: "bulk_orders"
+    question: "Can you help with a party or bulk order?"
+    requires: "bulk_orders"
+    if_yes: "Yes. Tell us the numbers, the budget and roughly what people drink and we will put a list together. Give us a bit of notice for anything large."
+    if_no: "We do not run a formal bulk order service, but come and talk to us about what you need - for a party in {suburb} we can usually make sure the stock is there."
+    link: "/services"
+    post_as: "ask_from_second_account"
+
+  - id: "delivery"
+    question: "Do you deliver?"
+    answer: "You can order from us on {delivery} for delivery around {suburb} and nearby. In store is still quickest if you are close by."
+    link: "/services"
+    post_as: "ask_from_second_account"
+
+  - id: "card_surcharge"
+    question: "Is there a card surcharge?"
+    requires: "card_surcharge"
+    answer: "Card surcharge: {card_surcharge}. We take {payments}."
+    post_as: "ask_from_second_account"
+
+  - id: "price_match"
+    question: "Do you price match?"
+    requires: "price_match"
+    if_yes: "We will look at a genuine advertised price - bring it in and ask. We are an independent, so we cannot always match a warehouse price, and we will tell you straight when we cannot."
+    if_no: "We do not price match. We are an independent shop, so we compete on range, cold stock and staff who know the products rather than on beating chain pricing."
+    link: "/specials"
+    post_as: "ask_from_second_account"
+
+  - id: "id_required"
+    question: "Do you ask for ID?"
+    answer: "{id_policy} It is the law and it is not personal - if you look under 25 you will be asked, every time."
+    post_as: "ask_from_second_account"
+
+  - id: "distance_uni"
+    question: "How far are you from Macquarie University?"
+    answer: "We are a few minutes from {landmark}, in {suburb}. Easy stop between campus and home, with {parking_lower}."
+    link: "/visit-us"
+    post_as: "ask_from_second_account"
+
+  - id: "distance_centre"
+    question: "How far are you from Macquarie Centre?"
+    answer: "A short drive from {landmark2}. If you are heading home through {suburb} we are the quicker stop - no shopping centre carpark involved."
+    link: "/visit-us"
+    post_as: "ask_from_second_account"
+
+  - id: "website"
+    question: "Do you have a website?"
+    answer: "Yes - our full range and current specials are online."
+    link: "/"
+    post_as: "ask_from_second_account"
+
+  - id: "specials"
+    question: "Where can I see this week's specials?"
+    answer: "Current specials are on our website, updated as they change. Or ask at the counter in {suburb} and we will tell you what is worth it this week."
+    link: "/specials"
+    post_as: "ask_from_second_account"
+
+  - id: "range_spirits"
+    question: "What spirits do you stock?"
+    answer: "A full spirits range - gin, whisky, vodka, rum, tequila and liqueurs, including NSW distillers. If we do not have something, ask and we will see whether we can get it."
+    link: "/spirits"
+    post_as: "ask_from_second_account"
+
+  - id: "range_wine"
+    question: "Do you have a good wine selection?"
+    answer: "Yes, across price points rather than just the cheap end. Tell us what you are eating or what you usually drink and we will point you at something in our {suburb} store."
+    link: "/full-range"
+    post_as: "ask_from_second_account"
+
+  - id: "craft_beer"
+    question: "Do you stock craft beer?"
+    answer: "We do, including small NSW breweries you will not find in the chains. The range moves, so it is worth a look each visit."
+    link: "/full-range"
+    post_as: "ask_from_second_account"
+
+  - id: "zero_alcohol"
+    question: "Do you have non-alcoholic drinks?"
+    answer: "Yes - zero-alcohol beer, sparkling and spirits, kept chilled with everything else. The range has got a lot better in the last few years and we stock the ones worth drinking."
+    link: "/full-range"
+    post_as: "ask_from_second_account"
+
+  - id: "specific_brand"
+    question: "Do you stock {brand}?"
+    answer: "Ring us on {phone} and we will check the shelf while you are on the line. If it is not in, we can usually tell you whether we can order it."
+    link: "/contact"
+    post_as: "ask_from_second_account"
+    note: "Duplicate this row per brand people actually ask about. Do not post it until you can answer yes or no honestly."
+    needs_operator_input: true
+
+  - id: "local_makers"
+    question: "Do you stock local NSW producers?"
+    answer: "We do, deliberately. Small NSW breweries and distillers do not get chain shelf space easily, so an independent in {suburb} is often the only place to find them."
+    link: "/about"
+    post_as: "ask_from_second_account"
+
+  - id: "advice"
+    question: "Can you recommend something?"
+    answer: "That is the part of the job we like. Tell us the occasion, what you normally drink and the budget, and we will get you something you will actually enjoy."
+    link: "/about"
+    post_as: "ask_from_second_account"
+
+  - id: "late_night"
+    question: "How late are you open?"
+    answer: "We are open {hours_summary}. Check before a late run - the closing time is not the same every night."
+    link: "/visit-us"
+    post_as: "ask_from_second_account"

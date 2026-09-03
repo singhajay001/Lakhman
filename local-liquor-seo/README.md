@@ -20,7 +20,8 @@ licence details, site URLs - lives in `config/business.yaml`. Nothing under
 | Phase | Scope | State |
 | --- | --- | --- |
 | 1 | Repo scaffold, `business.yaml`, compliance gate + tests, CLI skeleton | **done** |
-| 2 | Part A content engine (calendar, posts, products, Q&A), file output only | not started |
+| 2 | Part A content engine - calendar, posts, Q&A (A1, A2, A4), file output only | **done** |
+| 2b | Product tiles (A3) | waiting on `data/products.csv` |
 | 3 | Part B rank tracker (grid, providers, scoring, heatmap) | not started |
 | 4 | Review replies, photo program, competitor + profile + site audits, weekly report | not started |
 | 5 | Optional GBP API publisher behind `PUBLISH_MODE=api` | not started |
@@ -46,6 +47,40 @@ python3.11 -m venv .venv && . .venv/bin/activate
 pip install -e . && pip install pytest pytest-cov
 llm-seo --help
 ```
+
+## Running the content engine
+
+No API keys, no network. Everything lands in `out/`.
+
+```bash
+uv run llm-seo calendar build              # out/calendar.csv - 90 days planned
+uv run llm-seo posts generate --weeks 4    # out/posts/*.md + out/posts.csv
+uv run llm-seo qanda build                 # out/qanda.csv + qanda_needs_answer.csv
+uv run llm-seo compliance scan             # re-check every caption on disk
+uv run llm-seo posts lint                  # check the copy bank without generating
+```
+
+`config/content.yaml` is where the voice lives - the theme taxonomy, the weekly
+slots, the dated occasions and the copy bank. Edit it when the copy starts
+sounding like a robot. `src/` holds the machinery; `config/` holds the words.
+
+Three rules the generators will not bend:
+
+* **Nothing is invented.** Themes that name a specific bottle are held back
+  until `data/products.csv` exists, offer details come out as explicit
+  `[[FILL: ...]]` markers rather than a plausible discount, and a Q&A answer
+  that depends on a service fact nobody has confirmed goes to
+  `out/qanda_needs_answer.csv` instead of being guessed.
+* **Every caption passes the compliance gate before it is written.** A failure
+  stops the run; nothing half-built reaches disk.
+* **The rotation rule is reported, not faked.** Three posts a week with no theme
+  repeating inside 21 days needs nine usable themes. Without product data there
+  are eight, so the calendar says so and reports the gap it actually achieved.
+
+`posts lint` renders every template against every phrase it could receive, at
+both ends of the product-name length range, and reports anything that would fall
+outside Google's limits - cheaper than finding a 310-character body three months
+into a calendar.
 
 ## The compliance gate
 

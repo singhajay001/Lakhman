@@ -29,19 +29,29 @@ branded:
   - "local liquor marsfield"
   - "local liquor marsfield specials"
 
-# Content generators draw the local-intent phrase for a post from here.
-# Each must appear naturally in the first 90 characters of the post body.
+# Content generators draw the local-intent phrase for a post from here. Each must
+# appear verbatim in the first 90 characters of the post body.
+#
+#   article  what reads correctly in front of it ("" when none is needed), so
+#            copy says "Looking for a bottle shop in Marsfield?" and
+#            "Looking for cold beer in Marsfield?" rather than one grammar for both.
+#   kind     place  = the shop itself ("a bottle shop near Eastwood")
+#            product = something you drink ("craft beer in Marsfield")
+#            A theme that says "to go with dinner" only makes sense with a
+#            product phrase; themes declare which kinds they accept.
 content_phrases:
-  - "bottle shop in Marsfield"
-  - "bottle shop near Macquarie University"
-  - "liquor store in Marsfield"
-  - "cold beer in Marsfield"
-  - "wine shop near Macquarie Park"
-  - "craft beer in Marsfield"
-  - "spirits in Marsfield"
-  - "non-alcoholic drinks in Marsfield"
-  - "bottle shop near North Ryde"
-  - "bottle shop near Eastwood"
+  - {text: "bottle shop in Marsfield", article: "a", kind: "place"}
+  - {text: "bottle shop near Macquarie University", article: "a", kind: "place"}
+  - {text: "liquor store in Marsfield", article: "a", kind: "place"}
+  - {text: "bottle shop near North Ryde", article: "a", kind: "place"}
+  - {text: "bottle shop near Eastwood", article: "a", kind: "place"}
+  - {text: "wine shop near Macquarie Park", article: "a", kind: "place"}
+  - {text: "cold beer in Marsfield", article: "", kind: "product"}
+  - {text: "craft beer in Marsfield", article: "", kind: "product"}
+  - {text: "spirits in Marsfield", article: "", kind: "product"}
+  - {text: "wine in Marsfield", article: "", kind: "product"}
+  - {text: "non-alcoholic drinks in Marsfield", article: "", kind: "product"}
+  - {text: "zero-alcohol beer in Marsfield", article: "", kind: "product"}
 
 grid:
   size: 7               # odd only: 7, 9 or 11

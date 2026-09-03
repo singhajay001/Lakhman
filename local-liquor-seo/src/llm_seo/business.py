@@ -204,6 +204,25 @@ class Services(_Model):
     click_and_collect: bool
     parking: str
     payments: list[str]
+    # Unknown (None) is a real state: the Q&A generator marks the matching
+    # question as needing an answer rather than guessing on the operator's behalf.
+    ice: bool | None = None
+    gift_wrapping: bool | None = None
+    gift_cards: bool | None = None
+    phone_orders: bool | None = None
+    bulk_orders: bool | None = None
+    card_surcharge: str | None = None
+    price_match: bool | None = None
+    cold_room: bool = True
+    id_policy: str = ""
+
+    def unanswered(self) -> list[str]:
+        return [
+            name
+            for name in ("ice", "gift_wrapping", "gift_cards", "phone_orders",
+                         "bulk_orders", "card_surcharge", "price_match")
+            if getattr(self, name) is None
+        ]
 
 
 class GoogleProfile(_Model):
@@ -353,6 +372,7 @@ class Hours(_Model):
 
 class Catchment(_Model):
     primary_suburbs: list[str]
+    landmarks: list[str] = Field(default_factory=list)
     demand_drivers: list[str]
 
 
@@ -430,6 +450,12 @@ class Business(_Model):
                 f"google.api_write_access is '{self.google.api_write_access}' - "
                 "PUBLISH_MODE=api will refuse to run (see docs/google-access.md). "
                 "Everything else works without it."
+            )
+        unanswered = self.services.unanswered()
+        if unanswered:
+            gaps.append(
+                "services not answered yet, so their Q&A entries cannot be written: "
+                + ", ".join(unanswered)
             )
         if self.website.site_paths_source != "sitemap":
             gaps.append(

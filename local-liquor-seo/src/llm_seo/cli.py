@@ -198,10 +198,34 @@ def compliance_footer() -> None:
 
 @compliance_app.command("scan")
 def compliance_scan(
-    directory: Path = typer.Argument(..., exists=True, file_okay=False, help="Folder of generated copy."),
+    directory: Optional[Path] = typer.Argument(None, help="Folder of captions. Default: out/posts."),
 ) -> None:
     """Re-check every generated caption on disk. Exits non-zero on any violation."""
-    _not_built(2, "compliance scan (it checks out/posts, which Phase 2 produces)")
+    from .compliance import compliance_check
+    from .paths import out_dir
+
+    target = directory or out_dir() / "posts"
+    if not target.is_dir():
+        typer.secho(f"{target} does not exist - run `llm-seo posts generate` first.",
+                    fg=typer.colors.YELLOW, err=True)
+        raise typer.Exit(2)
+
+    files = sorted(target.glob("*.md"))
+    failures = 0
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        kind = "zero_alcohol" if "theme: zero_alcohol" in text else "alcohol"
+        body = text.split("---", 2)[-1]
+        result = compliance_check(body, kind=kind, surface="post")
+        if not result.ok:
+            failures += 1
+            typer.secho(f"{path.name}", fg=typer.colors.RED, err=True)
+            for violation in result.violations:
+                typer.echo(f"    {violation}", err=True)
+    if failures:
+        typer.secho(f"{failures} of {len(files)} captions failed", fg=typer.colors.RED, err=True)
+        raise typer.Exit(1)
+    typer.secho(f"{len(files)} captions pass every rule", fg=typer.colors.GREEN)
 
 
 # --------------------------------------------------------------------------
@@ -209,16 +233,76 @@ def compliance_scan(
 # --------------------------------------------------------------------------
 
 
+def _have_products() -> bool:
+    from .paths import project_root
+
+    return (project_root() / "data" / "products.csv").is_file()
+
+
+def _start_date(value: Optional[str]) -> "datetime.date":
+    import datetime
+
+    if value:
+        return datetime.date.fromisoformat(value)
+    from .content.posts import _next_monday
+
+    return _next_monday(datetime.date.today())
+
+
 @calendar_app.command("build")
-def calendar_build(days: int = typer.Option(90, help="Calendar length in days.")) -> None:
-    """Build the rolling 90-day content calendar."""
-    _not_built(2, "calendar build")
+def calendar_build(
+    days: int = typer.Option(90, help="Calendar length in days."),
+    start: Optional[str] = typer.Option(None, "--start", help="ISO date. Default: next Monday."),
+) -> None:
+    """Build the rolling content calendar."""
+    from .content.calendar import build_calendar
+
+    plan = build_calendar(start=_start_date(start), days=days, have_products=_have_products())
+    path = plan.write_csv()
+    typer.secho(f"{len(plan)} posts planned -> {path}", fg=typer.colors.GREEN)
+    gap = plan.min_theme_gap_days(ignore_occasions=True)
+    typer.echo(f"  theme rotation: no repeat inside {gap} days")
+    for warning in plan.warnings:
+        typer.secho(f"  warning: {warning}", fg=typer.colors.YELLOW)
 
 
 @posts_app.command("generate")
-def posts_generate(weeks: int = typer.Option(4, "--weeks", help="Weeks of posts to write.")) -> None:
+def posts_generate(
+    weeks: int = typer.Option(4, "--weeks", help="Weeks of posts to write."),
+    start: Optional[str] = typer.Option(None, "--start", help="ISO date. Default: next Monday."),
+) -> None:
     """Generate GBP posts as markdown captions plus posts.csv."""
-    _not_built(2, "posts generate")
+    from .compliance import ComplianceError
+    from .content.posts import PostGenerationError, generate_posts
+
+    try:
+        posts = generate_posts(
+            start=_start_date(start), weeks=weeks, have_products=_have_products()
+        )
+    except (ComplianceError, PostGenerationError) as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(1) from exc
+
+    posts_dir, csv_path = posts.write()
+    ready = sum(1 for post in posts.posts if post.status == "ready")
+    typer.secho(f"{len(posts)} posts written -> {posts_dir} and {csv_path}", fg=typer.colors.GREEN)
+    typer.echo(f"  {ready} ready to paste, {len(posts) - ready} needing input")
+    for warning in posts.warnings:
+        typer.secho(f"  warning: {warning}", fg=typer.colors.YELLOW)
+
+
+@posts_app.command("lint")
+def posts_lint() -> None:
+    """Check every copy template renders inside the length and keyword limits."""
+    from .content.lint import lint_templates
+
+    problems = lint_templates()
+    if not problems:
+        typer.secho("every template renders inside the limits", fg=typer.colors.GREEN)
+        return
+    for problem in problems:
+        typer.secho(f"  {problem}", fg=typer.colors.RED, err=True)
+    raise typer.Exit(1)
 
 
 @products_app.command("build")
@@ -228,9 +312,20 @@ def products_build(input: Path = typer.Option(Path("data/products.csv"), "--inpu
 
 
 @qanda_app.command("build")
-def qanda_build(count: int = typer.Option(25, "--count")) -> None:
+def qanda_build() -> None:
     """Seed GBP questions and answers."""
-    _not_built(2, "qanda build")
+    from .content.qanda import build_qanda
+
+    result = build_qanda()
+    answers, gaps = result.write()
+    typer.secho(f"{len(result)} answers written -> {answers}", fg=typer.colors.GREEN)
+    if gaps is not None:
+        typer.secho(
+            f"  {len(result.unanswered)} questions need a decision from you -> {gaps}",
+            fg=typer.colors.YELLOW,
+        )
+        for row in result.unanswered:
+            typer.echo(f"    {row.question}  ({row.what_we_need})")
 
 
 @reviews_app.command("draft")
