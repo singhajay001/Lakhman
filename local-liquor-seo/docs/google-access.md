@@ -114,6 +114,28 @@ So:
    gitignored and a test fails the build if a key-shaped string appears
    anywhere in the tree.
 
+### If you IP-restrict the key, expect to re-check the IP
+
+Most Australian broadband hands out a dynamic address. When it rotates, every
+Places call starts returning `REQUEST_DENIED` and the message does not mention
+the IP. Diagnose it in two commands:
+
+```
+curl -4 https://ifconfig.me
+curl -6 https://api6.ipify.org
+```
+
+(Windows `cmd` does not strip `#` comments - put nothing after the URL.)
+
+Compare against **Credentials -> the key -> Application restrictions**, and
+update the allowed address if it has moved. If this happens often, drop the
+application restriction to *None* and lean on the API restriction, the budget
+alert and the scanner's own caps instead. A restriction you have to babysit and
+that fails obscurely is worse than one you do not set.
+
+The provider layer in Phase 3 checks for this specific denial and reports it as
+a key-restriction problem rather than a generic API error.
+
 ### This is not the same as GBP API access
 
 The Maps Platform console and the Business Profile API access form are separate
