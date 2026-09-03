@@ -216,6 +216,7 @@ class GoogleProfile(_Model):
     flagged_primary_categories: list[str] = Field(default_factory=list)
     candidate_secondary_categories: list[str] = Field(default_factory=list)
     cloud_project_number: str | int | None = None
+    cloud_project_id: str | None = None
     api_write_access: Literal["unknown", "requested", "granted", "denied"] = "unknown"
     location_resource_name: str | None = None
 

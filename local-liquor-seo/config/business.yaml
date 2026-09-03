@@ -95,9 +95,10 @@ google:
     - "Beer store"
     - "Cold drinks shop"
     - "Beverage distributor"
-  # TODO(operator): the numeric project number from the Cloud console dashboard
-  # (not the project ID string). The API access request form asks for it.
-  cloud_project_number: null
+  # The Cloud project that holds the Places API key and, once approved, the
+  # Business Profile API access. The access request form asks for the number.
+  cloud_project_number: "624198239112"
+  cloud_project_id: "wired-rhino-507422-g5"
   # TODO(operator): has Google approved Business Profile API access for that
   # project? One of: unknown | requested | granted | denied. The Phase 5
   # publisher refuses to run unless this is "granted", so an unapproved project
