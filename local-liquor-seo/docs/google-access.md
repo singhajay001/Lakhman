@@ -121,9 +121,31 @@ systems. Enabling Places here does nothing for section 3 below, and being
 approved there does nothing for rank scanning here. You need both, and you can
 start both today - one takes five minutes, the other takes weeks.
 
-Cost control is in the tool, not in your memory of it: every scan prints an
-estimate and stops for confirmation above `COST_CEILING_USD`, hard-stops at
-`MAX_CALLS_PER_SCAN`, and logs each billable call to `data/api_usage.csv`.
+### Cost guards - two layers, only one of them stops anything
+
+**A Cloud budget alert does not cap spend.** It emails you when you cross a
+threshold. Billing keeps running. People assume otherwise and find out the
+expensive way, so set one, but do not treat it as a limit.
+
+* **Billing -> Budgets & alerts -> Create budget.** Scope it to this project,
+  set a monthly amount, and keep the default 50% / 90% / 100% alert thresholds.
+  Start low - $20/month is well above a fortnight of development dry-runs and
+  well below a runaway loop. If it fires, that is information, not a disaster.
+* **The actual cap is in this toolkit.** Every scan prints a cost estimate
+  before it runs, stops for confirmation above `COST_CEILING_USD`, hard-stops at
+  `MAX_CALLS_PER_SCAN`, and logs each billable call with its estimated cost to
+  `data/api_usage.csv`. That is the layer that refuses to spend money.
+
+The two work together: the tool prevents a runaway scan, the budget alert
+catches anything the tool does not know about (a stray key in use elsewhere, a
+misconfigured cron, a second project sharing the billing account).
+
+### Confirm the project is actually linked to billing
+
+A billing account existing is not the same as this project being attached to it.
+**Billing -> Account management** lists the linked projects. If the project is
+not there, Places calls fail with a billing error that reads like a permissions
+problem.
 
 ---
 
