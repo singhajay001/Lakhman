@@ -23,15 +23,26 @@ an inconsistent address fails the build instead of going live.
 address and click through all nine pages, `/specials` especially, plus a junk
 URL to confirm the 404 page. Do this before step 2.
 
-## 2 · Point the domain at it · you · 10 min + DNS wait
+## 2 · Point the domain at it · ✅ done 2026-09-03
 
-`localliquormarsfield.com.au` apex, no `www`. Then add
-`www.localliquormarsfield.com.au` as a **redirect** to the apex — every page
-declares the apex as canonical, so `www` serving a copy would split the site
-against itself.
+`localliquormarsfield.com.au` is attached to the **localliquormarsfield1**
+Worker, which builds from `singhajay001/localliquormarsfield` on every push to
+`main`. Verified live: homepage, `/specials`, and `/xyz` serving the branded 404
+that only exists in the new build.
 
-**Done when:** `https://localliquormarsfield.com.au` loads with a padlock, and
-typing `www.` in front redirects.
+The old project held only the apex — `www` was never configured, so nothing was
+lost in the move.
+
+**Two loose ends, neither urgent:**
+
+- **`www` does not resolve.** Nobody is losing traffic over it today, but people
+  do type it. Fix: DNS → CNAME `www` → `localliquormarsfield.com.au`, proxied;
+  then Rules → Redirect Rules → 301 to the apex, preserving path and query. Do
+  not attach `www` as a second custom domain — that serves a duplicate site on a
+  second hostname.
+- **Delete the old `localliquormarsfield` Worker.** It holds no domains now, so
+  it serves nothing. Deleting it removes the chance of deploying to the wrong
+  project later.
 
 ## 3 · Set the website on the Google Business Profile · ✅ done 2026-09-02
 
