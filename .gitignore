@@ -1,2 +1,9 @@
+.env
+data/*.db
+data/inbox/*.csv
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
 analysis/out/
-*.csv
