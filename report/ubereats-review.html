@@ -1,0 +1,863 @@
+<title>Why Uber Eats Orders Halved</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  color-scheme: light;
+  --page:#f5f7f3; --panel:#ffffff; --panel-2:#eef1ea;
+  --ink:#16211c; --ink-2:#4c5852; --ink-3:#78827b;
+  --rule:#dde2d8; --rule-2:#c8d0c3;
+  --accent:#1e5b46; --accent-soft:#e4ede8;
+  --s1:#2a78d6; --s1-fill:#2a78d6; --s2:#eb6834;
+  --muted-mark:#98a496;
+  --critical:#d03b3b; --good:#0ca30c; --warning:#fab219;
+  --shadow:0 1px 2px rgba(22,33,28,.06), 0 8px 24px -18px rgba(22,33,28,.35);
+}
+:root{ --prose:min(740px, 100% - 2.5rem); --wide:min(1060px, 100% - 2.5rem); }
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#121613; --panel:#1a201c; --panel-2:#222923;
+    --ink:#edf1ea; --ink-2:#a6b0a8; --ink-3:#7d877f;
+    --rule:#2a322c; --rule-2:#39423b;
+    --accent:#63b294; --accent-soft:#1e2b25;
+    --s1:#3987e5; --s1-fill:#3987e5; --s2:#d95926;
+    --muted-mark:#4a534c;
+    --critical:#d03b3b; --good:#0ca30c; --warning:#fab219;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 30px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#121613; --panel:#1a201c; --panel-2:#222923;
+  --ink:#edf1ea; --ink-2:#a6b0a8; --ink-3:#7d877f;
+  --rule:#2a322c; --rule-2:#39423b;
+  --accent:#63b294; --accent-soft:#1e2b25;
+  --s1:#3987e5; --s1-fill:#3987e5; --s2:#d95926;
+  --muted-mark:#4a534c;
+  --critical:#d03b3b; --good:#0ca30c; --warning:#fab219;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 30px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--page); color:var(--ink);
+  font-family:"Public Sans","Helvetica Neue",Arial,sans-serif;
+  font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  padding:0 0 6rem;
+}
+.wrap{display:flex; flex-direction:column; align-items:center; gap:0}
+.prose{width:var(--prose)}
+.wide{width:var(--wide)}
+
+h1,h2,h3{font-family:Fraunces,Georgia,"Times New Roman",serif; text-wrap:balance; margin:0}
+h1{font-size:clamp(2.1rem,5.2vw,3.15rem); font-weight:600; line-height:1.06; letter-spacing:-.02em}
+h2{font-size:clamp(1.4rem,2.9vw,1.75rem); font-weight:600; line-height:1.2; letter-spacing:-.01em}
+h3{font-size:1.06rem; font-weight:600; line-height:1.3}
+p{margin:0}
+a{color:var(--accent)}
+
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.685rem; font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--accent);
+}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+
+/* ---------- masthead ---------- */
+header.mast{
+  width:100%; border-bottom:1px solid var(--rule); background:var(--panel);
+  padding:2.9rem 0 2.4rem; margin-bottom:2.9rem;
+}
+.mast-in{display:flex; flex-direction:column; gap:1.15rem}
+.mast-meta{
+  display:flex; flex-wrap:wrap; gap:.5rem 1.4rem; align-items:baseline;
+  padding-top:1.15rem; border-top:1px solid var(--rule);
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.75rem; color:var(--ink-3);
+  font-variant-numeric:tabular-nums;
+}
+.mast-meta b{color:var(--ink-2); font-weight:500}
+.standfirst{font-size:1.12rem; color:var(--ink-2); max-width:62ch}
+.standfirst strong{color:var(--ink); font-weight:600}
+
+/* ---------- verdict tiles ---------- */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:1px;
+  background:var(--rule); border:1px solid var(--rule); border-radius:3px; overflow:hidden; margin:0 0 3rem}
+.tile{background:var(--panel); padding:1.15rem 1.2rem 1.25rem; display:flex; flex-direction:column; gap:.28rem}
+.tile .k{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.665rem; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3)}
+.tile .v{font-family:Fraunces,Georgia,serif; font-size:1.95rem; font-weight:600; line-height:1;
+  font-variant-numeric:tabular-nums; letter-spacing:-.01em}
+.tile .n{font-size:.815rem; color:var(--ink-3); line-height:1.4}
+.v.down{color:var(--critical)} .v.up{color:var(--accent)}
+
+/* ---------- sections ---------- */
+section{margin:0 0 3.4rem; width:100%; display:flex; flex-direction:column; align-items:center; gap:1.15rem}
+.sec-head{width:var(--prose); display:flex; flex-direction:column; gap:.5rem}
+.sec-head p{color:var(--ink-2)}
+.body-stack{width:var(--prose); display:flex; flex-direction:column; gap:1.05rem}
+
+/* ---------- chart panel ---------- */
+figure{margin:0; width:100%; background:var(--panel); border:1px solid var(--rule);
+  border-radius:3px; box-shadow:var(--shadow); overflow:hidden}
+.fig-head{padding:1.15rem 1.35rem .35rem; display:flex; flex-direction:column; gap:.3rem}
+.fig-head h3{font-family:"Public Sans",sans-serif; font-size:.95rem; font-weight:600; letter-spacing:-.005em}
+.fig-head .sub{font-size:.83rem; color:var(--ink-3); max-width:70ch}
+.legend{display:flex; flex-wrap:wrap; gap:.35rem 1.1rem; padding:.5rem 1.35rem .2rem}
+.lg{display:inline-flex; align-items:center; gap:.42rem; font-size:.775rem; color:var(--ink-2)}
+.lg i{width:11px; height:11px; border-radius:2px; display:block; flex:none}
+.chart-scroll{overflow-x:auto; padding:.3rem .6rem 0}
+.chart-scroll svg{display:block; min-width:520px; width:100%; height:auto}
+figcaption{padding:.55rem 1.35rem 1.15rem; font-size:.775rem; color:var(--ink-3); line-height:1.5;
+  border-top:1px solid var(--rule); margin-top:.6rem; padding-top:.8rem}
+
+/* svg text */
+.ax{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; fill:var(--ink-3);
+  font-variant-numeric:tabular-nums}
+.ax-strong{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; fill:var(--ink-2);
+  font-variant-numeric:tabular-nums; font-weight:500}
+.dlabel{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; fill:var(--ink-2);
+  font-variant-numeric:tabular-nums; font-weight:500}
+.annot{font-family:"Public Sans",sans-serif; font-size:11.5px; fill:var(--ink-2); font-weight:500}
+.grid-line{stroke:var(--rule); stroke-width:1}
+.axis-line{stroke:var(--rule-2); stroke-width:1}
+
+/* tooltip */
+#tip{position:fixed; z-index:60; pointer-events:none; opacity:0; transition:opacity .1s;
+  background:var(--panel); border:1px solid var(--rule-2); border-radius:3px;
+  box-shadow:var(--shadow); padding:.5rem .65rem; font-size:.78rem; color:var(--ink);
+  min-width:130px; line-height:1.45}
+#tip .tt{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.68rem; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink-3); display:block; margin-bottom:.15rem}
+#tip .tr{display:flex; justify-content:space-between; gap:1.1rem; font-variant-numeric:tabular-nums}
+#tip .tr span:last-child{font-family:"IBM Plex Mono",ui-monospace,monospace; font-weight:500}
+
+/* ---------- findings ---------- */
+.finding{display:grid; grid-template-columns:auto 1fr; gap:.15rem 1rem; padding:1.15rem 0;
+  border-top:1px solid var(--rule); align-items:start}
+.finding:last-child{border-bottom:1px solid var(--rule)}
+.fchip{grid-row:span 2; margin-top:.28rem; font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; font-weight:500;
+  padding:.24rem .5rem; border-radius:2px; white-space:nowrap;
+  background:var(--accent-soft); color:var(--accent)}
+.fchip.bad{background:color-mix(in srgb, var(--critical) 13%, transparent); color:var(--critical)}
+.fchip.warn{background:color-mix(in srgb, var(--warning) 22%, transparent); color:#8a6100}
+:root[data-theme="dark"] .fchip.warn, :root:not([data-theme="light"]) .fchip.warn{color:var(--warning)}
+.finding h3{margin-bottom:.2rem}
+.finding p{color:var(--ink-2); font-size:.94rem}
+.finding .ev{margin-top:.45rem; font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.745rem; color:var(--ink-3); font-variant-numeric:tabular-nums}
+
+/* ---------- callout ---------- */
+.call{border-left:3px solid var(--accent); background:var(--panel); padding:1.05rem 1.25rem;
+  border-radius:0 3px 3px 0; display:flex; flex-direction:column; gap:.45rem}
+.call.alert{border-left-color:var(--critical)}
+.call h3{font-family:"Public Sans",sans-serif; font-size:.93rem}
+.call p{font-size:.92rem; color:var(--ink-2)}
+
+/* ---------- table ---------- */
+.tbl-scroll{overflow-x:auto; width:100%; border:1px solid var(--rule); border-radius:3px; background:var(--panel)}
+table{border-collapse:collapse; width:100%; min-width:460px; font-size:.875rem}
+th,td{text-align:left; padding:.62rem .85rem; border-bottom:1px solid var(--rule)}
+thead th{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.655rem; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-3); font-weight:500; background:var(--panel-2)}
+tbody tr:last-child td{border-bottom:none}
+td.num{text-align:right; font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.barcell{display:flex; align-items:center; gap:.5rem}
+.barcell .track{flex:1; height:7px; background:var(--panel-2); border-radius:2px; overflow:hidden; min-width:44px}
+.barcell .fill{height:100%; border-radius:2px; display:block}
+.barcell .pct{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.76rem;
+  font-variant-numeric:tabular-nums; color:var(--ink-2); width:3.1rem; text-align:right}
+
+/* ---------- actions ---------- */
+.actions{display:flex; flex-direction:column; gap:0; border:1px solid var(--rule);
+  border-radius:3px; background:var(--panel); overflow:hidden}
+.act{display:grid; grid-template-columns:auto 1fr auto; gap:.2rem 1rem; padding:1.1rem 1.25rem;
+  border-bottom:1px solid var(--rule); align-items:start}
+.act:last-child{border-bottom:none}
+.act .rank{grid-row:span 2; font-family:Fraunces,Georgia,serif; font-size:1.35rem; font-weight:600;
+  color:var(--accent); line-height:1; margin-top:.15rem; font-variant-numeric:tabular-nums}
+.act h3{font-family:"Public Sans",sans-serif; font-size:.95rem; margin-bottom:.18rem}
+.act p{font-size:.885rem; color:var(--ink-2)}
+.act .worth{grid-row:span 2; font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.7rem;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); text-align:right;
+  white-space:nowrap; margin-top:.28rem}
+
+ul.plain{margin:0; padding-left:1.15rem; display:flex; flex-direction:column; gap:.4rem;
+  color:var(--ink-2); font-size:.94rem}
+ul.plain li::marker{color:var(--accent)}
+
+footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px solid var(--rule);
+  font-size:.8rem; color:var(--ink-3); display:flex; flex-direction:column; gap:.5rem}
+
+@media (prefers-reduced-motion: reduce){*{transition:none !important; animation:none !important}}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+</style>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="prose mast-in">
+    <span class="eyebrow">Trafalgar Grocery &amp; Liquor · Channel review</span>
+    <h1>Why Uber Eats orders halved</h1>
+    <p class="standfirst">Seven months of order data says the store is not losing customers to a
+      worse offer — it is being <strong>seen by fewer people</strong>. Order volume is down 43% since
+      mid-May while average basket value is <em>up</em> 17%. That combination has one main cause,
+      and one main fix.</p>
+    <div class="mast-meta">
+      <span><b>Window</b> 29 Jan – 7 Sep 2026</span>
+      <span><b>Orders</b> 735</span>
+      <span><b>Revenue</b> $24,651</span>
+      <span><b>Source</b> MyFoodLink order &amp; sales exports</span>
+    </div>
+  </div>
+</header>
+
+<div class="prose">
+  <div class="tiles">
+    <div class="tile">
+      <span class="k">Orders / day now</span>
+      <span class="v down">2.44</span>
+      <span class="n">down from 4.60 in April</span>
+    </div>
+    <div class="tile">
+      <span class="k">Average order</span>
+      <span class="v up">$36.86</span>
+      <span class="n">up from $31.46 pre-May</span>
+    </div>
+    <div class="tile">
+      <span class="k">Revenue / day</span>
+      <span class="v down">$89.93</span>
+      <span class="n">down from $134.15</span>
+    </div>
+    <div class="tile">
+      <span class="k">Annual gap</span>
+      <span class="v">$29k</span>
+      <span class="n">value of returning to April volume</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ THE DECLINE ============ -->
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">The shape of the problem</span>
+    <h2>Volume fell off a cliff after April, and never fully came back</h2>
+    <p>Orders per day held between 4.1 and 4.6 from February to April, then dropped to
+      roughly 2.1 through June and July. August recovered to 3.16 — better, but still a third
+      below the April run rate.</p>
+  </div>
+
+  <div class="wide">
+    <figure>
+      <div class="fig-head">
+        <h3>Orders per day, by month</h3>
+        <p class="sub">Normalised to orders per calendar day so partial months are comparable.</p>
+      </div>
+      <div class="legend" id="lg1"></div>
+      <div class="chart-scroll"><svg id="c1" role="img"
+        aria-label="Bar chart of orders per day by month. February 4.07, March 4.10, April 4.60, then May 3.19, June 2.13, July 2.16, August 3.16."></svg></div>
+      <figcaption>January (3 trading days) and September (7 days) are partial months in the export and are
+        shown for completeness only — neither is used in any comparison above.</figcaption>
+    </figure>
+  </div>
+
+  <div class="body-stack">
+    <div class="call alert">
+      <h3>Rising basket value alongside falling orders is the diagnostic</h3>
+      <p>If the offer, the pricing or the range had got worse, baskets would shrink too. They grew.
+        What is missing is the marginal shopper — the one who was browsing, saw the store, and
+        bought two things. The committed customers are still ordering, and ordering more.
+        That is an <strong>impressions problem</strong>, not a product problem.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ IT'S NOT OPERATIONS ============ -->
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">Ruling out the alternatives</span>
+    <h2>Every day and every hour fell by roughly the same amount</h2>
+    <p>This is the test that matters. If trading hours had been cut, specific hours would vanish.
+      If a liquor competitor had opened, the late-night peak would have taken the damage.
+      If it were seasonal, weekends would hold up better than weekdays. None of that happened —
+      the whole curve moved down together.</p>
+  </div>
+
+  <div class="wide">
+    <figure>
+      <div class="fig-head">
+        <h3>Orders per week by day, before and after mid-May</h3>
+        <p class="sub">Every weekday declined. Saturday, the strongest day, lost the most in absolute terms.</p>
+      </div>
+      <div class="legend" id="lg2"></div>
+      <div class="chart-scroll"><svg id="c2" role="img"
+        aria-label="Grouped bar chart comparing orders per week by weekday before and after mid-May. All seven days declined, between 11 and 54 percent."></svg></div>
+      <figcaption>Change shown against each pair. Wednesday's smaller fall (−11%) comes off an
+        already-low base rather than representing genuine resilience.</figcaption>
+    </figure>
+  </div>
+
+  <div class="body-stack">
+    <p>Two further checks point the same way. Trading hours were unchanged all year — the first
+      order of the day lands at 10am and the last before midnight, in every single month. And the
+      store was almost never dark: across 222 days there were only three two-day gaps with no orders,
+      and 23 zero-order days in total, which at two to four orders a day is ordinary rather than alarming.</p>
+    <p>What did change is the calendar. The store went live on <span class="mono">29 January</span>.
+      Strong February, March and April; decline from May. That is the shape of a
+      <strong>new-merchant visibility boost expiring</strong> — Uber Eats gives new stores elevated
+      placement for an introductory period, and when it lapses a store falls back to whatever its
+      organic ranking earns. Trafalgar has nothing propping that ranking up.</p>
+  </div>
+</section>
+
+<!-- ============ NEVER PROMOTED ============ -->
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">The gap</span>
+    <h2>In seven months, not one promotion has ever run</h2>
+  </div>
+  <div class="body-stack">
+    <div class="tiles" style="margin-bottom:0">
+      <div class="tile"><span class="k">Offers run</span><span class="v">0</span><span class="n">of 735 orders</span></div>
+      <div class="tile"><span class="k">Campaigns</span><span class="v">0</span><span class="n">no ads, no boosts</span></div>
+      <div class="tile"><span class="k">Coupons</span><span class="v">0</span><span class="n">none issued</span></div>
+      <div class="tile"><span class="k">Total discount</span><span class="v">$3.32</span><span class="n">a single order, in August</span></div>
+    </div>
+    <p>Promotion participation is one of the strongest levers on placement in the Uber Eats
+      marketplace — promoted stores get carousel positions and badges that organic ranking alone
+      does not earn. Trafalgar has been competing for visibility with nothing in the tank, and it
+      worked fine right up until the introductory boost ran out.</p>
+  </div>
+</section>
+
+<!-- ============ WHAT THIS STORE ACTUALLY IS ============ -->
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">Who is actually buying</span>
+    <h2>On Uber Eats, this is a bottle shop that also sells snacks</h2>
+    <p>Not a supermarket. The data is unambiguous, and the merchandising should follow it.</p>
+  </div>
+
+  <div class="wide">
+    <figure>
+      <div class="fig-head">
+        <h3>Orders by hour of checkout</h3>
+        <p class="sub">71% of all orders land between 6pm and midnight. The 11pm hour carries the second-highest
+          average basket of any hour at $41.69.</p>
+      </div>
+      <div class="chart-scroll"><svg id="c3" role="img"
+        aria-label="Bar chart of orders by hour. Volume builds through the evening to a peak of 115 orders at 9pm, with 82 orders in the 11pm hour."></svg></div>
+      <figcaption>Daytime checkouts appear only on even hours, which looks like two-hour bucketing in the
+        MyFoodLink export rather than real gaps in demand — so read each daytime bar as covering two hours.
+        Evening hours are recorded individually. One 3am order is excluded.</figcaption>
+    </figure>
+  </div>
+
+  <div class="body-stack">
+    <p>The GST split says the same thing from the other direction. Alcohol and packaged goods carry
+      GST; basic food does not — so the tax on each order is a reliable proxy for what was in the bag.</p>
+
+    <div class="tiles" style="margin-bottom:0">
+      <div class="tile"><span class="k">Revenue carrying GST</span><span class="v">79.6%</span><span class="n">alcohol &amp; packaged goods</span></div>
+      <div class="tile"><span class="k">Fully taxable orders</span><span class="v">412</span><span class="n">of 736 — no fresh food at all</span></div>
+      <div class="tile"><span class="k">Fresh-food-only orders</span><span class="v">101</span><span class="n">just 14% of orders</span></div>
+      <div class="tile"><span class="k">Saturday orders</span><span class="v">170</span><span class="n">vs 60 on Monday</span></div>
+    </div>
+
+    <p>Four in five dollars are liquor, mixers, snacks and packaged goods. More than half of all
+      orders contain no fresh food whatsoever. The peak is Saturday night at 9pm. Nobody is doing
+      their weekly shop here — they are topping up a night in.</p>
+
+    <div class="call">
+      <h3>Merchandise for the actual occasion</h3>
+      <p>The front of the Uber Eats store, the collections, the photography and any promotion should
+        be built around <strong>Friday and Saturday evening top-ups</strong>: beer, wine and spirits with
+        their mixers, ice, snacks and confectionery in the same collection. Presenting a general
+        grocery aisle to a customer who is buying a Saturday night is a wasted first screen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BASKET ECONOMICS ============ -->
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">Order economics</span>
+    <h2>One in five orders is almost certainly losing money</h2>
+    <p>Baskets are small: the median order is three items, and 42% of all orders contain
+      exactly two. At the bottom of the range, the arithmetic stops working.</p>
+  </div>
+
+  <div class="body-stack">
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Order value</th><th scope="col">Orders</th>
+            <th scope="col" style="width:38%">Share of orders</th>
+            <th scope="col" style="width:38%">Share of revenue</th></tr>
+        </thead>
+        <tbody id="bandrows"></tbody>
+      </table>
+    </div>
+
+    <div class="call alert">
+      <h3>The sub-$10 tail</h3>
+      <p>149 orders under $10, averaging <span class="mono">$6.18</span>. At an assumed 30% commission
+        the store keeps about <span class="mono">$4.32</span> — before the cost of the goods, before
+        the bag, and before five to ten minutes of someone's time picking and packing it.
+        These orders are 20% of volume and 3.7% of revenue.</p>
+      <p>They are not worthless — order frequency feeds ranking, which is the very thing that has
+        slipped. So the fix is <strong>a small-order fee, not a high minimum basket</strong>:
+        keep the order and the ranking signal, stop paying for the privilege.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINDINGS ============ -->
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">Everything the data showed</span>
+    <h2>Findings</h2>
+  </div>
+  <div class="body-stack">
+    <div>
+      <div class="finding">
+        <span class="fchip bad">Critical</span>
+        <h3>Order volume down 43%, basket value up 17%</h3>
+        <p>4.26 → 2.44 orders per day; $31.46 → $36.86 average order. Falling traffic against rising
+          baskets isolates the problem to discovery rather than to the offer.</p>
+        <p class="ev">452 orders in 106 days → 283 orders in 116 days</p>
+      </div>
+      <div class="finding">
+        <span class="fchip bad">Critical</span>
+        <h3>The decline is uniform across every day and every daypart</h3>
+        <p>All seven weekdays fell, between 11% and 54%. Trading hours, late-night share and store
+          uptime are all unchanged. That rules out hours, seasonality and a category-specific competitor.</p>
+        <p class="ev">10:00–23:00 trading in all 9 months · only 3 two-day outages in 222 days</p>
+      </div>
+      <div class="finding">
+        <span class="fchip warn">Likely cause</span>
+        <h3>Timing matches expiry of the new-merchant visibility boost</h3>
+        <p>Launched 29 January, strong through April, decays from May. Nothing in the store's own
+          operations changed at that point. This is an inference from timing and shape — confirm it
+          against the impressions and store-ranking figures in Uber Eats Merchant Manager.</p>
+        <p class="ev">Feb 4.07 · Mar 4.10 · Apr 4.60 · May 3.19 · Jun 2.13 · Jul 2.16 · Aug 3.16 orders/day</p>
+      </div>
+      <div class="finding">
+        <span class="fchip bad">Critical</span>
+        <h3>No promotion has ever been run on the channel</h3>
+        <p>Zero offers, zero campaigns, zero coupons across 735 orders. Total discount given away in
+          seven months: $3.32. Promo participation is a direct input to marketplace placement.</p>
+        <p class="ev">Offer / Campaign / Coupon fields empty on every order</p>
+      </div>
+      <div class="finding">
+        <span class="fchip">Opportunity</span>
+        <h3>The channel is 80% liquor and packaged goods, concentrated on weekend nights</h3>
+        <p>412 of 736 orders contain no GST-free food at all. 71% of orders arrive after 6pm,
+          peaking Saturday at 9pm. The store's Uber Eats identity should be built around this,
+          not around general grocery.</p>
+        <p class="ev">79.6% of revenue GST-bearing · Sat 170 orders vs Mon 60</p>
+      </div>
+      <div class="finding">
+        <span class="fchip warn">Margin</span>
+        <h3>42% of orders contain exactly two items; 20% are under $10</h3>
+        <p>Median basket is three lines. The sub-$10 tail nets roughly $4.32 per order before goods
+          and labour.</p>
+        <p class="ev">311 two-line orders · 149 orders under $10 averaging $6.18</p>
+      </div>
+      <div class="finding">
+        <span class="fchip warn">Margin</span>
+        <h3>The direct MyFoodLink shop is dormant</h3>
+        <p>One order, worth $2.00, in seven months — against 735 through Uber Eats at roughly 30%
+          commission. Every order won directly is worth about 1.4 of the same order on the marketplace.</p>
+        <p class="ev">Myfoodlink Platform: 1 order / $2.00 · Third Party Marketplace: 735 orders / $24,651</p>
+      </div>
+      <div class="finding">
+        <span class="fchip warn">Blind spot</span>
+        <h3>Substitutions and not-supplied items are not being recorded</h3>
+        <p>Both fields are zero on all 735 orders, which almost certainly means the Uber integration
+          is not writing them rather than that fulfilment has been perfect. Missing-item rate is a
+          ranking input, so this is a blind spot on exactly the metric under suspicion.</p>
+        <p class="ev"># of substitutions = 0 and # of not supplied = 0 across every row</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACTIONS ============ -->
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">What to do, in order</span>
+    <h2>The plan</h2>
+    <p>Ordered by expected return against effort. The first three all target visibility, because
+      that is where the $29,000 sits — basket and margin work on 2.4 orders a day cannot match it.</p>
+  </div>
+  <div class="body-stack">
+    <div class="actions">
+      <div class="act">
+        <span class="rank">1</span>
+        <h3>Read the visibility numbers in Merchant Manager before changing anything</h3>
+        <span class="worth">This week</span>
+        <p>Store impressions, menu views and conversion by month, plus current store rating and
+          missing-item rate. This confirms or kills the boost-expiry theory in ten minutes and tells
+          you whether a ranking penalty is also in play. Everything below is more effective once you know.</p>
+      </div>
+      <div class="act">
+        <span class="rank">2</span>
+        <h3>Run the first promotion — weekend evenings, on liquor and mixers</h3>
+        <span class="worth">Highest impact</span>
+        <p>Spend-and-save on the Friday–Saturday 5pm–close window rather than a blanket discount,
+          so it buys placement during the hours that already convert. Ask your Uber account manager
+          which offers are co-funded before choosing one. Treat the first month as buying impressions,
+          not margin.</p>
+      </div>
+      <div class="act">
+        <span class="rank">3</span>
+        <h3>Rebuild the storefront around the Saturday-night occasion</h3>
+        <span class="worth">Free</span>
+        <p>Lead collections with beer, wine, spirits, mixers, ice, snacks and confectionery grouped
+          for the occasion rather than by department. Check that item names read the way people
+          search — brand, product, then size — and that the top sellers all carry photos.</p>
+      </div>
+      <div class="act">
+        <span class="rank">4</span>
+        <h3>Add a small-order fee under about $15</h3>
+        <span class="worth">~$1–2k / yr</span>
+        <p>Keeps the 20% of orders that currently lose money, and the ranking signal they carry,
+          without paying to fulfil them. A hard minimum basket would cut the order count you are
+          trying to rebuild.</p>
+      </div>
+      <div class="act">
+        <span class="rank">5</span>
+        <h3>Confirm the uplift arithmetic covers the commission</h3>
+        <span class="worth">Margin</span>
+        <p>Commission is charged on the marked-up price, so a 30% commission needs about a 43% uplift
+          to hold the in-store dollar margin, not 30%. Check the current figure and tier it — hold
+          near parity on the items people price-compare, take more on impulse and mixers.</p>
+      </div>
+      <div class="act">
+        <span class="rank">6</span>
+        <h3>Fix the substitution and not-supplied tracking</h3>
+        <span class="worth">Diagnostic</span>
+        <p>Ask MyFoodLink why both fields are empty on Uber orders. Without them you cannot see the
+          missing-item rate, which is both a ranking factor and the most likely hidden cause of a
+          rating slide.</p>
+      </div>
+      <div class="act">
+        <span class="rank">7</span>
+        <h3>Give the direct shop a reason to exist</h3>
+        <span class="worth">Long game</span>
+        <p>An insert in every Uber Eats bag offering a discount for ordering direct next time costs
+          almost nothing and converts marketplace customers into ones you keep the full margin on.
+          Slow, compounding, and the only lever here that reduces the commission bill.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIMITS ============ -->
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">What this analysis could not see</span>
+    <h2>Limits, and what would sharpen it</h2>
+  </div>
+  <div class="body-stack">
+    <p>Both exports are order-level. There is no line-item or product detail in them, and no in-store
+      sales, so nothing here is based on which products sold — the product mix above is inferred from
+      GST rather than observed directly.</p>
+    <ul class="plain">
+      <li><strong>A catalogue export</strong> — SKU, name, department, size, in-store and Uber price,
+        image flag — would allow the naming-for-search audit and a real photo-gap list.</li>
+      <li><strong>Line-item order detail</strong> would replace the GST proxy with actual product mix,
+        and identify which items to bundle.</li>
+      <li><strong>In-store sales for the same period</strong> would show which lines over-index on
+        Uber Eats and which strong sellers are invisible there.</li>
+      <li><strong>Cost prices</strong> would turn the uplift discussion into an actual margin model
+        per department.</li>
+      <li><strong>The Uber Eats commission rate</strong> from the merchant agreement — 30% is assumed
+        throughout, and every dollar figure involving margin moves with it.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="prose">
+  <p>Prepared from MyFoodLink order exports (Q1–Q3 2026) and the sales export for 1 Jan – 7 Sep 2026.
+    735 orders, $24,651 in revenue. Commission assumed at 30% where margin is discussed.</p>
+  <p>Analysis script: <span class="mono">analysis/ubereats_analysis.py</span></p>
+</footer>
+
+</div>
+
+<script>
+const DATA = {
+  monthly: [
+    {m:"Jan", v:5.00, orders:15,  aov:34.76, partial:true},
+    {m:"Feb", v:4.07, orders:114, aov:22.84, period:"early"},
+    {m:"Mar", v:4.10, orders:127, aov:30.21, period:"early"},
+    {m:"Apr", v:4.60, orders:138, aov:37.60, period:"early"},
+    {m:"May", v:3.19, orders:99,  aov:38.27, period:"late"},
+    {m:"Jun", v:2.13, orders:64,  aov:34.70, period:"late"},
+    {m:"Jul", v:2.16, orders:67,  aov:32.25, period:"late"},
+    {m:"Aug", v:3.16, orders:98,  aov:41.27, period:"late"},
+    {m:"Sep", v:1.86, orders:13,  aov:22.10, partial:true}
+  ],
+  dow: [
+    {d:"Mon", before:2.25, after:1.57, chg:-30},
+    {d:"Tue", before:2.97, after:1.51, chg:-49},
+    {d:"Wed", before:2.25, after:1.99, chg:-11},
+    {d:"Thu", before:5.02, after:2.90, chg:-42},
+    {d:"Fri", before:5.48, after:3.26, chg:-41},
+    {d:"Sat", before:7.20, after:3.68, chg:-49},
+    {d:"Sun", before:4.69, after:2.17, chg:-54}
+  ],
+  hourly: [
+    {h:"10am", orders:28, aov:29.51, eve:false},
+    {h:"12pm", orders:45, aov:42.73, eve:false},
+    {h:"2pm",  orders:78, aov:28.27, eve:false},
+    {h:"4pm",  orders:59, aov:32.88, eve:false},
+    {h:"6pm",  orders:81, aov:28.61, eve:true},
+    {h:"7pm",  orders:81, aov:31.69, eve:true},
+    {h:"8pm",  orders:93, aov:33.68, eve:true},
+    {h:"9pm",  orders:115, aov:32.81, eve:true},
+    {h:"10pm", orders:72, aov:34.35, eve:true},
+    {h:"11pm", orders:82, aov:41.69, eve:true}
+  ],
+  bands: [
+    {b:"Under $10", orders:150, revenue:930.10},
+    {b:"$10 – $20", orders:135, revenue:1956.25},
+    {b:"$20 – $30", orders:111, revenue:2798.58},
+    {b:"$30 – $50", orders:198, revenue:7944.67},
+    {b:"$50 – $75", orders:84,  revenue:5108.00},
+    {b:"$75 – $100",orders:34,  revenue:2917.05},
+    {b:"$100 +",    orders:23,  revenue:2996.45}
+  ]
+};
+
+const NS = "http://www.w3.org/2000/svg";
+const el = (n, a={}) => { const e = document.createElementNS(NS, n);
+  for (const k in a) e.setAttribute(k, a[k]); return e; };
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const money = n => "$" + n.toFixed(2);
+
+/* ---- tooltip ---- */
+const tip = document.getElementById("tip");
+function showTip(evt, title, rows){
+  tip.innerHTML = '<span class="tt">' + title + "</span>" +
+    rows.map(r => '<div class="tr"><span>' + r[0] + "</span><span>" + r[1] + "</span></div>").join("");
+  tip.style.opacity = 1;
+  moveTip(evt);
+}
+function moveTip(evt){
+  const pad = 14, r = tip.getBoundingClientRect();
+  let x = evt.clientX + pad, y = evt.clientY + pad;
+  if (x + r.width > window.innerWidth - 8) x = evt.clientX - r.width - pad;
+  if (y + r.height > window.innerHeight - 8) y = evt.clientY - r.height - pad;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip(){ tip.style.opacity = 0; }
+function hoverable(node, title, rows){
+  node.style.cursor = "default";
+  node.addEventListener("mouseenter", e => showTip(e, title, rows));
+  node.addEventListener("mousemove", moveTip);
+  node.addEventListener("mouseleave", hideTip);
+}
+
+/* ---- shared axis helper ---- */
+function yAxis(g, y, max, ticks, W, ml, fmt){
+  for (let i = 0; i <= ticks; i++){
+    const v = max * i / ticks, yy = y(v);
+    g.appendChild(el("line", {x1:ml, x2:W-14, y1:yy, y2:yy, class:"grid-line"}));
+    const t = el("text", {x:ml-9, y:yy+3.5, "text-anchor":"end", class:"ax"});
+    t.textContent = fmt ? fmt(v) : v.toFixed(v % 1 ? 1 : 0);
+    g.appendChild(t);
+  }
+}
+
+/* ================= CHART 1 — monthly ================= */
+function chart1(){
+  const svg = document.getElementById("c1");
+  const W = 1000, H = 338, ml = 46, mr = 14, mt = 30, mb = 54;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const plotW = W - ml - mr, plotH = H - mt - mb;
+  const max = 5, y = v => mt + plotH - (v / max) * plotH;
+  const n = DATA.monthly.length, step = plotW / n, bw = Math.min(58, step * 0.6);
+
+  yAxis(svg, y, max, 5, W, ml);
+  svg.appendChild(el("line", {x1:ml, x2:W-14, y1:y(0), y2:y(0), class:"axis-line"}));
+
+  const early = cssv("--s1"), late = cssv("--s2"), muted = cssv("--muted-mark");
+
+  DATA.monthly.forEach((d, i) => {
+    const cx = ml + step * i + step / 2, h = Math.max(2, y(0) - y(d.v));
+    const fill = d.partial ? muted : (d.period === "early" ? early : late);
+    const g = el("g", {});
+    const bar = el("rect", {x:cx - bw/2, y:y(d.v), width:bw, height:h,
+      rx:4, ry:4, fill:fill, "shape-rendering":"crispEdges"});
+    // square off the baseline end
+    const foot = el("rect", {x:cx - bw/2, y:y(0) - Math.min(5, h), width:bw,
+      height:Math.min(5, h), fill:fill});
+    g.appendChild(bar); g.appendChild(foot);
+
+    const lab = el("text", {x:cx, y:y(d.v) - 7, "text-anchor":"middle", class:"dlabel"});
+    lab.textContent = d.v.toFixed(2);
+    g.appendChild(lab);
+
+    const xl = el("text", {x:cx, y:y(0) + 18, "text-anchor":"middle",
+      class: d.partial ? "ax" : "ax-strong"});
+    xl.textContent = d.m;
+    g.appendChild(xl);
+    if (d.partial){
+      const p = el("text", {x:cx, y:y(0) + 32, "text-anchor":"middle", class:"ax"});
+      p.textContent = "part";
+      g.appendChild(p);
+    }
+    hoverable(g, d.m + " 2026", [
+      ["Orders/day", d.v.toFixed(2)],
+      ["Orders", d.orders],
+      ["Avg order", money(d.aov)],
+      d.partial ? ["Note", "partial month"] : ["Period", d.period === "early" ? "Feb–Apr" : "May–Aug"]
+    ]);
+    svg.appendChild(g);
+  });
+
+  const yl = el("text", {x:2, y:mt - 8, "text-anchor":"start", class:"ax"});
+  yl.textContent = "orders/day"; svg.appendChild(yl);
+
+  document.getElementById("lg1").innerHTML =
+    `<span class="lg"><i style="background:${early}"></i>February – April</span>
+     <span class="lg"><i style="background:${late}"></i>May – August</span>
+     <span class="lg"><i style="background:${muted}"></i>Partial month</span>`;
+}
+
+/* ================= CHART 2 — day of week ================= */
+function chart2(){
+  const svg = document.getElementById("c2");
+  const W = 1000, H = 340, ml = 46, mr = 14, mt = 22, mb = 62;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const plotW = W - ml - mr, plotH = H - mt - mb;
+  const max = 8, y = v => mt + plotH - (v / max) * plotH;
+  const n = DATA.dow.length, step = plotW / n;
+  const bw = Math.min(30, step * 0.3), gap = 2;
+
+  yAxis(svg, y, max, 4, W, ml);
+  svg.appendChild(el("line", {x1:ml, x2:W-14, y1:y(0), y2:y(0), class:"axis-line"}));
+
+  const cB = cssv("--s1"), cA = cssv("--s2");
+
+  DATA.dow.forEach((d, i) => {
+    const cx = ml + step * i + step / 2;
+    [["before", cB, -1], ["after", cA, 1]].forEach(([k, col, side]) => {
+      const v = d[k], h = Math.max(2, y(0) - y(v));
+      const x = cx + side * (gap / 2) + (side < 0 ? -bw : 0);
+      const g = el("g", {});
+      g.appendChild(el("rect", {x:x, y:y(v), width:bw, height:h, rx:4, ry:4, fill:col}));
+      g.appendChild(el("rect", {x:x, y:y(0) - Math.min(5, h), width:bw,
+        height:Math.min(5, h), fill:col}));
+      const lab = el("text", {x:x + bw/2, y:y(v) - 6, "text-anchor":"middle", class:"dlabel"});
+      lab.textContent = v.toFixed(1);
+      g.appendChild(lab);
+      hoverable(g, d.d + " · " + (k === "before" ? "Feb – mid May" : "mid May – Sep"),
+        [["Orders/week", v.toFixed(2)], ["Change", d.chg + "%"]]);
+      svg.appendChild(g);
+    });
+
+    const xl = el("text", {x:cx, y:y(0) + 18, "text-anchor":"middle", class:"ax-strong"});
+    xl.textContent = d.d; svg.appendChild(xl);
+    const ch = el("text", {x:cx, y:y(0) + 34, "text-anchor":"middle", class:"ax"});
+    ch.setAttribute("fill", cssv("--critical"));
+    ch.textContent = d.chg + "%"; svg.appendChild(ch);
+  });
+
+  const yl = el("text", {x:2, y:mt - 8, "text-anchor":"start", class:"ax"});
+  yl.textContent = "orders/wk"; svg.appendChild(yl);
+
+  document.getElementById("lg2").innerHTML =
+    `<span class="lg"><i style="background:${cB}"></i>Feb – mid May</span>
+     <span class="lg"><i style="background:${cA}"></i>mid May – Sep</span>`;
+}
+
+/* ================= CHART 3 — hour of day ================= */
+function chart3(){
+  const svg = document.getElementById("c3");
+  const W = 1000, H = 330, ml = 46, mr = 14, mt = 46, mb = 52;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const plotW = W - ml - mr, plotH = H - mt - mb;
+  const max = 120, y = v => mt + plotH - (v / max) * plotH;
+  const n = DATA.hourly.length, step = plotW / n, bw = Math.min(52, step * 0.62);
+
+  yAxis(svg, y, max, 4, W, ml);
+  svg.appendChild(el("line", {x1:ml, x2:W-14, y1:y(0), y2:y(0), class:"axis-line"}));
+
+  const col = cssv("--s1"), muted = cssv("--muted-mark");
+
+  // evening bracket
+  const firstEve = DATA.hourly.findIndex(d => d.eve);
+  const bx1 = ml + step * firstEve + step * 0.1;
+  const bx2 = ml + plotW - step * 0.1;
+  const by = mt - 20;
+  const br = el("path", {d:`M ${bx1} ${by+7} L ${bx1} ${by} L ${bx2} ${by} L ${bx2} ${by+7}`,
+    fill:"none", stroke:cssv("--rule-2"), "stroke-width":1});
+  svg.appendChild(br);
+  const bl = el("text", {x:(bx1+bx2)/2, y:by - 6, "text-anchor":"middle", class:"annot"});
+  bl.textContent = "6pm – midnight · 71% of all orders";
+  svg.appendChild(bl);
+
+  DATA.hourly.forEach((d, i) => {
+    const cx = ml + step * i + step / 2, h = Math.max(2, y(0) - y(d.orders));
+    const fill = d.eve ? col : muted;
+    const g = el("g", {});
+    g.appendChild(el("rect", {x:cx - bw/2, y:y(d.orders), width:bw, height:h, rx:4, ry:4, fill:fill}));
+    g.appendChild(el("rect", {x:cx - bw/2, y:y(0) - Math.min(5, h), width:bw,
+      height:Math.min(5, h), fill:fill}));
+    const lab = el("text", {x:cx, y:y(d.orders) - 7, "text-anchor":"middle", class:"dlabel"});
+    lab.textContent = d.orders; g.appendChild(lab);
+    const xl = el("text", {x:cx, y:y(0) + 18, "text-anchor":"middle", class:"ax"});
+    xl.textContent = d.h; g.appendChild(xl);
+    hoverable(g, d.h + (d.eve ? " · evening" : " · daytime (2hr bucket)"),
+      [["Orders", d.orders], ["Avg order", money(d.aov)]]);
+    svg.appendChild(g);
+  });
+
+  const yl = el("text", {x:2, y:mt - 8, "text-anchor":"start", class:"ax"});
+  yl.textContent = "orders"; svg.appendChild(yl);
+}
+
+/* ================= value band table ================= */
+function bandTable(){
+  const tot = DATA.bands.reduce((a, d) => ({o:a.o + d.orders, r:a.r + d.revenue}), {o:0, r:0});
+  const maxShare = Math.max(...DATA.bands.map(d =>
+    Math.max(d.orders / tot.o, d.revenue / tot.r)));
+  const rows = DATA.bands.map(d => {
+    const po = d.orders / tot.o, pr = d.revenue / tot.r;
+    const bar = (p, c) => `<div class="barcell"><div class="track">
+      <span class="fill" style="width:${(p / maxShare * 100).toFixed(1)}%;background:${c}"></span>
+      </div><span class="pct">${(p * 100).toFixed(1)}%</span></div>`;
+    return `<tr><th scope="row" style="font-weight:500">${d.b}</th>
+      <td class="num">${d.orders}</td>
+      <td>${bar(po, "var(--s1)")}</td>
+      <td>${bar(pr, "var(--s2)")}</td></tr>`;
+  }).join("");
+  document.getElementById("bandrows").innerHTML = rows;
+}
+
+function drawAll(){
+  ["c1", "c2", "c3"].forEach(id => document.getElementById(id).innerHTML = "");
+  chart1(); chart2(); chart3();
+}
+drawAll();
+bandTable();
+
+// redraw on theme change so SVG picks up the new token values
+const mq = window.matchMedia("(prefers-color-scheme: dark)");
+mq.addEventListener("change", drawAll);
+new MutationObserver(drawAll).observe(document.documentElement,
+  {attributes:true, attributeFilter:["data-theme"]});
+window.addEventListener("scroll", hideTip, {passive:true});
+</script>
