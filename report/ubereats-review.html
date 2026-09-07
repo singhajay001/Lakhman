@@ -165,7 +165,7 @@ table{border-collapse:collapse; width:100%; min-width:460px; font-size:.875rem}
 th,td{text-align:left; padding:.62rem .85rem; border-bottom:1px solid var(--rule)}
 thead th{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.655rem; letter-spacing:.11em;
   text-transform:uppercase; color:var(--ink-3); font-weight:500; background:var(--panel-2)}
-tbody tr:last-child td{border-bottom:none}
+tbody tr:last-child td, tbody tr:last-child th{border-bottom:none}
 td.num{text-align:right; font-family:"IBM Plex Mono",ui-monospace,monospace;
   font-variant-numeric:tabular-nums; white-space:nowrap}
 .barcell{display:flex; align-items:center; gap:.5rem}
@@ -208,13 +208,15 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
     <span class="eyebrow">Trafalgar Grocery &amp; Liquor · Channel review</span>
     <h1>Why Uber Eats orders halved</h1>
     <p class="standfirst">Seven months of order data says the store is not losing customers to a
-      worse offer — it is being <strong>seen by fewer people</strong>. Order volume is down 43% since
-      mid-May while average basket value is <em>up</em> 17%. That combination has one main cause,
-      and one main fix.</p>
+      worse offer — <strong>there are fewer customers reaching it</strong>. Order volume is down 43%
+      since mid-May while average basket value is <em>up</em> 17%. The store sits beside Macquarie
+      University, and the monthly shape follows the academic year closely enough that seasonality
+      explains most of the fall — but not all of it. One test settles the rest.</p>
     <div class="mast-meta">
       <span><b>Window</b> 29 Jan – 7 Sep 2026</span>
       <span><b>Orders</b> 735</span>
       <span><b>Revenue</b> $24,651</span>
+      <span><b>Store</b> Marsfield NSW 2112</span>
       <span><b>Source</b> MyFoodLink exports + storefront review 7 Sep</span>
     </div>
   </div>
@@ -310,11 +312,39 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
       order of the day lands at 10am and the last before midnight, in every single month. And the
       store was almost never dark: across 222 days there were only three two-day gaps with no orders,
       and 23 zero-order days in total, which at two to four orders a day is ordinary rather than alarming.</p>
-    <p>What did change is the calendar. The store went live on <span class="mono">29 January</span>.
-      Strong February, March and April; decline from May. That is the shape of a
-      <strong>new-merchant visibility boost expiring</strong> — Uber Eats gives new stores elevated
-      placement for an introductory period, and when it lapses a store falls back to whatever its
-      organic ranking earns. Trafalgar has nothing propping that ranking up.</p>
+    <p>What does change is the calendar — but not the retail one. The store is at
+      <span class="mono">Shop 5, 1 Trafalgar Place, Marsfield NSW 2112</span>, next door to Macquarie
+      University. Read the months against the academic year and they line up:</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th scope="col">Period</th><th scope="col">Orders/day</th>
+          <th scope="col">University calendar</th></tr></thead>
+        <tbody>
+          <tr><th scope="row" style="font-weight:500">Feb – Apr</th><td class="num">4.07 – 4.60</td><td>Session 1 teaching</td></tr>
+          <tr><th scope="row" style="font-weight:500">May</th><td class="num">3.19</td><td>end of teaching, exams approaching</td></tr>
+          <tr><th scope="row" style="font-weight:500">Jun – Jul</th><td class="num">2.13 – 2.16</td><td>exams, then the mid-year break</td></tr>
+          <tr><th scope="row" style="font-weight:500">Aug</th><td class="num">3.16</td><td>Session 2 under way</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>A student catchment emptying out over the mid-year break would produce exactly what the data
+      shows: every weekday and every daypart falling together, late-night share holding, and a
+      recovery when semester resumes. It fits better than the explanation I reached for before
+      seeing the address — an expiring new-merchant boost would decay and stay decayed, and would
+      not bounce back in August.</p>
+
+    <div class="call alert">
+      <h3>But seasonality does not explain all of it</h3>
+      <p>August ran at 3.16 orders per day against April's 4.60. Both are mid-semester months, so
+        they should be comparable — and August is still <strong>31% down</strong>. Something beyond
+        the calendar is taking a share of that gap, and September so far is running weaker still.</p>
+      <p>One check settles it, and you already have the data. <strong>Pull your in-store sales for
+        the same months.</strong> If in-store dipped through June and July too, the catchment emptied
+        and Uber Eats behaved normally. If in-store held steady while Uber Eats halved, the problem
+        is on the platform and the visibility work below is urgent.</p>
+    </div>
   </div>
 </section>
 
@@ -331,10 +361,11 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
       <div class="tile"><span class="k">Coupons</span><span class="v">0</span><span class="n">field never populated</span></div>
       <div class="tile"><span class="k">Total discount</span><span class="v">$3.32</span><span class="n">a single order, in August</span></div>
     </div>
-    <p>Those four figures are exactly what the MyFoodLink export contains. But the live storefront,
-      checked on 7 September, carries <strong>two $0 delivery fee offers</strong>, an
-      <em>Everyday deals on Essentials</em> row with markdowns of 10–25%, and at least one item
-      labelled <strong>Sponsored</strong>. Both cannot be the whole truth.</p>
+    <p>Those four figures are exactly what the MyFoodLink export contains. The storefront is busier:
+      an <em>Everyday deals on Essentials</em> row with markdowns of 10–25%, and at least one item
+      labelled <strong>Sponsored</strong>. The two $0 delivery fee banners turn out to be an
+      <strong>Uber One member benefit</strong> rather than anything you fund — so they are not
+      evidence of a merchant promotion, and not a lever you control.</p>
 
     <div class="call alert">
       <h3>Which one it is changes what you can measure</h3>
@@ -421,19 +452,21 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
         The category carrying 80% of your revenue does not.</p>
     </div>
 
-    <p>This is the cheapest fix available to you and it is entirely within your control. It will not
-      by itself explain the May decline — the aisle structure did not change that month — but it is a
-      permanent brake on every browsing customer who arrives without a specific product in mind.</p>
+    <p>To be precise about where the problem is not: at marketplace level the store is tagged
+      <em>Grocery · Convenience · Alcohol</em>, so a customer searching Uber Eats for a bottle shop
+      can find you. The breakage is <strong>inside</strong> the store — once they arrive, there is no
+      aisle to walk down. This is the cheapest fix available and it is entirely in your back office.
+      It will not explain the mid-year decline on its own, but it is a permanent brake on every
+      browsing customer who arrives without a specific product in mind.</p>
 
     <div class="finding" style="border-top:1px solid var(--rule)">
       <span class="fchip warn">Check</span>
-      <h3>The store is called three different things</h3>
-      <p>The storefront header displays <strong>Friendly Grocer</strong> — the banner brand, shared
-        with every other store in the group. The search field inside it says
-        <em>Trafalgar Supermarket And Cellars</em>. MyFoodLink calls it
-        <em>Trafalgar Grocery &amp; Liquor</em>. Confirm which name appears in Uber Eats search results
-        and the home feed: if it is the banner name, a local customer searching "Trafalgar" may not
-        find you, and nothing in the name signals that you sell alcohol.</p>
+      <h3>The header shows the banner brand, not the store</h3>
+      <p>The store record itself is correct — <strong>Trafalgar Supermarket And Cellars</strong>,
+        tagged <em>Grocery · Convenience · Alcohol</em>, so alcohol intent is recognised at the
+        marketplace level. But the storefront header displays <strong>Friendly Grocer</strong>, the
+        banner brand shared with every other store in the group. Worth confirming which of the two a
+        customer sees in search results and the home feed, since only one of them says Trafalgar.</p>
     </div>
 
     <div class="finding">
@@ -444,6 +477,16 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
         customer is paying something close to half again in fees. Worth asking your account manager
         what is driving it and whether the $0 delivery fee offers can be extended, because it
         suppresses exactly the small top-up order this store is built around.</p>
+    </div>
+
+    <div class="finding">
+      <span class="fchip warn">Check</span>
+      <h3>Late-night liquor sits close to a regulatory boundary</h3>
+      <p>Licence <span class="mono">LIQP700301260</span> is a NSW packaged liquor licence, and NSW
+        restricts the hours in which alcohol can be delivered. The 11pm hour is your second-best
+        basket at $41.69, which puts your most valuable trading hour near whatever the cut-off is.
+        Confirm the current rule against your licence conditions before extending hours or promoting
+        into that window — the upside is real, and so is the exposure.</p>
     </div>
 
     <div class="finding" style="border-bottom:1px solid var(--rule)">
@@ -519,11 +562,27 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
       </div>
       <div class="finding">
         <span class="fchip warn">Likely cause</span>
-        <h3>Timing matches expiry of the new-merchant visibility boost</h3>
-        <p>Launched 29 January, strong through April, decays from May. Nothing in the store's own
-          operations changed at that point. This is an inference from timing and shape — confirm it
-          against the impressions and store-ranking figures in Uber Eats Merchant Manager.</p>
+        <h3>The monthly shape tracks the Macquarie University academic year</h3>
+        <p>The store is in Marsfield, beside the university. Peak during Session 1, trough across
+          exams and the mid-year break, recovery when Session 2 starts. A catchment that empties and
+          refills explains the uniform fall better than anything on the platform does.</p>
         <p class="ev">Feb 4.07 · Mar 4.10 · Apr 4.60 · May 3.19 · Jun 2.13 · Jul 2.16 · Aug 3.16 orders/day</p>
+      </div>
+      <div class="finding">
+        <span class="fchip bad">Open question</span>
+        <h3>Seasonality does not cover the whole gap</h3>
+        <p>April and August are both mid-semester months, yet August ran 31% below April, and
+          September is weaker again. Comparing in-store sales for the same months separates a
+          catchment effect from a platform one — if in-store also dipped, the students left; if it
+          held, the problem is Uber Eats visibility.</p>
+        <p class="ev">Apr 4.60 vs Aug 3.16 orders/day · Sep 1.86 over 7 days</p>
+      </div>
+      <div class="finding">
+        <span class="fchip">Ruled out</span>
+        <h3>Store rating is healthy at 4.6</h3>
+        <p>4.6 from 45 ratings. That is comfortably clear of the range where Uber Eats suppresses a
+          store, so a ratings-driven demotion is not what happened.</p>
+        <p class="ev">Storefront, 7 Sep 2026 · 45 ratings across 736 orders</p>
       </div>
       <div class="finding">
         <span class="fchip bad">Critical</span>
@@ -588,22 +647,33 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
   <div class="sec-head">
     <span class="eyebrow">What to do, in order</span>
     <h2>The plan</h2>
-    <p>Ordered by expected return against effort. The first four all target visibility and
-      discovery, because that is where the $29,000 sits — basket and margin work on 2.4 orders a day
+    <p>The first two are diagnosis and should happen before anything else — they decide whether
+      this is a catchment story or a platform one. The rest target visibility and discovery, because
+      that is where the $29,000 sits — basket and margin work on 2.4 orders a day
       cannot match it. Items 2 and 4 cost nothing but an afternoon in the back office.</p>
   </div>
   <div class="body-stack">
     <div class="actions">
       <div class="act">
         <span class="rank">1</span>
-        <h3>Read the visibility numbers in Merchant Manager before changing anything</h3>
-        <span class="worth">This week</span>
-        <p>Store impressions, menu views and conversion by month, plus current store rating and
-          missing-item rate. This confirms or kills the boost-expiry theory in ten minutes and tells
-          you whether a ranking penalty is also in play. Everything below is more effective once you know.</p>
+        <h3>Compare in-store sales, month by month, against the Uber Eats line</h3>
+        <span class="worth">Decides the rest</span>
+        <p>You already hold this data. If in-store trade dipped through June and July alongside Uber
+          Eats, the university catchment emptied and the channel behaved normally — the job is then
+          to plan around the academic year. If in-store held steady while Uber Eats halved, this is a
+          platform visibility problem and everything below becomes urgent. Nothing else is worth
+          deciding until you know which.</p>
       </div>
       <div class="act">
         <span class="rank">2</span>
+        <h3>Pull impressions and menu views by month in Merchant Manager</h3>
+        <span class="worth">This week</span>
+        <p>The other half of the same question. Impressions holding while orders fell points at
+          conversion or the catchment; impressions falling points at ranking. Rating is already ruled
+          out at 4.6, so check the missing-item rate while you are in there.</p>
+      </div>
+      <div class="act">
+        <span class="rank">3</span>
         <h3>Create a Beer, Wine &amp; Spirits aisle</h3>
         <span class="worth">Free · today</span>
         <p>Your highest-revenue category currently has no entry point in the browse list. Add it, and
@@ -612,7 +682,7 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
           on a basket rather than an aisle.</p>
       </div>
       <div class="act">
-        <span class="rank">3</span>
+        <span class="rank">4</span>
         <h3>Settle whether your promotions are being recorded</h3>
         <span class="worth">Blocks everything else</span>
         <p>Offers and a sponsored item are live on the storefront but absent from every order in the
@@ -621,7 +691,7 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
           Manager, then ask MyFoodLink whether Uber-side promotions write back at all.</p>
       </div>
       <div class="act">
-        <span class="rank">4</span>
+        <span class="rank">5</span>
         <h3>Fix the store name, and question the $7.99 delivery fee</h3>
         <span class="worth">Discovery</span>
         <p>Make sure the name customers see carries "Trafalgar" so local search finds you, and ideally
@@ -630,7 +700,7 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
           top-up order that is most of your volume.</p>
       </div>
       <div class="act">
-        <span class="rank">5</span>
+        <span class="rank">6</span>
         <h3>Confirm the uplift arithmetic covers the commission</h3>
         <span class="worth">Margin</span>
         <p>Commission is charged on the marked-up price, so a 30% commission needs about a 43% uplift
@@ -640,7 +710,7 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
           than yours; the sub-$10 tail has to be fixed through basket size, not a surcharge.</p>
       </div>
       <div class="act">
-        <span class="rank">6</span>
+        <span class="rank">7</span>
         <h3>Fix the substitution and not-supplied tracking</h3>
         <span class="worth">Diagnostic</span>
         <p>Ask MyFoodLink why both fields are empty on Uber orders. Without them you cannot see the
@@ -648,7 +718,16 @@ footer{width:var(--prose); margin-top:1.5rem; padding-top:1.4rem; border-top:1px
           rating slide.</p>
       </div>
       <div class="act">
-        <span class="rank">7</span>
+        <span class="rank">8</span>
+        <h3>Run the trading year on the academic calendar</h3>
+        <span class="worth">Structural</span>
+        <p>If step 1 confirms a student catchment, stop treating the year as flat. Spend on offers
+          and ads during session and especially in the first fortnight back, when habits form; pull
+          spend right back over the mid-year and summer breaks rather than paying to reach an empty
+          suburb. Build the range around what that customer actually buys late on a weekend.</p>
+      </div>
+      <div class="act">
+        <span class="rank">9</span>
         <h3>Give the direct shop a reason to exist</h3>
         <span class="worth">Long game</span>
         <p>An insert in every Uber Eats bag offering a discount for ordering direct next time costs
