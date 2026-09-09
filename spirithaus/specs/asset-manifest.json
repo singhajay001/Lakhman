@@ -1,0 +1,40 @@
+{
+  "campaign": "SPIRITHAUS",
+  "version": "1.0.0",
+  "colorSpace": "sRGB",
+  "master": "16-bit, unsharpened",
+  "webDelivery": { "format": "jpeg", "quality": 90, "progressive": true },
+  "safeZones": {
+    "hero": {
+      "region": "left-third",
+      "rule": "x = 0 to 0.3333 of width, full height. Empty, unlit, no objects, no specular highlights.",
+      "maxLuma": "15 IRE"
+    },
+    "tile": {
+      "region": "centre-third-band",
+      "rule": "y = 0.3333 to 0.6667 of height, full width. Empty, low contrast, visual interest at top and bottom edges.",
+      "maxLuma": "15 IRE"
+    },
+    "lifestyle": { "region": "none", "rule": "Keep one quadrant quiet for caption placement." }
+  },
+  "assets": [
+    { "file": "hero-home.jpg",      "class": "hero", "px": [3840, 1600], "ratio": "2.4:1", "spec": "prompts/hero/hero-home.jpg.md",      "subject": "backbar shelf run, curated selection",   "hands": false, "serve": 0 },
+    { "file": "hero-home-alt.jpg",  "class": "hero", "px": [3840, 1600], "ratio": "2.4:1", "spec": "prompts/hero/hero-home-alt.jpg.md",  "subject": "bottle boxed in tissue, fulfilment",     "hands": false, "serve": 0 },
+    { "file": "hero-whisky.jpg",    "class": "hero", "px": [3840, 1600], "ratio": "2.4:1", "spec": "prompts/hero/hero-whisky.jpg.md",    "subject": "cask head, oak, transmitted amber",      "hands": false, "serve": 1 },
+    { "file": "hero-gin.jpg",       "class": "hero", "px": [3840, 1600], "ratio": "2.4:1", "spec": "prompts/hero/hero-gin.jpg.md",       "subject": "botanical bill on stone",                "hands": false, "serve": 0 },
+    { "file": "hero-tequila.jpg",   "class": "hero", "px": [3840, 1600], "ratio": "2.4:1", "spec": "prompts/hero/hero-tequila.jpg.md",   "subject": "agave pina, volcanic stone",             "hands": false, "serve": 0 },
+    { "file": "hero-rum.jpg",       "class": "hero", "px": [3840, 1600], "ratio": "2.4:1", "spec": "prompts/hero/hero-rum.jpg.md",       "subject": "cane, molasses, tropical hardwood",      "hands": false, "serve": 0 },
+    { "file": "hero-vodka.jpg",     "class": "hero", "px": [3840, 1600], "ratio": "2.4:1", "spec": "prompts/hero/hero-vodka.jpg.md",     "subject": "frost, brushed steel, raw grain",        "hands": false, "serve": 0 },
+    { "file": "hero-cocktails.jpg", "class": "hero", "px": [3840, 1600], "ratio": "2.4:1", "spec": "prompts/hero/hero-cocktails.jpg.md", "subject": "bar tools, single stirred serve",        "hands": false, "serve": 1 },
+    { "file": "hero-liqueurs.jpg",  "class": "hero", "px": [3840, 1600], "ratio": "2.4:1", "spec": "prompts/hero/hero-liqueurs.jpg.md",  "subject": "coffee, cacao, vanilla, viscosity",      "hands": false, "serve": 0 },
+
+    { "file": "tile-whisky.jpg",    "class": "tile", "px": [2048, 2560], "ratio": "4:5",   "spec": "prompts/tiles/tile-whisky.jpg.md",    "subject": "stave top, bottle shoulder bottom",     "hands": false, "serve": 0 },
+    { "file": "tile-gin.jpg",       "class": "tile", "px": [2048, 2560], "ratio": "4:5",   "spec": "prompts/tiles/tile-gin.jpg.md",       "subject": "botanical drift top, bottle base bottom","hands": false, "serve": 0 },
+    { "file": "tile-cocktails.jpg", "class": "tile", "px": [2048, 2560], "ratio": "4:5",   "spec": "prompts/tiles/tile-cocktails.jpg.md", "subject": "mixing glass top, tools bottom",        "hands": false, "serve": 0 },
+
+    { "file": "life-packing.jpg",   "class": "lifestyle", "px": [4096, 2731], "ratio": "3:2", "spec": "prompts/lifestyle/life-packing.jpg.md", "subject": "hands packing a bottle", "hands": true,  "serve": 0 },
+    { "file": "life-shelf.jpg",     "class": "lifestyle", "px": [4096, 2731], "ratio": "3:2", "spec": "prompts/lifestyle/life-shelf.jpg.md",   "subject": "hand placing bottle on shelf", "hands": true, "serve": 0 },
+    { "file": "life-build.jpg",     "class": "lifestyle", "px": [4096, 2731], "ratio": "3:2", "spec": "prompts/lifestyle/life-build.jpg.md",   "subject": "hand stirring in mixing glass", "hands": true, "serve": 0 },
+    { "file": "life-sydney.jpg",    "class": "lifestyle", "px": [4096, 2731], "ratio": "3:2", "spec": "prompts/lifestyle/life-sydney.jpg.md",  "subject": "Sydney laneway shopfront at dusk", "hands": false, "serve": 0 }
+  ]
+}
