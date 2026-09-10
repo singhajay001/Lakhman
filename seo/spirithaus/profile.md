@@ -15,6 +15,26 @@
 | Ships to | TODO — AU-wide? VIC only? click-and-collect? |
 | Physical presence | TODO — if yes, this also needs a local profile |
 
+## 🔴 Name collision — never assume a "spirithaus" result is you
+
+`spirithaus.com.au` and **`spirithouse.com.au`** are homophones. Spirit House is
+a long-established Sunshine Coast restaurant with a blog, an online shop and
+years of accumulated authority. Searching `spirithaus` returns *them*.
+
+Consequences, recorded so they are not rediscovered:
+
+- **Brand queries are not a viable channel.** Contested by an older entity with a
+  near-identical name.
+- **Product queries are.** `buy <brand> <expression> australia` and
+  bottle-specific long tail are uncontested by a restaurant.
+- **Entity markup matters more than usual.** `Organization`, `sameAs` and
+  consistent naming are doing real disambiguation work here.
+- When checking rankings, confirm the domain. A result for "spirit house" is a
+  different business, the same way IGA Trafalgar VIC is not Trafalgar Marsfield.
+
+Verified 2026-09-10: `site:spirithaus.com.au` returns zero results; the engine
+substitutes spirithouse.com.au.
+
 ## What winning looks like
 
 This is **e-commerce**. Revenue comes from people searching for a product,
