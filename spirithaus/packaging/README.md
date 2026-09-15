@@ -1,30 +1,41 @@
 # SPIRITHAUS — A4 Packaging
 
-Two A4 portrait (210 × 297 mm) pieces for the outer carton:
+Two pieces for the outer carton, each in **portrait (210 × 297 mm)** and
+**landscape (297 × 210 mm)**:
 
 - **Box label** — the functional despatch label: handling marks, 18+/ID band,
   address panel, order fields, statutory notice.
 - **Box artwork** — the premium outer face. Wordmark, tagline, an oversized `U`
   bleeding off the top and right edges. No address or despatch fields.
 
+Landscape is not a rotation — the portrait piece stacks seven bands down the
+page, which does not work at 297 × 210. The landscape label is re-laid-out:
+header, handling and 18+ bands run full width, then the body splits into a
+large address panel on the left and the order fields on the right, with the
+return address, statutory notice and licence block sharing a three-column
+footer.
+
 Every PDF is single-page with fonts embedded and no external dependencies at
-print time. An **editable deck** of all four designs is also provided for
-PowerPoint / Google Slides.
+print time. **Editable decks** are provided for PowerPoint / Google Slides in
+both orientations.
 
 ## Editable version — Google Slides
 
-`dist/spirithaus-box-label-artwork-A4.pptx` — four A4 slides:
-label (bone), label (ink), artwork (ink), artwork (bone).
+- `dist/spirithaus-box-label-artwork-A4.pptx` — portrait
+- `dist/spirithaus-box-label-artwork-A4-landscape.pptx` — landscape
+
+Four slides each: label (bone), label (ink), artwork (ink), artwork (bone).
 
 **To open in Google Slides:** upload the `.pptx` to Google Drive → right-click →
-*Open with* → *Google Slides*. The page is already set to A4 portrait.
+*Open with* → *Google Slides*. Page size is already set (A4 portrait or A4
+landscape to match the file).
 
 Bands, rules and every line of copy are **native editable objects**. Only the
 wordmark, the three handling icons and the `U` mark are placed images — as a
 logo should be. Fonts are named **Archivo** and **Space Mono**; both are in the
 Google Slides font picker, so they resolve on open.
 
-Rebuild it with `node build-deck.js` (needs `pptxgenjs`).
+`node build-deck.js` rebuilds both decks (needs `pptxgenjs`).
 
 Why Slides and not Docs or Sheets: a label is a fixed-size layout with
 positioned elements. Docs reflows and cannot hold mm-accurate placement; Sheets
@@ -40,7 +51,14 @@ is a grid, not a canvas. Slides is the only Google app with a real fixed canvas.
 | `dist/spirithaus-box-artwork-a4-ink.pdf` | 210 × 297 mm | **Artwork, primary.** Bone on ink |
 | `dist/spirithaus-box-artwork-a4-bone.pdf` | 210 × 297 mm | Artwork, light variant |
 | `dist/spirithaus-box-artwork-a4-ink-bleed.pdf` | 216 × 303 mm | Artwork, trade print with 3 mm bleed |
-| `dist/spirithaus-box-label-artwork-A4.pptx` | 4 × A4 | Editable deck (see above) |
+| `dist/spirithaus-box-label-a4L-bone.pdf` | 297 × 210 mm | **Landscape label, primary.** Ink on bone |
+| `dist/spirithaus-box-label-a4L-ink.pdf` | 297 × 210 mm | Landscape label, inverted |
+| `dist/spirithaus-box-label-a4L-bone-bleed.pdf` | 303 × 216 mm | Landscape label, trade print |
+| `dist/spirithaus-box-artwork-a4L-ink.pdf` | 297 × 210 mm | **Landscape artwork, primary.** Bone on ink |
+| `dist/spirithaus-box-artwork-a4L-bone.pdf` | 297 × 210 mm | Landscape artwork, light |
+| `dist/spirithaus-box-artwork-a4L-ink-bleed.pdf` | 303 × 216 mm | Landscape artwork, trade print |
+| `dist/spirithaus-box-label-artwork-A4.pptx` | 4 × A4 portrait | Editable deck (see above) |
+| `dist/spirithaus-box-label-artwork-A4-landscape.pptx` | 4 × A4 landscape | Editable deck (see above) |
 
 Previews: `preview/*.png` (rendered at exact trim size, 2× scale).
 
@@ -52,8 +70,9 @@ node build-deck.js  # rebuilds the editable .pptx
 ```
 
 Requires Chromium. Override the binary with `CHROME=/path/to/chrome ./build.sh`.
-Sources are `box-label-a4.html` and `box-artwork-a4.html`; variants switch on a
-query string (`?v=bone`, `?v=ink`, `?v=bone-bleed`, `?v=ink-bleed`).
+Sources are `box-label-a4.html`, `box-artwork-a4.html` and their
+`-landscape` counterparts; variants switch on a query string
+(`?v=bone`, `?v=ink`, `?v=bone-bleed`, `?v=ink-bleed`).
 
 `assets/` holds the transparent PNG exports of the wordmark, `U` mark and
 handling icons used by the deck.
@@ -64,8 +83,10 @@ generator intended. (LibreOffice cannot open `.pptx` in this environment.)
 
 ## Layout
 
-The sheet is a fixed seven-row grid that sums to exactly 297 mm, so content
-cannot overflow or reflow onto a second page:
+### Portrait
+
+A fixed seven-row grid summing to exactly 297 mm, so content cannot overflow or
+reflow onto a second page:
 
 ```
  50mm  header band — wordmark, tagline, carton _ of _
@@ -80,8 +101,23 @@ cannot overflow or reflow onto a second page:
 In the bleed build the header grows to 53 mm and the footer to 41 mm, so the
 two bands absorb the 3 mm top and bottom bleed and the trim area stays 297 mm.
 
-The address panel is deliberately the largest zone — it doubles as the clear
-area for a courier's own consignment sticker.
+### Landscape
+
+A five-row grid summing to exactly 210 mm:
+
+```
+ 42mm  header band — wordmark, tagline, carton _ of _
+ 24mm  handling — FRAGILE · THIS WAY UP · KEEP DRY
+ 16mm  age/ID band (SPIRITHAUS red)
+ 90mm  body — address panel (167mm) | order fields (78mm)
+ 38mm  footer — return address | statutory notice | licence
+```
+
+The bleed build grows the header to 45 mm and the footer to 41 mm, keeping the
+trim area at 210 mm.
+
+In both orientations the address panel is deliberately the largest zone — it
+doubles as the clear area for a courier's own consignment sticker.
 
 ## Fill these in before printing
 

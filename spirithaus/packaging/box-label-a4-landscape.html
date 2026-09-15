@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>SPIRITHAUS — A4 Landscape Box Label</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{
+  --ink:#111110;--bone:#F2EFE9;--red:#CF1C29;
+  --rule:rgba(17,17,16,.22);--rule-strong:rgba(17,17,16,.55);--mute:rgba(17,17,16,.52);
+  --pad:16mm;--page-w:297mm;--page-h:210mm;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:297mm 210mm;margin:0}
+html,body{background:#777}
+body{font-family:'Archivo',Helvetica,Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+.sheet{
+  position:relative;width:var(--page-w);height:var(--page-h);margin:0 auto;
+  background:var(--bone);color:var(--ink);overflow:hidden;
+  display:grid;grid-template-rows:42mm 24mm 16mm 90mm 38mm;   /* = 210mm */
+}
+.v-ink .sheet{background:var(--ink);color:var(--bone)}
+.v-ink{--rule:rgba(242,239,233,.28);--rule-strong:rgba(242,239,233,.6);--mute:rgba(242,239,233,.55)}
+.v-ink .band{background:var(--bone);color:var(--ink)}
+.v-ink .band .tagline{color:rgba(17,17,16,.6)}
+.v-ink .cartonbox{border-color:rgba(17,17,16,.35)}
+.v-ink .cartonbox b u{border-bottom-color:rgba(17,17,16,.45)}
+.v-ink .foot{background:var(--bone);color:var(--ink)}
+.v-ink .foot .legal{color:rgba(17,17,16,.74)}
+.v-ink .foot .legal b,.v-ink .foot .nm{color:var(--ink)}
+.v-ink .foot .lic,.v-ink .foot .sub{color:rgba(17,17,16,.74)}
+.v-ink .foot .rts{color:rgba(17,17,16,.55)}
+.v-ink .foot .lic u{border-bottom-color:rgba(17,17,16,.5)}
+
+/* wordmark */
+.wordmark{display:flex;align-items:baseline;line-height:.8;white-space:nowrap}
+.wm-a{font-weight:300;letter-spacing:.20em}
+.wm-b{font-weight:800;letter-spacing:-.005em;display:inline-flex;align-items:baseline}
+.wm-u{display:inline-block;height:.72em;width:.71em;margin:0 .012em}
+.wm-u svg{display:block;height:100%;width:100%}
+
+/* header band */
+.band{background:var(--ink);color:var(--bone);padding:0 var(--pad);
+  display:flex;align-items:center;justify-content:space-between;gap:10mm}
+.band .lockup{display:flex;flex-direction:column;gap:3.2mm}
+.band .wordmark{font-size:12.4mm}
+.band .tagline{font-family:'Space Mono',monospace;font-size:2.5mm;letter-spacing:.50em;
+  color:rgba(242,239,233,.62);text-transform:uppercase}
+.cartonbox{border:.5mm solid rgba(242,239,233,.38);padding:2.6mm 4mm 2.2mm;
+  text-align:center;min-width:38mm}
+.cartonbox span{display:block;font-family:'Space Mono',monospace;font-size:2.3mm;
+  letter-spacing:.24em;color:rgba(242,239,233,.6);text-transform:uppercase;margin-bottom:1.2mm}
+.cartonbox b{font-size:7mm;font-weight:700;display:block}
+.cartonbox b i{font-style:normal;opacity:.4;font-weight:300;padding:0 1.6mm}
+.cartonbox b u{text-decoration:none;display:inline-block;width:10mm;
+  border-bottom:.4mm solid rgba(242,239,233,.5)}
+
+/* handling */
+.handling{display:grid;grid-template-columns:1fr 1fr 1fr;
+  border-bottom:.4mm solid var(--rule);padding:0 var(--pad)}
+.hcell{display:flex;align-items:center;gap:4mm;padding:0 2mm}
+.hcell+.hcell{border-left:.3mm solid var(--rule);padding-left:8mm}
+.icon{width:10mm;height:10mm;flex:none}
+.icon svg{display:block;width:100%;height:100%}
+.htext strong{display:block;font-size:4.2mm;font-weight:800;letter-spacing:.04em;
+  text-transform:uppercase;line-height:1.05}
+.htext em{display:block;font-style:normal;font-family:'Space Mono',monospace;
+  font-size:2.2mm;letter-spacing:.14em;color:var(--mute);text-transform:uppercase;
+  margin-top:1.2mm;white-space:nowrap}
+
+/* age band */
+.age{background:var(--red);color:#fff;display:flex;align-items:center;
+  justify-content:center;gap:5mm;padding:0 var(--pad)}
+.age .n{font-size:8mm;font-weight:800;line-height:1;border:.7mm solid rgba(255,255,255,.9);
+  border-radius:50%;width:12mm;height:12mm;display:flex;align-items:center;
+  justify-content:center;flex:none;padding-bottom:.4mm}
+.age .t{font-size:4.6mm;font-weight:800;letter-spacing:.075em;text-transform:uppercase;line-height:1.2}
+.age .t s{display:block;text-decoration:none;font-family:'Space Mono',monospace;
+  font-size:2.4mm;font-weight:400;letter-spacing:.16em;color:rgba(255,255,255,.82);margin-top:.9mm}
+
+/* body: address left, order fields right */
+.body{position:relative;padding:8mm var(--pad) 0;display:flex;gap:10mm;overflow:hidden}
+.ghost{position:absolute;right:-30mm;top:-16mm;width:118mm;height:120mm;
+  color:var(--ink);opacity:.05;pointer-events:none}
+.v-ink .ghost{color:var(--bone);opacity:.045}
+.ghost svg{display:block;width:100%;height:100%}
+.kicker{font-family:'Space Mono',monospace;font-size:2.9mm;font-weight:700;
+  letter-spacing:.34em;text-transform:uppercase;color:var(--mute)}
+.kicker b{color:var(--red);font-weight:700}
+.to{flex:1;display:flex;flex-direction:column;position:relative;z-index:2}
+.lines{margin-top:5mm;display:flex;flex-direction:column;flex:1;padding-bottom:8mm}
+.line{flex:1;border-bottom:.35mm solid var(--rule-strong)}
+.vdiv{width:0;border-left:.3mm solid var(--rule);margin-top:2mm;margin-bottom:8mm}
+.meta{width:78mm;display:flex;flex-direction:column;padding-bottom:8mm;position:relative;z-index:2}
+.mcell{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:1mm}
+.mcell span{font-family:'Space Mono',monospace;font-size:2.4mm;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--mute);margin-bottom:6mm}
+.mcell .fill{border-bottom:.35mm solid var(--rule-strong)}
+
+/* footer: return address | statutory notice | licence */
+.foot{background:var(--ink);color:var(--bone);padding:5.5mm var(--pad) 0;
+  display:grid;grid-template-columns:86mm 1fr 58mm;gap:10mm;align-items:start}
+.foot .rts{font-size:2.5mm;color:rgba(242,239,233,.55)}
+.foot .nm{font-weight:800;font-size:3.4mm;letter-spacing:.03em;color:var(--bone);margin-top:3.4mm}
+.foot .sub{font-family:'Space Mono',monospace;font-size:2.4mm;letter-spacing:.08em;
+  line-height:1.65;color:rgba(242,239,233,.72);margin-top:1.4mm}
+.foot .legal{font-family:'Space Mono',monospace;font-size:2.3mm;line-height:1.7;
+  letter-spacing:.05em;color:rgba(242,239,233,.72)}
+.foot .legal b{color:var(--bone);font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  display:block;margin-bottom:1.6mm;font-size:2.35mm}
+.foot .lic{font-family:'Space Mono',monospace;font-size:2.3mm;letter-spacing:.1em;
+  color:rgba(242,239,233,.72);line-height:2.05;text-align:right}
+.foot .lic u{text-decoration:none;display:inline-block;width:26mm;
+  border-bottom:.3mm solid rgba(242,239,233,.45);margin-left:2mm}
+
+/* bleed: 303 x 216, absorbed by the header and footer bands */
+.v-bleed .sheet{width:303mm;height:216mm;--pad:19mm;
+  grid-template-rows:45mm 24mm 16mm 90mm 41mm}
+.v-bleed .band{padding-top:3mm}
+.v-bleed .foot{padding-bottom:3mm}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="band">
+    <div class="lockup">
+      <div class="wordmark"><span class="wm-a">SPIRIT</span><span class="wm-b">HA<span class="wm-u"><svg viewBox="0 0 276 280" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="b1"><path d="M60,0 L60,142 A78,78 0 0,0 216,142 L216,0 Z"/></clipPath></defs><path fill="currentColor" d="M0,0 L0,142 A138,138 0 0,0 276,142 L276,0 L216,0 L216,142 A78,78 0 0,1 60,142 L60,0 Z"/><rect clip-path="url(#b1)" x="60" y="162" width="156" height="118" fill="#CF1C29"/></svg></span>S</span></div>
+      <div class="tagline">SPIRITS &nbsp;·&nbsp; WINE &nbsp;·&nbsp; COCKTAILS</div>
+    </div>
+    <div class="cartonbox"><span>Carton</span><b><u>&nbsp;</u><i>/</i><u>&nbsp;</u></b></div>
+  </header>
+
+  <section class="handling">
+    <div class="hcell">
+      <div class="icon"><svg viewBox="0 0 100 100" fill="currentColor"><path d="M27,8 H73 L67.5,44 C65.5,57.5 34.5,57.5 32.5,44 Z"/><rect x="46.5" y="56" width="7" height="26"/><rect x="29" y="82" width="42" height="7.5" rx="1.5"/></svg></div>
+      <div class="htext"><strong>Fragile</strong><em>Glass · Handle with care</em></div>
+    </div>
+    <div class="hcell">
+      <div class="icon"><svg viewBox="0 0 100 100" fill="currentColor"><path d="M28,6 L41,29 H33.5 V92 H22.5 V29 H15 Z"/><path d="M72,6 L85,29 H77.5 V92 H66.5 V29 H59 Z"/></svg></div>
+      <div class="htext"><strong>This Way Up</strong><em>Do not invert · Do not stack</em></div>
+    </div>
+    <div class="hcell">
+      <div class="icon"><svg viewBox="0 0 100 100"><path fill="currentColor" d="M50,14 C27,14 10,30 8,48 H92 C90,30 73,14 50,14 Z"/><path fill="none" stroke="currentColor" stroke-width="7.5" stroke-linecap="round" d="M50,14 V76 C50,88 28,88 28,76"/><circle fill="currentColor" cx="50" cy="8" r="5"/></svg></div>
+      <div class="htext"><strong>Keep Dry</strong><em>Store upright · Away from heat</em></div>
+    </div>
+  </section>
+
+  <section class="age">
+    <div class="n">18</div>
+    <div class="t">Contains alcohol · ID required on delivery
+      <s>Must not be left unattended · Do not supply to a minor or an intoxicated person</s>
+    </div>
+  </section>
+
+  <section class="body">
+    <div class="ghost"><svg viewBox="0 0 276 280" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M0,0 L0,142 A138,138 0 0,0 276,142 L276,0 L216,0 L216,142 A78,78 0 0,1 60,142 L60,0 Z"/></svg></div>
+    <div class="to">
+      <div class="kicker">Deliver&nbsp;to <b>—</b> signature required</div>
+      <div class="lines">
+        <div class="line"></div><div class="line"></div><div class="line"></div>
+        <div class="line"></div><div class="line"></div>
+      </div>
+    </div>
+    <div class="vdiv"></div>
+    <div class="meta">
+      <div class="mcell"><span>Order No.</span><div class="fill"></div></div>
+      <div class="mcell"><span>Despatch date</span><div class="fill"></div></div>
+      <div class="mcell"><span>Items in carton</span><div class="fill"></div></div>
+      <div class="mcell"><span>Packed by</span><div class="fill"></div></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>
+      <div class="kicker rts">Return to sender</div>
+      <div class="nm">SPIRITHAUS</div>
+      <div class="sub">[STREET ADDRESS]<br>SYDNEY NSW [POSTCODE] AUSTRALIA<br>[PHONE] &nbsp;·&nbsp; [EMAIL]</div>
+    </div>
+    <div class="legal">
+      <b>Liquor Act 2007 (NSW)</b>
+      It is against the law to sell or supply alcohol to, or to obtain alcohol on behalf of,
+      a person under the age of 18 years.<br>
+      Photo ID must be sighted on delivery. If no person aged 18 or over is present to receive
+      and sign for this consignment, it must not be left — return to depot.
+    </div>
+    <div class="lic">LICENCE No.<u>&nbsp;</u><br>ABN<u>&nbsp;</u><br>CONSIGNMENT<u>&nbsp;</u></div>
+  </footer>
+
+</div>
+<script>
+(function(){
+  var v=new URLSearchParams(location.search).get('v')||'bone', r=document.documentElement;
+  if(/ink/.test(v)) r.classList.add('v-ink');
+  if(/bleed/.test(v)){
+    r.classList.add('v-bleed');
+    var s=document.createElement('style');
+    s.textContent='@page{size:303mm 216mm;margin:0}';
+    document.head.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>

@@ -19,4 +19,12 @@ echo "Artwork…"
 render box-artwork-a4.html ink        spirithaus-box-artwork-a4-ink
 render box-artwork-a4.html bone       spirithaus-box-artwork-a4-bone
 render box-artwork-a4.html ink-bleed  spirithaus-box-artwork-a4-ink-bleed
-echo "Done. (Editable deck: node build-deck.js)"
+echo "Label — landscape…"
+render box-label-a4-landscape.html bone       spirithaus-box-label-a4L-bone
+render box-label-a4-landscape.html ink        spirithaus-box-label-a4L-ink
+render box-label-a4-landscape.html bone-bleed spirithaus-box-label-a4L-bone-bleed
+echo "Artwork — landscape…"
+render box-artwork-a4-landscape.html ink       spirithaus-box-artwork-a4L-ink
+render box-artwork-a4-landscape.html bone      spirithaus-box-artwork-a4L-bone
+render box-artwork-a4-landscape.html ink-bleed spirithaus-box-artwork-a4L-ink-bleed
+echo "Done. (Editable decks: node build-deck.js)"
