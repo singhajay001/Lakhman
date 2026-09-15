@@ -15,7 +15,7 @@
                           { "qty": 2,  "name": "Roku Gin", "size": null } ] },
     { "n": 5,  "items": [ { "qty": 10, "name": "Don Julio", "size": null },
                           { "qty": 1,  "name": "Roku Gin", "size": null } ] },
-    { "n": 6,  "items": [ { "qty": 6,  "name": "Cao Isle Single Malt Whisky", "size": "700ml" } ] },
+    { "n": 6,  "items": [ { "qty": 6,  "name": "Caol Ila Single Malt Whisky", "size": "700ml" } ] },
     { "n": 7,  "items": [ { "qty": 12, "name": "Belvedere Vodka", "size": "700ml" },
                           { "qty": 2,  "name": "Don Julio", "size": null } ] },
     { "n": 8,  "items": [ { "qty": 6,  "name": "Karu Morita Rested", "size": "700ml" } ] },
