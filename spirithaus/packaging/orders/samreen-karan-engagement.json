@@ -5,7 +5,14 @@
     "name": "SPIRITHAUS PTY LTD",
     "abn": "97 701 853 483",
     "licenceLabel": "NSW Packaged Liquor Licence",
-    "licence": "LIQP700301260"
+    "licence": "LIQP700301260",
+    "tradingName": "SPIRITHAUS",
+    "street": "[STREET ADDRESS]",
+    "locality": "Sydney",
+    "state": "NSW",
+    "postcode": "[POSTCODE]",
+    "phone": "0452 480 487",
+    "email": "sales@spirithaus.com.au"
   },
   "customer": {
     "name": "Samreen & Karan's",

@@ -234,8 +234,8 @@ def label_page(order, box, total_boxes, idx):
   <footer class="foot">
     <div>
       <div class="kicker rts">Return to sender</div>
-      <div class="nm">SPIRITHAUS</div>
-      <div class="sub">[STREET ADDRESS]<br>SYDNEY NSW [POSTCODE] AUSTRALIA<br>[PHONE] &nbsp;&middot;&nbsp; [EMAIL]</div>
+      <div class="nm">%(rtname)s</div>
+      <div class="sub">%(rtaddr)s<br>%(rtcity)s<br>%(rtcontact)s</div>
     </div>
     <div class="legal"><b>Liquor Act 2007 (NSW)</b>%(legal)s</div>
     <div class="lic"><span class="lt">%(liclabel)s</span><span class="ln">%(licno)s</span>ABN&nbsp;%(abn)s<br>CONSIGNMENT<u>&nbsp;</u></div>
@@ -248,7 +248,14 @@ def label_page(order, box, total_boxes, idx):
                                           esc(c.get("postcode") or "")) if x),
                  rows="".join(rows), count=count, legal=LEGAL, boxnote=note,
                  liclabel=co.get("licenceLabel","Liquor licence"),
-                 licno=co.get("licence",""), abn=co.get("abn",""))
+                 licno=co.get("licence",""), abn=co.get("abn",""),
+                 rtname=esc(co.get("tradingName") or co.get("name","SPIRITHAUS")),
+                 rtaddr=esc(co.get("street","")),
+                 rtcity=" ".join(x for x in (esc(co.get("locality","")).upper(),
+                                             esc(co.get("state","")),
+                                             esc(co.get("postcode","")), "AUSTRALIA") if x),
+                 rtcontact=" &middot; ".join(x for x in
+                           (esc(co.get("phone","")), esc(co.get("email",""))) if x))
 
 MCSS = """
 :root{--ink:#111110;--bone:#F2EFE9;--red:#CF1C29;--rule:rgba(17,17,16,.2);

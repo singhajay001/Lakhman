@@ -109,7 +109,7 @@ and confirm the Liquor Act wording with your licensing advisor before printing.`
     fontSize:PT(2.6),bold:true,charSpacing:PT(.88),color:mute});
   s.addText('SPIRITHAUS',{...TX,x:M(PAD),y:M(226.5),w:M(90),h:M(5),
     fontSize:PT(3.5),bold:true,charSpacing:PT(.1),color:body});
-  s.addText('[STREET ADDRESS]\nSYDNEY NSW [POSTCODE] AUSTRALIA\n[PHONE]  ·  [EMAIL]',
+  s.addText('[STREET ADDRESS]\nSYDNEY NSW [POSTCODE] AUSTRALIA\n0452 480 487  ·  sales@spirithaus.com.au',
     {...MONO,x:M(PAD),y:M(232.5),w:M(110),h:M(16),fontSize:PT(2.5),lineSpacingMultiple:1.55,
      charSpacing:PT(.25),color:mute});
   s.addImage({path:A(uMark),x:M(RIGHT-23),y:M(219),w:M(22.7),h:M(23),transparency:86});
@@ -246,7 +246,7 @@ Act wording with your licensing advisor before printing.`);
     fontSize:PT(2.5),bold:true,charSpacing:PT(.85),color:mix(fFg,fBg,.55)});
   s.addText('SPIRITHAUS',{...TX,x:M(LPAD),y:M(183.5),w:M(86),h:M(5),
     fontSize:PT(3.4),bold:true,color:fFg});
-  s.addText('[STREET ADDRESS]\nSYDNEY NSW [POSTCODE] AUSTRALIA\n[PHONE]  ·  [EMAIL]',
+  s.addText('[STREET ADDRESS]\nSYDNEY NSW [POSTCODE] AUSTRALIA\n0452 480 487  ·  sales@spirithaus.com.au',
     {...MONO,x:M(LPAD),y:M(189.5),w:M(90),h:M(16),fontSize:PT(2.4),lineSpacingMultiple:1.6,
      charSpacing:PT(.2),color:mix(fFg,fBg,.72)});
   s.addText('LIQUOR ACT 2007 (NSW)',{...MONO,x:M(112),y:M(177.5),w:M(90),h:M(4),

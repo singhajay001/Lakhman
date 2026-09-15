@@ -13,9 +13,8 @@ CHROME = os.environ.get("CHROME", "/opt/pw-browsers/chromium-1194/chrome-linux/c
 BRAND = {
     "url":         "https://spirithaus.com.au",   # <- CONFIRM BEFORE PRINT
     "url_display": "spirithaus.com.au",
-    "instagram":   "@spirithaus",
-    "phone":       "[PHONE]",
-    "email":       "[EMAIL]",
+    "phone":       "0452 480 487",
+    "email":       "sales@spirithaus.com.au",
     "company":     "SPIRITHAUS PTY LTD",
     "abn":         "97 701 853 483",
     "licence":     "LIQP700301260",
@@ -111,6 +110,7 @@ body{font-family:'Archivo',Helvetica,Arial,sans-serif;
   padding-left:var(--pad);padding-right:var(--pad);padding-bottom:16mm}
 .foot .row{font-family:'Space Mono',monospace;font-size:2.7mm;letter-spacing:.18em;
   text-transform:uppercase}
+.foot .row .lc{text-transform:none}
 .foot .legal{font-family:'Space Mono',monospace;font-size:2.35mm;line-height:1.75;
   letter-spacing:.06em;color:var(--mute);margin-top:4.5mm}
 .v-bleed .sheet{width:216mm;height:303mm;padding:25mm 23mm 0}
@@ -156,7 +156,7 @@ def build(variant="white"):
   </section>
 
   <footer class="foot">
-    <div class="row">%(company)s &nbsp;&middot;&nbsp; Sydney &nbsp;&middot;&nbsp; %(phone)s &nbsp;&middot;&nbsp; %(email)s &nbsp;&middot;&nbsp; %(ig)s</div>
+    <div class="row">%(company)s &nbsp;&middot;&nbsp; Sydney &nbsp;&middot;&nbsp; %(phone)s &nbsp;&middot;&nbsp; <span class="lc">%(email)s</span></div>
     <div class="legal">
       Enjoy responsibly. It is against the law to sell or supply alcohol to, or to obtain
       alcohol on behalf of, a person under the age of 18 years.<br>
@@ -165,7 +165,7 @@ def build(variant="white"):
   </footer>
 </div></body></html>""" % dict(cls=cls.strip(), css=CSS, u=U, pillars=pillars,
         qr=qr_svg(b["url"]), url=b["url_display"], company=b["company"],
-        phone=b["phone"], email=b["email"], ig=b["instagram"],
+        phone=b["phone"], email=b["email"],
         liclabel=b["licenceLabel"], licence=b["licence"], abn=b["abn"])
     if "bleed" in variant:
         page = page.replace("@page{size:210mm 297mm;margin:0}", "@page{size:216mm 303mm;margin:0}")
