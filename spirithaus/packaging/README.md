@@ -62,6 +62,32 @@ is a grid, not a canvas. Slides is the only Google app with a real fixed canvas.
 
 Previews: `preview/*.png` (rendered at exact trim size, 2× scale).
 
+## Filled labels for a real order
+
+Order data lives in `orders/<slug>.json`; the generator fills the label and
+produces a packing manifest:
+
+```sh
+python3 build-order.py orders/samreen-karan-engagement.json
+```
+
+Writes into `dist/orders/`:
+
+| File | What |
+|---|---|
+| `<slug>-labels-bone.pdf` | One landscape page per carton, ink on bone |
+| `<slug>-labels-ink.pdf` | Same, inverted |
+| `<slug>-manifest.pdf` | A4 portrait packing manifest — per-carton contents, unit counts, tick boxes, totals by product, sign-off |
+
+The filled label replaces the blank address rules with the customer block and
+an itemised **contents** list, and pre-fills the carton counter (`3 / 11`) and
+the unit count. Items with no quantity render as `—` / "Qty to confirm" rather
+than being guessed, and the manifest counts how many such lines exist and warns
+in red.
+
+To add an order, copy an existing JSON and edit it. Set `"qty": null` where a
+quantity is genuinely unknown.
+
 ## Build
 
 ```sh
