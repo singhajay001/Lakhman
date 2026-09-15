@@ -41,6 +41,33 @@ Why Slides and not Docs or Sheets: a label is a fixed-size layout with
 positioned elements. Docs reflows and cannot hold mm-accurate placement; Sheets
 is a grid, not a canvas. Slides is the only Google app with a real fixed canvas.
 
+## Marketing box label (A4 portrait)
+
+`dist/spirithaus-marketing-label-a4-{white,ink,white-bleed}.pdf`
+
+The brand panel that goes on the carton alongside the despatch label. Its job
+is a reorder, so it carries a scannable QR. Built by `build-marketing.py`,
+with the URL and contact details in the `BRAND` dict at the top of that file.
+
+**The QR is generated, not a placeholder** — error correction H (30% of the
+symbol can be damaged and still read), 27.9 mm square at 0.85 mm per module.
+`qa-verify-qr.py` locates the symbol in the rendered PDF, reads its modules
+back and compares them to the encoder's matrix, and checks the two things that
+silently kill a printed QR:
+
+- **polarity** — must be dark modules on light. On the ink variant the QR sits
+  on a white plate, because an inverted symbol defeats many scanners
+- **quiet zone** — 4 clear modules on every side (3.4 mm here); the plate
+  supplies it on the dark variant, the page supplies it on the white one
+
+```sh
+python3 build-marketing.py     # rebuild
+python3 qa-verify-qr.py        # verify the printed symbol, exits non-zero on a problem
+```
+
+**Before printing, confirm the URL.** It defaults to `https://spirithaus.com.au`
+and is baked into the symbol — a wrong domain is unfixable once the boxes are out.
+
 ## Print quality — pick the right variant
 
 | Variant | Toner load | Use |
