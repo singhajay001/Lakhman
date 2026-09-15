@@ -6,6 +6,7 @@ const path = require('path');
 const A = f => path.join(__dirname, 'assets', f);
 
 const INK='111110', BONE='F2EFE9', RED='CF1C29';
+const LIC_NO='LIQP700301260', LIC_LABEL='Packaged Liquor Licence (NSW)';
 const M  = mm => mm/25.4;                 // mm -> inches
 const PT = mm => +(mm*2.8346).toFixed(1); // mm -> points
 const PAD = 14, W = 210, H = 297, RIGHT = W-PAD, CW = W-PAD*2;
@@ -121,8 +122,12 @@ and confirm the Liquor Act wording with your licensing advisor before printing.`
   s.addText('It is against the law to sell or supply alcohol to, or to obtain alcohol on behalf of, a person under the age of 18 years.\nPhoto ID must be sighted on delivery. If no person aged 18 or over is present to receive and sign for this consignment, it must not be left — return to depot.',
     {...MONO,x:M(PAD),y:M(269),w:M(104),h:M(23),fontSize:PT(2.3),lineSpacingMultiple:1.7,
      charSpacing:PT(.13),color:mix(fFg,fBg,.74)});
-  ['LICENCE No.','ABN','CONSIGNMENT'].forEach((t,i)=>{
-    const y = 264.5 + i*6.2;
+  s.addText(LIC_LABEL.toUpperCase(),{...MONO,x:M(120),y:M(264.5),w:M(76),h:M(4),align:'right',
+    fontSize:PT(2.1),charSpacing:PT(.38),color:mix(fFg,fBg,.74)});
+  s.addText(LIC_NO,{...MONO,x:M(120),y:M(268.4),w:M(76),h:M(5),align:'right',
+    fontSize:PT(3.2),bold:true,charSpacing:PT(.32),color:fFg});
+  ['ABN','CONSIGNMENT'].forEach((t,i)=>{
+    const y = 277 + i*6.2;
     s.addText(t,{...MONO,x:M(120),y:M(y),w:M(32),h:M(4),align:'right',
       fontSize:PT(2.3),charSpacing:PT(.28),color:mix(fFg,fBg,.74)});
     s.addShape('line',{x:M(155),y:M(y+3.6),w:M(41),h:0,
@@ -249,8 +254,12 @@ Act wording with your licensing advisor before printing.`);
   s.addText('It is against the law to sell or supply alcohol to, or to obtain alcohol on behalf of, a person under the age of 18 years.\nPhoto ID must be sighted on delivery. If no person aged 18 or over is present to receive and sign for this consignment, it must not be left — return to depot.',
     {...MONO,x:M(112),y:M(182.5),w:M(101),h:M(24),fontSize:PT(2.3),lineSpacingMultiple:1.7,
      charSpacing:PT(.13),color:mix(fFg,fBg,.72)});
-  ['LICENCE No.','ABN','CONSIGNMENT'].forEach((t,i)=>{
-    const y=178+i*5.5;
+  s.addText(LIC_LABEL.toUpperCase(),{...MONO,x:M(203),y:M(177.5),w:M(78),h:M(4),align:'right',
+    fontSize:PT(2.1),charSpacing:PT(.38),color:mix(fFg,fBg,.72)});
+  s.addText(LIC_NO,{...MONO,x:M(203),y:M(181.2),w:M(78),h:M(5),align:'right',
+    fontSize:PT(3.2),bold:true,charSpacing:PT(.32),color:fFg});
+  ['ABN','CONSIGNMENT'].forEach((t,i)=>{
+    const y=190+i*5.5;
     s.addText(t,{...MONO,x:M(223),y:M(y),w:M(30),h:M(4),align:'right',
       fontSize:PT(2.3),charSpacing:PT(.28),color:mix(fFg,fBg,.72)});
     s.addShape('line',{x:M(255),y:M(y+3.4),w:M(26),h:0,line:{color:mix(fFg,fBg,.45),width:.9}});

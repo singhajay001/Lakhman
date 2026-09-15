@@ -80,20 +80,23 @@ body{font-family:'Archivo',Helvetica,Arial,sans-serif;
 .kicker{font-family:'Space Mono',monospace;font-size:2.9mm;font-weight:700;letter-spacing:.34em;
   text-transform:uppercase;color:var(--mute)}
 .kicker b{color:var(--red);font-weight:700}
-.to{flex:1;display:flex;flex-direction:column;position:relative;z-index:2;padding-bottom:8mm}
-.cust{margin-top:5mm}
+.to{flex:1;display:flex;flex-direction:column;position:relative;z-index:2;padding-bottom:6mm}
+.cust{margin-top:4mm}
 .cust .nm{font-size:8.6mm;font-weight:800;letter-spacing:-.01em;line-height:1.05}
 .cust .ev{font-size:5mm;font-weight:300;margin-top:1.6mm;letter-spacing:.01em}
 .cust .loc{font-family:'Space Mono',monospace;font-size:3.5mm;letter-spacing:.28em;
   text-transform:uppercase;margin-top:3.2mm;color:var(--mute)}
-.hr{border-top:.35mm solid var(--rule);margin:6.5mm 0 5mm}
-.items{display:flex;flex-direction:column;gap:3.2mm;margin-top:4.5mm}
+.hr{border-top:.35mm solid var(--rule);margin:5mm 0 4mm}
+.items{display:flex;flex-direction:column;gap:3mm;margin-top:3.5mm}
 .item{display:flex;align-items:baseline;gap:3.4mm}
 .item b{font-size:5.6mm;font-weight:800;min-width:14mm;text-align:right;letter-spacing:-.01em}
 .item .x{font-family:'Space Mono',monospace;font-size:3mm;color:var(--mute)}
 .item em{font-style:normal;font-size:5mm;font-weight:400;letter-spacing:.005em}
-.item i{font-style:normal;font-family:'Space Mono',monospace;font-size:2.9mm;
-  letter-spacing:.14em;color:var(--mute);text-transform:uppercase}
+.item i{font-style:normal;font-family:'Space Mono',monospace;font-size:2.7mm;
+  letter-spacing:.12em;color:var(--mute);text-transform:uppercase}
+.boxnote{margin-top:3.5mm;border:.4mm solid var(--red);color:var(--red);align-self:flex-start;
+  font-family:'Space Mono',monospace;font-size:2.7mm;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;padding:2.4mm 4.5mm}
 .vdiv{width:0;border-left:.3mm solid var(--rule);margin:2mm 0 8mm}
 .meta{width:78mm;display:flex;flex-direction:column;padding-bottom:8mm;position:relative;z-index:2}
 .mcell{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:1mm}
@@ -118,6 +121,10 @@ body{font-family:'Archivo',Helvetica,Arial,sans-serif;
   color:rgba(242,239,233,.72);line-height:2.05;text-align:right}
 .foot .lic u{text-decoration:none;display:inline-block;width:26mm;
   border-bottom:.3mm solid rgba(242,239,233,.45);margin-left:2mm}
+.foot .lic .lt{display:block;font-size:2.1mm;letter-spacing:.18em;text-transform:uppercase}
+.foot .lic .ln{display:block;font-size:3.2mm;font-weight:700;letter-spacing:.1em;
+  color:var(--bone);margin:.4mm 0 2.4mm;line-height:1.2}
+.v-ink .foot .lic .ln{color:var(--ink)}
 """
 
 U_FILL = ('<svg viewBox="0 0 276 280" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="u%d">'
@@ -141,16 +148,20 @@ LEGAL = ("It is against the law to sell or supply alcohol to, or to obtain alcoh
 def esc(s): return html.escape(str(s))
 
 def label_page(order, box, total_boxes, idx):
-    c = order["customer"]
+    c = order["customer"]; co = order.get("company", {})
     units = sum(i["qty"] for i in box["items"] if i["qty"] is not None)
     known = all(i["qty"] is not None for i in box["items"])
+    unit = box.get("unit", "units")
     rows = []
     for it in box["items"]:
         q = ('<b>%d</b><span class="x">&times;</span>' % it["qty"]) if it["qty"] is not None \
             else '<b>&mdash;</b><span class="x">&nbsp;</span>'
-        sz = '<i>%s</i>' % esc(it["size"]) if it["size"] else ''
-        rows.append('<div class="item">%s<em>%s</em>%s</div>' % (q, esc(it["name"]), sz))
-    count = ('<div class="val">%d<u>units</u></div>' % units) if known \
+        detail = " &middot; ".join(esc(v) for v in
+                 (it.get("size"), it.get("abv"), it.get("origin")) if v)
+        d = '<i>%s</i>' % detail if detail else ''
+        rows.append('<div class="item">%s<em>%s</em>%s</div>' % (q, esc(it["name"]), d))
+    note = ('<div class="boxnote">%s</div>' % esc(box["note"])) if box.get("note") else ''
+    count = ('<div class="val">%d<u>%s</u></div>' % (units, esc(unit))) if known \
             else '<div class="val" style="font-size:4.4mm;font-weight:400">Qty to confirm</div>'
     return """
 <div class="sheet">
@@ -183,12 +194,13 @@ def label_page(order, box, total_boxes, idx):
       <div class="hr"></div>
       <div class="kicker">Contents <b>&mdash;</b> carton %(n)d of %(t)d</div>
       <div class="items">%(rows)s</div>
+      %(boxnote)s
     </div>
     <div class="vdiv"></div>
     <div class="meta">
       <div class="mcell"><span>Order No.</span><div class="fill"></div></div>
       <div class="mcell"><span>Despatch date</span><div class="fill"></div></div>
-      <div class="mcell"><span>Units in carton</span>%(count)s</div>
+      <div class="mcell"><span>Items in carton</span>%(count)s</div>
       <div class="mcell"><span>Packed &amp; checked by</span><div class="fill"></div></div>
     </div>
   </section>
@@ -199,13 +211,15 @@ def label_page(order, box, total_boxes, idx):
       <div class="sub">[STREET ADDRESS]<br>SYDNEY NSW [POSTCODE] AUSTRALIA<br>[PHONE] &nbsp;&middot;&nbsp; [EMAIL]</div>
     </div>
     <div class="legal"><b>Liquor Act 2007 (NSW)</b>%(legal)s</div>
-    <div class="lic">LICENCE No.<u>&nbsp;</u><br>ABN<u>&nbsp;</u><br>CONSIGNMENT<u>&nbsp;</u></div>
+    <div class="lic"><span class="lt">%(liclabel)s</span><span class="ln">%(licno)s</span>ABN&nbsp;%(abn)s<br>CONSIGNMENT<u>&nbsp;</u></div>
   </footer>
 </div>""" % dict(u=U_FILL % (idx, idx), ug=U_PLAIN, n=box["n"], t=total_boxes,
                  i1=ICONS["fragile"], i2=ICONS["up"], i3=ICONS["dry"],
                  name=esc(c["name"]), event=esc(c["event"]),
                  loc=esc(c["locality"]) + " " + esc(c["state"]),
-                 rows="".join(rows), count=count, legal=LEGAL)
+                 rows="".join(rows), count=count, legal=LEGAL, boxnote=note,
+                 liclabel=co.get("licenceLabel","Liquor licence"),
+                 licno=co.get("licence",""), abn=co.get("abn",""))
 
 MCSS = """
 :root{--ink:#111110;--bone:#F2EFE9;--red:#CF1C29;--rule:rgba(17,17,16,.2);
@@ -248,14 +262,19 @@ td.i em{font-style:normal;font-family:'Space Mono',monospace;font-size:2.5mm;
   letter-spacing:.14em;color:var(--mute);text-transform:uppercase;margin-left:2mm}
 tfoot td{padding:4mm 0 0;font-weight:800;font-size:3.8mm;border-top:.5mm solid var(--ink)}
 .totals{margin-top:6mm;padding-top:4mm;border-top:.4mm solid var(--rule)}
-.totals .row{display:flex;justify-content:space-between;font-size:3.1mm;padding:.9mm 0}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;column-gap:12mm;margin-top:4mm}
+.totals .row{display:flex;justify-content:space-between;font-size:3mm;padding:.9mm 0;
+  gap:4mm;border-bottom:.25mm solid var(--rule)}
+.totals .row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .totals .row b{font-weight:800}
 .totals .row em{font-style:normal;font-family:'Space Mono',monospace;font-size:2.5mm;
   letter-spacing:.14em;color:var(--mute);text-transform:uppercase;margin-left:2mm}
 .body{flex:1;padding:0 var(--pad);overflow:hidden}
 .note{font-family:'Space Mono',monospace;font-size:2.4mm;line-height:1.7;letter-spacing:.06em;
   color:var(--red);margin-top:4.5mm}
-.foot{background:var(--ink);color:rgba(242,239,233,.72);padding:5mm var(--pad);flex:none;
+.licline{background:var(--ink);color:rgba(242,239,233,.55);padding:0 var(--pad) 4.5mm;flex:none;
+  font-family:'Space Mono',monospace;font-size:2.2mm;letter-spacing:.2em;text-transform:uppercase}
+.foot{background:var(--ink);color:rgba(242,239,233,.72);padding:5mm var(--pad) 2.5mm;flex:none;
   font-family:'Space Mono',monospace;font-size:2.3mm;letter-spacing:.1em;line-height:1.9;
   display:flex;justify-content:space-between}
 .foot u{text-decoration:none;display:inline-block;width:32mm;
@@ -263,7 +282,7 @@ tfoot td{padding:4mm 0 0;font-weight:800;font-size:3.8mm;border-top:.5mm solid v
 """
 
 def build_manifest(order):
-    c = order["customer"]; boxes = order["boxes"]
+    c = order["customer"]; boxes = order["boxes"]; co = order.get("company", {})
     tot = OrderedDict(); grand = 0; unknown = 0
     rows = []
     for b in boxes:
@@ -295,7 +314,7 @@ def build_manifest(order):
     <div class="kicker">Consignment</div>
     <div class="nm">%(name)s</div>
     <div class="ev">%(event)s</div>
-    <div class="loc">%(loc)s</div>
+    <div class="loc">%(loc)s &nbsp;&middot;&nbsp; %(nb)d boxes &nbsp;&middot;&nbsp; %(grand)d items</div>
   </div>
   <div class="body">
     <table>
@@ -306,16 +325,19 @@ def build_manifest(order):
     %(note)s
     <div class="totals">
       <div class="kicker">Totals by product</div>
-      <div style="margin-top:4mm">%(trows)s</div>
+      <div class="tgrid">%(trows)s</div>
     </div>
   </div>
   <footer class="foot">
     <div>PACKED BY<u>&nbsp;</u> &nbsp; CHECKED BY<u>&nbsp;</u></div>
     <div>DATE<u>&nbsp;</u></div>
   </footer>
+  <div class="licline">%(coname)s &nbsp;&middot;&nbsp; ABN %(abn)s &nbsp;&middot;&nbsp; %(liclabel)s %(licno)s</div>
 </div></body></html>""" % dict(css=MCSS, u=U_FILL % (99, 99), name=esc(c["name"]),
         event=esc(c["event"]), loc=esc(c["locality"]) + " " + esc(c["state"]),
-        rows="".join(rows), trows=trows, nb=len(boxes), grand=grand, note=note)
+        rows="".join(rows), trows=trows, nb=len(boxes), grand=grand, note=note,
+        coname=esc(co.get("name","")), abn=esc(co.get("abn","")),
+        liclabel=esc(co.get("licenceLabel","")), licno=esc(co.get("licence","")))
 
 def build_labels(order, variant):
     pages = "".join(label_page(order, b, len(order["boxes"]), i)
