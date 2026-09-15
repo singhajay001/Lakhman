@@ -34,13 +34,13 @@ function label(variant){
   s.background = { color: sheet };
   s.addNotes(`SPIRITHAUS A4 box label — ${variant} variant. 210 x 297mm.
 Every band, rule and line of copy is editable. The wordmark, handling icons and U
-mark are placed images. Replace [STREET ADDRESS] / [POSTCODE] / [PHONE] / [EMAIL],
+mark are placed images. Confirm the return-address block,
 and confirm the Liquor Act wording with your licensing advisor before printing.`);
 
   /* header band */
   s.addShape('rect',{x:0,y:0,w:M(W),h:M(50),fill:{color:bandBg},line:{width:0}});
-  s.addImage({path:A(wm), x:M(PAD), y:M(16), w:M(98.9), h:M(10)});
-  s.addText('SPIRITS  ·  WINE  ·  COCKTAILS',{...MONO,x:M(PAD),y:M(29),w:M(110),h:M(5),
+  s.addImage({path:A(wm), x:M(PAD), y:M(14.4), w:M(119.3), h:M(12.1)});
+  s.addText('SPIRITS  ·  WINE  ·  COCKTAILS',{...MONO,x:M(PAD),y:M(29.5),w:M(120),h:M(5),
     fontSize:PT(2.55),charSpacing:PT(1.28),color:mix(bandFg,bandBg,.62),valign:'top'});
   // carton counter
   s.addShape('rect',{x:M(RIGHT-34),y:M(15),w:M(34),h:M(20),fill:{type:'none'},
@@ -109,7 +109,7 @@ and confirm the Liquor Act wording with your licensing advisor before printing.`
     fontSize:PT(2.6),bold:true,charSpacing:PT(.88),color:mute});
   s.addText('SPIRITHAUS',{...TX,x:M(PAD),y:M(226.5),w:M(90),h:M(5),
     fontSize:PT(3.5),bold:true,charSpacing:PT(.1),color:body});
-  s.addText('[STREET ADDRESS]\nSYDNEY NSW [POSTCODE] AUSTRALIA\n0452 480 487  ·  sales@spirithaus.com.au',
+  s.addText('SYDNEY NSW AUSTRALIA\n0452 480 487  ·  sales@spirithaus.com.au',
     {...MONO,x:M(PAD),y:M(232.5),w:M(110),h:M(16),fontSize:PT(2.5),lineSpacingMultiple:1.55,
      charSpacing:PT(.25),color:mute});
   s.addImage({path:A(uMark),x:M(RIGHT-23),y:M(219),w:M(22.7),h:M(23),transparency:86});
@@ -174,7 +174,7 @@ function labelL(variant){
   s.background = { color: sheet };
   s.addNotes(`SPIRITHAUS A4 LANDSCAPE box label — ${variant}. 297 x 210mm.
 Address panel left, order fields right, statutory notice across the footer.
-Replace [STREET ADDRESS] / [POSTCODE] / [PHONE] / [EMAIL]; confirm the Liquor
+Confirm the return-address block and the Liquor
 Act wording with your licensing advisor before printing.`);
 
   // ghost first so the age and footer bands clip it to the body area
@@ -184,8 +184,8 @@ Act wording with your licensing advisor before printing.`);
   /* header band */
   s.addShape('rect',{x:0,y:0,w:M(LW),h:M(42),fill:{color:bandBg},line:{width:0}});
   s.addImage({path:A(bone?'wordmark-white.png':'wordmark-ink.png'),
-    x:M(LPAD), y:M(13.6), w:M(89.9), h:M(9.1)});
-  s.addText('SPIRITS  ·  WINE  ·  COCKTAILS',{...MONO,x:M(LPAD),y:M(25.6),w:M(110),h:M(5),
+    x:M(LPAD), y:M(12), w:M(111.6), h:M(11.3)});
+  s.addText('SPIRITS  ·  WINE  ·  COCKTAILS',{...MONO,x:M(LPAD),y:M(26.3),w:M(120),h:M(5),
     fontSize:PT(2.5),charSpacing:PT(1.25),color:mix(bandFg,bandBg,.62)});
   s.addShape('rect',{x:M(LRIGHT-38),y:M(11),w:M(38),h:M(20),fill:{type:'none'},
     line:{color:mix(bandFg,bandBg,.38),width:1.3}});
@@ -246,7 +246,7 @@ Act wording with your licensing advisor before printing.`);
     fontSize:PT(2.5),bold:true,charSpacing:PT(.85),color:mix(fFg,fBg,.55)});
   s.addText('SPIRITHAUS',{...TX,x:M(LPAD),y:M(183.5),w:M(86),h:M(5),
     fontSize:PT(3.4),bold:true,color:fFg});
-  s.addText('[STREET ADDRESS]\nSYDNEY NSW [POSTCODE] AUSTRALIA\n0452 480 487  ·  sales@spirithaus.com.au',
+  s.addText('SYDNEY NSW AUSTRALIA\n0452 480 487  ·  sales@spirithaus.com.au',
     {...MONO,x:M(LPAD),y:M(189.5),w:M(90),h:M(16),fontSize:PT(2.4),lineSpacingMultiple:1.6,
      charSpacing:PT(.2),color:mix(fFg,fBg,.72)});
   s.addText('LIQUOR ACT 2007 (NSW)',{...MONO,x:M(112),y:M(177.5),w:M(90),h:M(4),

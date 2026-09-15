@@ -7,10 +7,10 @@
     "licenceLabel": "NSW Packaged Liquor Licence",
     "licence": "LIQP700301260",
     "tradingName": "SPIRITHAUS",
-    "street": "[STREET ADDRESS]",
+    "street": "",
     "locality": "Sydney",
     "state": "NSW",
-    "postcode": "[POSTCODE]",
+    "postcode": "",
     "phone": "0452 480 487",
     "email": "sales@spirithaus.com.au"
   },
@@ -197,5 +197,6 @@
         }
       ]
     }
-  ]
+  ],
+  "fulfilment": "collection"
 }

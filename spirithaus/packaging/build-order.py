@@ -42,8 +42,8 @@ body{font-family:'Archivo',Helvetica,Arial,sans-serif;
 
 .band{background:var(--ink);color:var(--bone);padding:0 var(--pad);
   display:flex;align-items:center;justify-content:space-between;gap:10mm}
-.band .lockup{display:flex;flex-direction:column;gap:3.2mm}
-.band .wordmark{font-size:12.4mm}
+.band .lockup{display:flex;flex-direction:column;gap:3.6mm}
+.band .wordmark{font-size:15.4mm}
 .band .tagline{font-family:'Space Mono',monospace;font-size:2.5mm;letter-spacing:.50em;
   color:rgba(242,239,233,.62);text-transform:uppercase}
 .cartonbox{border:.5mm solid rgba(242,239,233,.38);padding:2.4mm 5mm 2.6mm;text-align:center;min-width:42mm}
@@ -166,15 +166,37 @@ ICONS = {
  "up":'<svg viewBox="0 0 100 100" fill="currentColor"><path d="M28,6 L41,29 H33.5 V92 H22.5 V29 H15 Z"/><path d="M72,6 L85,29 H77.5 V92 H66.5 V29 H59 Z"/></svg>',
  "dry":'<svg viewBox="0 0 100 100"><path fill="currentColor" d="M50,14 C27,14 10,30 8,48 H92 C90,30 73,14 50,14 Z"/><path fill="none" stroke="currentColor" stroke-width="7.5" stroke-linecap="round" d="M50,14 V76 C50,88 28,88 28,76"/><circle fill="currentColor" cx="50" cy="8" r="5"/></svg>'}
 
-LEGAL = ("It is against the law to sell or supply alcohol to, or to obtain alcohol on behalf of, "
-         "a person under the age of 18 years.<br>Photo ID must be sighted on delivery. If no person "
-         "aged 18 or over is present to receive and sign for this consignment, it must not be left "
-         "&mdash; return to depot.")
+STATUTORY = ("It is against the law to sell or supply alcohol to, or to obtain alcohol on "
+             "behalf of, a person under the age of 18 years.")
+
+# Delivery and customer collection need different operational wording. Printing
+# "return to depot" on a carton the customer collects in person is simply wrong.
+MODES = {
+  "delivery": {
+    "kicker":   "Deliver&nbsp;to",
+    "age_head": "Contains alcohol &middot; ID required on delivery",
+    "age_sub":  "Must not be left unattended &middot; Do not supply to a minor or an intoxicated person",
+    "date":     "Despatch date",
+    "party":    "Return to sender",
+    "legal2":   ("Photo ID must be sighted on delivery. If no person aged 18 or over is present to "
+                 "receive and sign for this consignment, it must not be left &mdash; return to depot."),
+  },
+  "collection": {
+    "kicker":   "For&nbsp;collection&nbsp;by",
+    "age_head": "Contains alcohol &middot; ID required on collection",
+    "age_sub":  "Do not release to a minor or to an intoxicated person",
+    "date":     "Collection date",
+    "party":    "Enquiries",
+    "legal2":   ("Photo ID must be sighted on collection. This consignment will not be released to a "
+                 "person under the age of 18, or to a person who is intoxicated."),
+  },
+}
 
 def esc(s): return html.escape(str(s))
 
 def label_page(order, box, total_boxes, idx):
     c = order["customer"]; co = order.get("company", {})
+    md = MODES.get(order.get("fulfilment", "delivery"), MODES["delivery"])
     units = sum(i["qty"] for i in box["items"] if i["qty"] is not None)
     known = all(i["qty"] is not None for i in box["items"])
     unit = box.get("unit", "units")
@@ -205,13 +227,13 @@ def label_page(order, box, total_boxes, idx):
   </section>
   <section class="age">
     <div class="n">18</div>
-    <div class="t">Contains alcohol &middot; ID required on delivery
-      <s>Must not be left unattended &middot; Do not supply to a minor or an intoxicated person</s></div>
+    <div class="t">%(agehead)s
+      <s>%(agesub)s</s></div>
   </section>
   <section class="body">
     <div class="ghost">%(ug)s</div>
     <div class="to">
-      <div class="kicker">Deliver&nbsp;to <b>&mdash;</b> signature required</div>
+      <div class="kicker">%(kicker)s <b>&mdash;</b> signature required</div>
       <div class="cust">
         <div class="nm">%(name)s</div>
         <div class="ev">%(event)s</div>
@@ -226,18 +248,18 @@ def label_page(order, box, total_boxes, idx):
     <div class="vdiv"></div>
     <div class="meta">
       <div class="mcell"><span>Order No.</span><div class="fill"></div></div>
-      <div class="mcell"><span>Despatch date</span><div class="fill"></div></div>
+      <div class="mcell"><span>%(datelabel)s</span><div class="fill"></div></div>
       <div class="mcell"><span>Items in carton</span>%(count)s</div>
       <div class="mcell"><span>Packed &amp; checked by</span><div class="fill"></div></div>
     </div>
   </section>
   <footer class="foot">
     <div>
-      <div class="kicker rts">Return to sender</div>
+      <div class="kicker rts">%(party)s</div>
       <div class="nm">%(rtname)s</div>
-      <div class="sub">%(rtaddr)s<br>%(rtcity)s<br>%(rtcontact)s</div>
+      <div class="sub">%(rtblock)s</div>
     </div>
-    <div class="legal"><b>Liquor Act 2007 (NSW)</b>%(legal)s</div>
+    <div class="legal"><b>Liquor Act 2007 (NSW)</b>%(legal1)s<br>%(legal2)s</div>
     <div class="lic"><span class="lt">%(liclabel)s</span><span class="ln">%(licno)s</span>ABN&nbsp;%(abn)s<br>CONSIGNMENT<u>&nbsp;</u></div>
   </footer>
 </div>""" % dict(u=U_FILL % (idx, idx), ug=U_PLAIN, n=box["n"], t=total_boxes,
@@ -246,16 +268,20 @@ def label_page(order, box, total_boxes, idx):
                  street=('<div class="addr">%s</div>' % esc(c["street"])) if c.get("street") else "",
                  loc=" ".join(x for x in (esc(c["locality"]), esc(c["state"]),
                                           esc(c.get("postcode") or "")) if x),
-                 rows="".join(rows), count=count, legal=LEGAL, boxnote=note,
+                 rows="".join(rows), count=count, boxnote=note,
+                 legal1=STATUTORY, legal2=md["legal2"], kicker=md["kicker"],
+                 agehead=md["age_head"], agesub=md["age_sub"],
+                 datelabel=md["date"], party=md["party"],
                  liclabel=co.get("licenceLabel","Liquor licence"),
                  licno=co.get("licence",""), abn=co.get("abn",""),
                  rtname=esc(co.get("tradingName") or co.get("name","SPIRITHAUS")),
-                 rtaddr=esc(co.get("street","")),
-                 rtcity=" ".join(x for x in (esc(co.get("locality","")).upper(),
-                                             esc(co.get("state","")),
-                                             esc(co.get("postcode","")), "AUSTRALIA") if x),
-                 rtcontact=" &middot; ".join(x for x in
-                           (esc(co.get("phone","")), esc(co.get("email",""))) if x))
+                 rtblock="<br>".join(x for x in (
+                     esc(co.get("street","")),
+                     " ".join(v for v in (esc(co.get("locality","")).upper(),
+                                          esc(co.get("state","")),
+                                          esc(co.get("postcode","")), "AUSTRALIA") if v),
+                     " &middot; ".join(v for v in (esc(co.get("phone","")),
+                                                   esc(co.get("email",""))) if v)) if x))
 
 MCSS = """
 :root{--ink:#111110;--bone:#F2EFE9;--red:#CF1C29;--rule:rgba(17,17,16,.2);
