@@ -11,34 +11,184 @@
     "name": "Samreen & Karan's",
     "event": "Engagement Party",
     "locality": "Camberwell",
-    "state": "VIC"
+    "state": "VIC",
+    "street": "539 Camberwell Rd",
+    "postcode": "3124",
+    "postcode_source": "inferred from locality — CONFIRM"
   },
   "boxes": [
-    { "n": 1, "unit": "bottles", "items": [
-      { "qty": 6, "name": "Aberlour 12 Year Old Double Cask Matured", "size": "700 ML", "abv": "40% ABV", "origin": "Speyside" } ] },
-    { "n": 2, "unit": "bottles", "items": [
-      { "qty": 6, "name": "Aberlour 12 Year Old Double Cask Matured", "size": "700 ML", "abv": "40% ABV", "origin": "Speyside" } ] },
-    { "n": 3, "unit": "bottles", "items": [
-      { "qty": 6, "name": "Aberlour 12 Year Old Double Cask Matured", "size": "700 ML", "abv": "40% ABV", "origin": "Speyside" } ] },
-    { "n": 4, "unit": "bottles", "items": [
-      { "qty": 6, "name": "Aberlour 12 Year Old Double Cask Matured", "size": "700 ML", "abv": "40% ABV", "origin": "Speyside" },
-      { "qty": 3, "name": "Roku Japanese Craft Gin", "size": "700 ML", "abv": "43% ABV", "origin": "Osaka" } ] },
-    { "n": 5, "unit": "bottles", "items": [
-      { "qty": 10, "name": "Don Julio Blanco Tequila", "size": "700 ML", "abv": "38% ABV", "origin": "Jalisco" },
-      { "qty": 1, "name": "Roku Japanese Craft Gin", "size": "700 ML", "abv": "43% ABV", "origin": "Osaka" } ] },
-    { "n": 6, "unit": "bottles", "items": [
-      { "qty": 6, "name": "Caol Ila Single Malt Whisky", "size": "700 ML", "abv": null, "origin": "Islay" } ] },
-    { "n": 7, "unit": "bottles", "note": "Heavy — two people, or split it", "items": [
-      { "qty": 12, "name": "Belvedere Vodka", "size": "700 ML", "abv": "40% ABV", "origin": "Mazovia" },
-      { "qty": 2, "name": "Don Julio Blanco Tequila", "size": "700 ML", "abv": "38% ABV", "origin": "Jalisco" } ] },
-    { "n": 8, "unit": "bottles", "items": [
-      { "qty": 6, "name": "Karu Rested Morita", "size": "700 ML", "abv": "42% ABV", "origin": "Richmond, NSW" } ] },
-    { "n": 9, "unit": "bottles", "items": [
-      { "qty": 6, "name": "Karu Rested Morita", "size": "700 ML", "abv": "42% ABV", "origin": "Richmond, NSW" } ] },
-    { "n": 10, "unit": "bottles", "note": "Heavier than it looks", "items": [
-      { "qty": 12, "name": "Tommy's Listo Margarita Mix", "size": null, "abv": null, "origin": null } ] },
-    { "n": 11, "unit": "jars", "items": [
-      { "qty": 6, "name": "Karu Halo Scorched Salt", "size": null, "abv": null, "origin": "Richmond, NSW" },
-      { "qty": 6, "name": "Ziggy Sauces", "size": null, "abv": null, "origin": null } ] }
+    {
+      "n": 1,
+      "unit": "bottles",
+      "items": [
+        {
+          "qty": 6,
+          "name": "Aberlour 12 Year Old Double Cask Matured",
+          "size": "700 ML",
+          "abv": "40% ABV",
+          "origin": "Speyside"
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "unit": "bottles",
+      "items": [
+        {
+          "qty": 6,
+          "name": "Aberlour 12 Year Old Double Cask Matured",
+          "size": "700 ML",
+          "abv": "40% ABV",
+          "origin": "Speyside"
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "unit": "bottles",
+      "items": [
+        {
+          "qty": 6,
+          "name": "Aberlour 12 Year Old Double Cask Matured",
+          "size": "700 ML",
+          "abv": "40% ABV",
+          "origin": "Speyside"
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "unit": "bottles",
+      "items": [
+        {
+          "qty": 6,
+          "name": "Aberlour 12 Year Old Double Cask Matured",
+          "size": "700 ML",
+          "abv": "40% ABV",
+          "origin": "Speyside"
+        },
+        {
+          "qty": 3,
+          "name": "Roku Japanese Craft Gin",
+          "size": "700 ML",
+          "abv": "43% ABV",
+          "origin": "Osaka"
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "unit": "bottles",
+      "items": [
+        {
+          "qty": 10,
+          "name": "Don Julio Blanco Tequila",
+          "size": "700 ML",
+          "abv": "38% ABV",
+          "origin": "Jalisco"
+        },
+        {
+          "qty": 1,
+          "name": "Roku Japanese Craft Gin",
+          "size": "700 ML",
+          "abv": "43% ABV",
+          "origin": "Osaka"
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "unit": "bottles",
+      "items": [
+        {
+          "qty": 6,
+          "name": "Caol Ila Single Malt Whisky",
+          "size": "700 ML",
+          "abv": null,
+          "origin": "Islay"
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "unit": "bottles",
+      "note": "Heavy — two people, or split it",
+      "items": [
+        {
+          "qty": 12,
+          "name": "Belvedere Vodka",
+          "size": "700 ML",
+          "abv": "40% ABV",
+          "origin": "Mazovia"
+        },
+        {
+          "qty": 2,
+          "name": "Don Julio Blanco Tequila",
+          "size": "700 ML",
+          "abv": "38% ABV",
+          "origin": "Jalisco"
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "unit": "bottles",
+      "items": [
+        {
+          "qty": 6,
+          "name": "Karu Rested Morita",
+          "size": "700 ML",
+          "abv": "42% ABV",
+          "origin": "Richmond, NSW"
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "unit": "bottles",
+      "items": [
+        {
+          "qty": 6,
+          "name": "Karu Rested Morita",
+          "size": "700 ML",
+          "abv": "42% ABV",
+          "origin": "Richmond, NSW"
+        }
+      ]
+    },
+    {
+      "n": 10,
+      "unit": "bottles",
+      "note": "Heavier than it looks",
+      "items": [
+        {
+          "qty": 12,
+          "name": "Tommy's Listo Margarita Mix",
+          "size": null,
+          "abv": null,
+          "origin": null
+        }
+      ]
+    },
+    {
+      "n": 11,
+      "unit": "jars",
+      "items": [
+        {
+          "qty": 6,
+          "name": "Karu Halo Scorched Salt",
+          "size": null,
+          "abv": null,
+          "origin": "Richmond, NSW"
+        },
+        {
+          "qty": 6,
+          "name": "Ziggy Sauces",
+          "size": null,
+          "abv": null,
+          "origin": null
+        }
+      ]
+    }
   ]
 }

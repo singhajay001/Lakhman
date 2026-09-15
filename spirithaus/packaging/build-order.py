@@ -81,19 +81,21 @@ body{font-family:'Archivo',Helvetica,Arial,sans-serif;
   text-transform:uppercase;color:var(--mute)}
 .kicker b{color:var(--red);font-weight:700}
 .to{flex:1;display:flex;flex-direction:column;position:relative;z-index:2;padding-bottom:6mm}
-.cust{margin-top:4mm}
-.cust .nm{font-size:8.6mm;font-weight:800;letter-spacing:-.01em;line-height:1.05}
-.cust .ev{font-size:5mm;font-weight:300;margin-top:1.6mm;letter-spacing:.01em}
-.cust .loc{font-family:'Space Mono',monospace;font-size:3.5mm;letter-spacing:.28em;
-  text-transform:uppercase;margin-top:3.2mm;color:var(--mute)}
-.hr{border-top:.35mm solid var(--rule);margin:5mm 0 4mm}
+.cust{margin-top:3.5mm}
+.cust .nm{font-size:7.8mm;font-weight:800;letter-spacing:-.012em;line-height:1.05}
+.cust .ev{font-size:4.6mm;font-weight:300;margin-top:1.4mm;letter-spacing:.01em}
+.cust .addr{font-size:4.8mm;font-weight:500;margin-top:2.8mm;letter-spacing:.005em}
+.cust .loc{font-family:'Space Mono',monospace;font-size:3.3mm;letter-spacing:.26em;
+  text-transform:uppercase;margin-top:1.6mm;color:var(--mute)}
+.hr{border-top:.35mm solid var(--rule);margin:4.5mm 0 3.5mm}
 .items{display:flex;flex-direction:column;gap:3mm;margin-top:3.5mm}
-.item{display:flex;align-items:baseline;gap:3.4mm}
+.item{display:flex;align-items:baseline;gap:3mm;overflow:hidden}
 .item b{font-size:5.6mm;font-weight:800;min-width:14mm;text-align:right;letter-spacing:-.01em}
 .item .x{font-family:'Space Mono',monospace;font-size:3mm;color:var(--mute)}
-.item em{font-style:normal;font-size:5mm;font-weight:400;letter-spacing:.005em}
-.item i{font-style:normal;font-family:'Space Mono',monospace;font-size:2.7mm;
-  letter-spacing:.12em;color:var(--mute);text-transform:uppercase}
+.item em{font-style:normal;font-size:4.5mm;font-weight:400;letter-spacing:0;
+  white-space:nowrap}
+.item i{font-style:normal;font-family:'Space Mono',monospace;font-size:2.4mm;
+  letter-spacing:.07em;color:var(--mute);text-transform:uppercase;white-space:nowrap}
 .boxnote{margin-top:3.5mm;border:.4mm solid var(--red);color:var(--red);align-self:flex-start;
   font-family:'Space Mono',monospace;font-size:2.7mm;font-weight:700;letter-spacing:.16em;
   text-transform:uppercase;padding:2.4mm 4.5mm}
@@ -213,6 +215,7 @@ def label_page(order, box, total_boxes, idx):
       <div class="cust">
         <div class="nm">%(name)s</div>
         <div class="ev">%(event)s</div>
+        %(street)s
         <div class="loc">%(loc)s</div>
       </div>
       <div class="hr"></div>
@@ -240,7 +243,9 @@ def label_page(order, box, total_boxes, idx):
 </div>""" % dict(u=U_FILL % (idx, idx), ug=U_PLAIN, n=box["n"], t=total_boxes,
                  i1=ICONS["fragile"], i2=ICONS["up"], i3=ICONS["dry"],
                  name=esc(c["name"]), event=esc(c["event"]),
-                 loc=esc(c["locality"]) + " " + esc(c["state"]),
+                 street=('<div class="addr">%s</div>' % esc(c["street"])) if c.get("street") else "",
+                 loc=" ".join(x for x in (esc(c["locality"]), esc(c["state"]),
+                                          esc(c.get("postcode") or "")) if x),
                  rows="".join(rows), count=count, legal=LEGAL, boxnote=note,
                  liclabel=co.get("licenceLabel","Liquor licence"),
                  licno=co.get("licence",""), abn=co.get("abn",""))
@@ -346,6 +351,7 @@ def build_manifest(order, variant="bone"):
     <div class="kicker">Consignment</div>
     <div class="nm">%(name)s</div>
     <div class="ev">%(event)s</div>
+    <div class="ev" style="font-size:4mm;margin-top:2.4mm">%(street)s</div>
     <div class="loc">%(loc)s &nbsp;&middot;&nbsp; %(nb)d boxes &nbsp;&middot;&nbsp; %(grand)d items</div>
   </div>
   <div class="body">
@@ -366,7 +372,9 @@ def build_manifest(order, variant="bone"):
   </footer>
   <div class="licline">%(coname)s &nbsp;&middot;&nbsp; ABN %(abn)s &nbsp;&middot;&nbsp; %(liclabel)s %(licno)s</div>
 </div></body></html>""" % dict(css=MCSS, u=U_FILL % (99, 99), name=esc(c["name"]),
-        event=esc(c["event"]), loc=esc(c["locality"]) + " " + esc(c["state"]),
+        event=esc(c["event"]), street=esc(c.get("street","")),
+        loc=" ".join(x for x in (esc(c["locality"]), esc(c["state"]),
+                                 esc(c.get("postcode") or "")) if x),
         rows="".join(rows), trows=trows, nb=len(boxes), grand=grand, note=note,
         coname=esc(co.get("name","")), abn=esc(co.get("abn","")),
         liclabel=esc(co.get("licenceLabel","")), licno=esc(co.get("licence","")), cls=cls)
