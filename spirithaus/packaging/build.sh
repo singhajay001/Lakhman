@@ -12,6 +12,7 @@ render () { # $1 = source html, $2 = variant, $3 = output basename
   echo "  -> $OUT/$3.pdf"
 }
 echo "Label…"
+render box-label-a4.html white      spirithaus-box-label-a4-white
 render box-label-a4.html bone       spirithaus-box-label-a4-bone
 render box-label-a4.html ink        spirithaus-box-label-a4-ink
 render box-label-a4.html bone-bleed spirithaus-box-label-a4-bone-bleed
@@ -20,6 +21,7 @@ render box-artwork-a4.html ink        spirithaus-box-artwork-a4-ink
 render box-artwork-a4.html bone       spirithaus-box-artwork-a4-bone
 render box-artwork-a4.html ink-bleed  spirithaus-box-artwork-a4-ink-bleed
 echo "Label — landscape…"
+render box-label-a4-landscape.html white      spirithaus-box-label-a4L-white
 render box-label-a4-landscape.html bone       spirithaus-box-label-a4L-bone
 render box-label-a4-landscape.html ink        spirithaus-box-label-a4L-ink
 render box-label-a4-landscape.html bone-bleed spirithaus-box-label-a4L-bone-bleed

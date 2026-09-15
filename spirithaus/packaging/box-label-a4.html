@@ -165,6 +165,31 @@ body{font-family:'Archivo',Helvetica,Arial,sans-serif;-webkit-print-color-adjust
   color:var(--bone);margin:.4mm 0 2.4mm;line-height:1.2}
 .v-ink .foot .lic .ln{color:var(--ink)}
 
+
+/* ---------- white / press-light variant ----------
+   No flood fills: header, footer and the 18+ band carry their weight with
+   rules and type. Large solids and light screens are what band, streak and
+   blotch on an office laser -- this variant has neither. */
+.v-white .sheet{background:#fff;color:var(--ink)}
+.v-white{--rule:rgba(17,17,16,.25);--rule-strong:rgba(17,17,16,.6);--mute:rgba(17,17,16,.55)}
+.v-white .band{background:#fff;color:var(--ink);border-bottom:.7mm solid var(--ink)}
+.v-white .band .tagline{color:rgba(17,17,16,.55)}
+.v-white .cartonbox{border-color:rgba(17,17,16,.45)}
+.v-white .cartonbox span{color:rgba(17,17,16,.55)}
+.v-white .cartonbox b{color:var(--ink)}
+.v-white .cartonbox b u{border-bottom-color:rgba(17,17,16,.45)}
+.v-white .age{background:#fff;color:var(--red);
+  border-top:.6mm solid var(--red);border-bottom:.6mm solid var(--red)}
+.v-white .age .n{border-color:var(--red);color:var(--red)}
+.v-white .age .t s{color:rgba(207,28,41,.88)}
+.v-white .foot{background:#fff;color:var(--ink);border-top:.7mm solid var(--ink)}
+.v-white .foot .legal{color:rgba(17,17,16,.72)}
+.v-white .foot .legal b{color:var(--ink)}
+.v-white .foot .lic{color:rgba(17,17,16,.72)}
+.v-white .foot .lic .ln{color:var(--ink)}
+.v-white .foot .lic u{border-bottom-color:rgba(17,17,16,.5)}
+.v-white .seal{display:none}
+
 /* ---------- bleed + crop marks ---------- */
 .v-bleed .sheet{
   width:216mm;height:303mm;--pad:17mm;
@@ -287,6 +312,7 @@ body{font-family:'Archivo',Helvetica,Arial,sans-serif;-webkit-print-color-adjust
   var v = new URLSearchParams(location.search).get('v') || 'bone';
   var r = document.documentElement;
   if (/ink/.test(v))   r.classList.add('v-ink');
+  if (/white/.test(v)) r.classList.add('v-white');
   if (/bleed/.test(v)) {
     r.classList.add('v-bleed');
     var st = document.createElement('style');

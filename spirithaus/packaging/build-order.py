@@ -107,6 +107,30 @@ body{font-family:'Archivo',Helvetica,Arial,sans-serif;
 .mcell .val u{text-decoration:none;font-family:'Space Mono',monospace;font-size:2.6mm;
   font-weight:400;color:var(--mute);letter-spacing:.16em;margin-left:2mm;text-transform:uppercase}
 
+/* ---------- white / press-light variant ----------
+   No flood fills anywhere: the header, footer and 18+ band carry their weight
+   with rules and type instead. Prints clean on an office laser, where large
+   solid areas band, streak and starve the toner. */
+.v-white .sheet{background:#fff;color:var(--ink)}
+.v-white{--rule:rgba(17,17,16,.25);--rule-strong:rgba(17,17,16,.6);--mute:rgba(17,17,16,.55)}
+.v-white .band{background:#fff;color:var(--ink);border-bottom:.7mm solid var(--ink)}
+.v-white .band .tagline{color:rgba(17,17,16,.55)}
+.v-white .cartonbox{border-color:rgba(17,17,16,.45)}
+.v-white .cartonbox span{color:rgba(17,17,16,.55)}
+.v-white .cartonbox b{color:var(--ink)}
+.v-white .age{background:#fff;color:var(--red);
+  border-top:.6mm solid var(--red);border-bottom:.6mm solid var(--red)}
+.v-white .age .n{border-color:var(--red);color:var(--red)}
+.v-white .age .t s{color:rgba(207,28,41,.88)}
+.v-white .foot{background:#fff;color:var(--ink);border-top:.7mm solid var(--ink)}
+.v-white .foot .rts{color:rgba(17,17,16,.55)}
+.v-white .foot .nm{color:var(--ink)}
+.v-white .foot .sub,.v-white .foot .legal,.v-white .foot .lic{color:rgba(17,17,16,.7)}
+.v-white .foot .legal b,.v-white .foot .lic .ln{color:var(--ink)}
+.v-white .foot .lic u{border-bottom-color:rgba(17,17,16,.5)}
+/* a light screen is the other thing cheap lasers render badly -- drop it */
+.v-white .ghost{display:none}
+
 .foot{background:var(--ink);color:var(--bone);padding:5.5mm var(--pad) 0;
   display:grid;grid-template-columns:86mm 1fr 58mm;gap:10mm;align-items:start}
 .foot .rts{font-size:2.5mm;color:rgba(242,239,233,.55)}
@@ -272,6 +296,13 @@ tfoot td{padding:4mm 0 0;font-weight:800;font-size:3.8mm;border-top:.5mm solid v
 .body{flex:1;padding:0 var(--pad);overflow:hidden}
 .note{font-family:'Space Mono',monospace;font-size:2.4mm;line-height:1.7;letter-spacing:.06em;
   color:var(--red);margin-top:4.5mm}
+.v-white .sheet{background:#fff}
+.v-white .band{background:#fff;color:var(--ink);border-bottom:.7mm solid var(--ink)}
+.v-white .band .ttl{color:rgba(17,17,16,.6)}
+.v-white .foot{background:#fff;color:rgba(17,17,16,.75);border-top:.7mm solid var(--ink)}
+.v-white .foot u{border-bottom-color:rgba(17,17,16,.5)}
+.v-white .licline{background:#fff;color:rgba(17,17,16,.55)}
+
 .licline{background:var(--ink);color:rgba(242,239,233,.55);padding:0 var(--pad) 4.5mm;flex:none;
   font-family:'Space Mono',monospace;font-size:2.2mm;letter-spacing:.2em;text-transform:uppercase}
 .foot{background:var(--ink);color:rgba(242,239,233,.72);padding:5mm var(--pad) 2.5mm;flex:none;
@@ -281,7 +312,7 @@ tfoot td{padding:4mm 0 0;font-weight:800;font-size:3.8mm;border-top:.5mm solid v
   border-bottom:.3mm solid rgba(242,239,233,.45);margin-left:2mm}
 """
 
-def build_manifest(order):
+def build_manifest(order, variant="bone"):
     c = order["customer"]; boxes = order["boxes"]; co = order.get("company", {})
     tot = OrderedDict(); grand = 0; unknown = 0
     rows = []
@@ -303,7 +334,8 @@ def build_manifest(order):
                     for k, v in tot.items())
     note = ("<div class='note'>%d line item(s) have no quantity supplied and are shown as "
             "&mdash;. Confirm before despatch.</div>" % unknown) if unknown else ""
-    return """<!doctype html><html lang='en-AU'><head><meta charset='utf-8'>
+    cls = ' class="v-white"' if variant == "white" else ''
+    return """<!doctype html><html%(cls)s lang='en-AU'><head><meta charset='utf-8'>
 <title>SPIRITHAUS packing manifest</title><link rel='stylesheet' href='../../fonts.css'>
 <style>%(css)s</style></head><body><div class="sheet">
   <header class="band">
@@ -337,12 +369,12 @@ def build_manifest(order):
         event=esc(c["event"]), loc=esc(c["locality"]) + " " + esc(c["state"]),
         rows="".join(rows), trows=trows, nb=len(boxes), grand=grand, note=note,
         coname=esc(co.get("name","")), abn=esc(co.get("abn","")),
-        liclabel=esc(co.get("licenceLabel","")), licno=esc(co.get("licence","")))
+        liclabel=esc(co.get("licenceLabel","")), licno=esc(co.get("licence","")), cls=cls)
 
 def build_labels(order, variant):
     pages = "".join(label_page(order, b, len(order["boxes"]), i)
                     for i, b in enumerate(order["boxes"]))
-    cls = ' class="v-ink"' if variant == "ink" else ""
+    cls = {"ink": ' class="v-ink"', "white": ' class="v-white"'}.get(variant, "")
     return ("<!doctype html><html%s lang='en-AU'><head><meta charset='utf-8'>"
             "<title>SPIRITHAUS labels</title><link rel='stylesheet' href='../../fonts.css'>"
             "<style>%s</style></head><body>%s</body></html>" % (cls, CSS, pages))
@@ -359,14 +391,15 @@ if __name__ == "__main__":
     outdir = os.path.join(HERE, "dist", "orders")
     os.makedirs(outdir, exist_ok=True)
     slug = order["slug"]
-    for v in ("bone", "ink"):
+    for v in ("white", "bone", "ink"):
         hp = os.path.join(outdir, "%s-labels-%s.html" % (slug, v))
         open(hp, "w").write(build_labels(order, v))
         pp = os.path.join(outdir, "%s-labels-%s.pdf" % (slug, v))
         to_pdf(hp, pp); os.remove(hp)
         print("  ->", os.path.relpath(pp, HERE))
-    hp = os.path.join(outdir, "%s-manifest.html" % slug)
-    open(hp, "w").write(build_manifest(order))
-    pp = os.path.join(outdir, "%s-manifest.pdf" % slug)
-    to_pdf(hp, pp); os.remove(hp)
-    print("  ->", os.path.relpath(pp, HERE))
+    for v in ("white", "bone"):
+        hp = os.path.join(outdir, "%s-manifest-%s.html" % (slug, v))
+        open(hp, "w").write(build_manifest(order, v))
+        pp = os.path.join(outdir, "%s-manifest-%s.pdf" % (slug, v))
+        to_pdf(hp, pp); os.remove(hp)
+        print("  ->", os.path.relpath(pp, HERE))

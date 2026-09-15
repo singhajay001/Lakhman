@@ -41,11 +41,34 @@ Why Slides and not Docs or Sheets: a label is a fixed-size layout with
 positioned elements. Docs reflows and cannot hold mm-accurate placement; Sheets
 is a grid, not a canvas. Slides is the only Google app with a real fixed canvas.
 
+## Print quality — pick the right variant
+
+| Variant | Toner load | Use |
+|---|---|---|
+| **white** | **~2–4%** | **Office laser / inkjet.** No flood fills anywhere |
+| bone | ~36–45% | Trade print, or a laser you trust |
+| ink | ~57% | Trade-printed adhesive stock only |
+
+Measured as mean toner load across a whole A4 label — how much of the sheet
+the printer has to cover.
+
+The dark bands look good from a real press and poor from an office laser: a
+large solid area is where toner starves, streaks and bands, and where cheap
+paper cockles. The **white** variant is not a recoloured version of the dark
+one — the header, footer and 18+ band are rebuilt to carry their weight with
+rules and type instead of solid fills, and the faint `U` watermark is dropped
+entirely, because a light screen is the other thing a cheap laser renders as
+visible dots.
+
+Use `white` for anything printed in-house. Keep `bone` / `ink` for trade print.
+
 ## Output
 
 | File | Size | Use |
 |---|---|---|
-| `dist/spirithaus-box-label-a4-bone.pdf` | 210 × 297 mm | **Primary.** Ink on bone. Economical on toner — for A4 label stock or in-house laser |
+| `dist/spirithaus-box-label-a4-white.pdf` | 210 × 297 mm | **Primary for in-house printing.** No flood fills |
+| `dist/spirithaus-box-label-a4L-white.pdf` | 297 × 210 mm | Landscape, same treatment |
+| `dist/spirithaus-box-label-a4-bone.pdf` | 210 × 297 mm | Ink on bone — trade print |
 | `dist/spirithaus-box-label-a4-ink.pdf` | 210 × 297 mm | Premium inverted variant. Bone on ink. For trade-printed adhesive stock |
 | `dist/spirithaus-box-label-a4-bone-bleed.pdf` | 216 × 303 mm | Trade print. 3 mm bleed all round, trim 210 × 297 centred. No crop marks — the printer imposes their own |
 | `dist/spirithaus-box-artwork-a4-ink.pdf` | 210 × 297 mm | **Artwork, primary.** Bone on ink |
@@ -75,9 +98,11 @@ Writes into `dist/orders/`:
 
 | File | What |
 |---|---|
-| `<slug>-labels-bone.pdf` | One landscape page per carton, ink on bone |
+| `<slug>-labels-white.pdf` | **One landscape page per carton, no flood fills — print this one in-house** |
+| `<slug>-labels-bone.pdf` | Same, ink on bone (trade print) |
 | `<slug>-labels-ink.pdf` | Same, inverted |
-| `<slug>-manifest.pdf` | A4 portrait packing manifest — per-carton contents, unit counts, tick boxes, totals by product, sign-off |
+| `<slug>-manifest-white.pdf` | A4 portrait packing manifest, press-light |
+| `<slug>-manifest-bone.pdf` | Same, ink bands |
 
 The filled label replaces the blank address rules with the customer block and
 an itemised **contents** list, and pre-fills the carton counter (`3 / 11`) and
