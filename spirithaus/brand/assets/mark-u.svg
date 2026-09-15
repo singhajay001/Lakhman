@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 276 280" role="img" aria-label="SPIRITHAUS">
+  <defs>
+    <clipPath id="bowl">
+      <path d="M60,0 L60,142 A78,78 0 0,0 216,142 L216,0 Z"/>
+    </clipPath>
+  </defs>
+  <path fill="currentColor"
+        d="M0,0 L0,142 A138,138 0 0,0 276,142 L276,0 L216,0 L216,142 A78,78 0 0,1 60,142 L60,0 Z"/>
+  <rect clip-path="url(#bowl)" x="60" y="162" width="156" height="118" fill="#CF1C29"/>
+</svg>
