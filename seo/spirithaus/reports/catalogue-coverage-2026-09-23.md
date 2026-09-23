@@ -116,17 +116,35 @@ so stock is not what was holding these back.
 
 The last two carry no description and go straight onto the list of 66.
 
-### 🔴 Two held back deliberately
+### Tequila Blu — priced and published
+
+Owner supplied sell $75.99 / cost $49.99. Set and live; storefront now **216**.
+
+| | |
+|---|---|
+| Price | $75.99 |
+| Unit cost | $49.99 AUD (gross margin 34%) |
+| SKU | `SH-TEQ-BLU-700` |
+| Product type | Tequila — was blank |
+
+The blank product type mattered as much as the price: with eleven types in
+use, a product with none falls out of every type-based collection and menu,
+so it would have gone live and still been effectively unreachable.
+
+**Assumption to check: the SKU says 700mL.** Nothing in the product record
+states a bottle size, and the store's SKU convention encodes it. Seven of the
+eight existing tequilas are 700, so that is the house default — but it is a
+guess, and if the bottle is a 750 the SKU needs the last segment changed.
+
+### 🔴 One still held back
 
 | | | |
 |---|---|---|
 | Lark Devil's Sonnet Tasmanian Single Malt | **$0.00** | no SKU, no description |
-| Tequila Blu | **$0.00** | no SKU, no product type, no description |
 
-Publishing these would have put **two bottles of spirits on a public
-storefront at zero dollars**, orderable by anyone who found them. They need a
-price and a SKU before they go live, and that is a decision about the
-products, not about SEO.
+Publishing this would put **a bottle of single malt on a public storefront at
+zero dollars**, orderable by anyone who found it. It needs a price and a SKU
+before it goes live, and that is a decision about the product, not about SEO.
 
 A note on verification: `productsCount` lagged by several minutes and reported
 7 still unpublished when the product list showed 2. The list is authoritative;
