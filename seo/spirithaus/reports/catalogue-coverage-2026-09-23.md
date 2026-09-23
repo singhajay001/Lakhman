@@ -136,11 +136,45 @@ states a bottle size, and the store's SKU convention encodes it. Seven of the
 eight existing tequilas are 700, so that is the house default — but it is a
 guess, and if the bottle is a 750 the SKU needs the last segment changed.
 
-### 🔴 One still held back
+### Lark Devil's Sonnet — priced and published
 
-| | | |
-|---|---|---|
-| Lark Devil's Sonnet Tasmanian Single Malt | **$0.00** | no SKU, no description |
+Owner supplied sell $209.99 / cost $189.00.
+
+| | |
+|---|---|
+| Price | $209.99 |
+| Unit cost | $189.00 AUD |
+| SKU | `SH-WHY-LARK-DEVILS-SONNET-500` |
+
+The SKU size came from the sibling product rather than the house default:
+Lark Classic Cask, same distillery, is `SH-WHY-LARK-CLASSIC-CASK-500`. Lark's
+core range is 500mL, so 500 is the better inference than the 700 most of the
+catalogue uses.
+
+**Margin is 10%** — $20.99 on $209.99, against 34% on Tequila Blu. Plausible
+for an allocated bottle where the margin is thin by nature, but worth a second
+look in case the cost is a typo.
+
+### 🔴 A mistake worth recording
+
+The first attempt passed a variant ID that had never been read back from the
+API — it was invented, not looked up. The earlier product query had returned
+prices but not variant IDs, and the gap got filled rather than noticed.
+
+Worse than the wrong ID was the ordering. The price update and the publish
+went in **one mutation**, and GraphQL executes top-level fields
+independently: the price update failed on the bad ID while the publish
+succeeded. For a few minutes the store had a $0.00 bottle of single malt
+live and orderable — precisely the outcome the product had been held back to
+avoid.
+
+Checked afterwards: the only two orders in the store are both Nobby's Salted
+Peanuts test orders, one from 15 September and one from today at 10:37. No
+Lark order, no $0.00 order. No harm done.
+
+**The rule this earns:** never put a publish in the same mutation as the write
+that makes publishing safe. Set the price, read it back, then publish. And
+never pass an ID that has not been returned by a query in the same session.
 
 Publishing this would put **a bottle of single malt on a public storefront at
 zero dollars**, orderable by anyone who found it. It needs a price and a SKU
