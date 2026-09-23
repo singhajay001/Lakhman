@@ -93,10 +93,50 @@ problem.
 `brand` being populated on every one is what makes the product schema work at
 all.
 
+## ✅ Done 2026-09-23: 10 of the 12 published
+
+Published to the Online Store, taking the storefront from **205 to 215**:
+
+| | Price |
+|---|---|
+| Appleton Estate 12 Year Old Rare Casks | $85.00 |
+| El Dorado 12 Year Old | $109.00 |
+| El Dorado 15 Year Old | $136.99 |
+| Plantation Xaymaca Special Dry | $89.00 |
+| Plantation 3 Stars White Rum | $69.99 |
+| Penfolds Koonunga Hill Shiraz | $14.99 |
+| Penfolds Koonunga Hill Cabernet Sauvignon | $14.99 |
+| Tapanappa Whalebone Vineyard Merlot Cabernet Franc | $95.00 |
+| Aberlour A'bunadh Single Malt | $154.99 |
+| Winding Road Cane Spirit | $85.00 |
+
+Zero inventory was not a blocker: `tracksInventory` is `false` across the
+store, including on already-published lines like Yamazaki 12 and Lagavulin 16,
+so stock is not what was holding these back.
+
+The last two carry no description and go straight onto the list of 66.
+
+### 🔴 Two held back deliberately
+
+| | | |
+|---|---|---|
+| Lark Devil's Sonnet Tasmanian Single Malt | **$0.00** | no SKU, no description |
+| Tequila Blu | **$0.00** | no SKU, no product type, no description |
+
+Publishing these would have put **two bottles of spirits on a public
+storefront at zero dollars**, orderable by anyone who found them. They need a
+price and a SKU before they go live, and that is a decision about the
+products, not about SEO.
+
+A note on verification: `productsCount` lagged by several minutes and reported
+7 still unpublished when the product list showed 2. The list is authoritative;
+the counter is eventually consistent. Do not use the count to confirm a write
+took effect.
+
 ## Order of work
 
-1. **Publish the 12 active-but-unpublished products**, or archive them on
-   purpose. Free, and they are finished work that is currently invisible.
+1. ~~Publish the 12 active-but-unpublished products~~ — **done**, bar the two
+   priced at $0.00.
 2. **Write the 66 missing descriptions.** Largest lever available. Start with
    the highest-margin or best-selling lines rather than alphabetically.
 3. **Barcodes at import, from now on, without exception.** Backfill the
