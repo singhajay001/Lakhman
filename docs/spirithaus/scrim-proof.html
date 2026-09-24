@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scrim Proof</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --ground:#0B0B0A;
+  --panel:#141413;
+  --panel-hi:#1C1B19;
+  --line:#26251F;
+  --ink:#F2EFE9;
+  --dim:#8C877C;
+  --pass:#7A8F6B;
+  --warn:#C98A2E;
+  --fail:#CF1C29;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img{max-width:100%}
+html,body{margin:0}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font:400 14px/1.5 var(--sans);
+  padding:0 16px;
+  padding-block:0 40px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto}
+
+header{
+  display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;
+  padding-block:24px 18px;border-bottom:1px solid var(--line);
+}
+h1{
+  font:600 21px/1.2 var(--sans);margin:0;letter-spacing:-.01em;text-wrap:balance;
+}
+.sub{color:var(--dim);margin:6px 0 0;max-width:62ch}
+.load{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+button,.btn{
+  font:500 13px/1 var(--sans);color:var(--ink);background:var(--panel-hi);
+  border:1px solid var(--line);border-radius:2px;padding:9px 14px;cursor:pointer;
+}
+button:hover,.btn:hover{background:#242320;border-color:#35342C}
+button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible{
+  outline:2px solid var(--fail);outline-offset:2px
+}
+.hint{color:var(--dim);font-size:12px}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:26px;padding-top:22px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---- stage ---- */
+.stage-wrap{min-width:0}
+.stage{
+  position:relative;width:100%;background:#000;overflow:hidden;
+  container-type:inline-size;border:1px solid var(--line);
+}
+.proof{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.scrim{position:absolute;inset:0;background:#111110;pointer-events:none}
+.typelayer{position:absolute;inset:0;pointer-events:none;display:flex;padding:0 4.5cqw}
+.typelayer.bottom{align-items:flex-end;justify-content:flex-start}
+.typelayer .stack{width:100%;padding-bottom:6cqw;display:flex;flex-direction:column;gap:1.6cqw;align-items:flex-start}
+.typelayer .kicker{color:#fff;font:500 1.5cqw/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;margin:0;opacity:.9}
+.headline{color:#fff;font-weight:600;line-height:1.08;letter-spacing:-.02em;text-wrap:balance;margin:0;max-width:18ch;font-size:5.2cqw}
+.typelayer .body{color:#fff;margin:0;max-width:46ch;font:400 2cqw/1.5 var(--sans);opacity:.92}
+.typelayer .cta{background:var(--fail);color:#fff;font:500 1.8cqw/1 var(--sans);padding:1.6cqw 2.6cqw;margin-top:1cqw}
+.typelayer.tile .stack{padding-bottom:7cqw}
+.typelayer.tile .headline{font-size:8cqw;max-width:none}
+.typelayer.tile .body,.typelayer.tile .cta{display:none}
+.guides{position:absolute;inset:0;pointer-events:none}
+.guides i{position:absolute;background:transparent;border:0;display:block}
+.guides .v{top:0;bottom:0;width:0;border-left:1px dashed rgba(207,28,41,.85)}
+.guides .h{left:0;right:0;height:0;border-top:1px dashed rgba(207,28,41,.85)}
+.guides .tag{
+  position:absolute;font:500 10px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:#fff;background:rgba(207,28,41,.9);padding:3px 5px;border:0;width:auto;
+}
+.stage-meta{
+  display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:space-between;
+  padding-top:10px;color:var(--dim);font:400 12px/1.4 var(--mono)
+}
+.stage-meta strong{color:var(--ink);font-weight:500}
+
+/* ---- filmstrip ---- */
+.strip{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;min-height:74px}
+.frame{
+  position:relative;flex:0 0 auto;width:96px;padding:0;border:1px solid var(--line);
+  background:var(--panel);cursor:pointer;border-radius:0;overflow:hidden;text-align:left
+}
+.frame img{display:block;width:100%;height:54px;object-fit:cover}
+.frame span{display:block;padding:4px 5px;font:400 10px/1.25 var(--mono);color:var(--dim);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.frame[aria-current="true"]{border-color:var(--fail)}
+.frame[aria-current="true"] span{color:var(--ink)}
+
+/* ---- rail ---- */
+.rail{display:flex;flex-direction:column;gap:18px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);padding:16px}
+.card h2{
+  font:500 11px/1 var(--sans);letter-spacing:.11em;text-transform:uppercase;
+  color:var(--dim);margin:0 0 14px
+}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:12px;color:var(--dim)}
+select,input[type=text]{
+  font:400 13px/1 var(--sans);color:var(--ink);background:var(--panel-hi);
+  border:1px solid var(--line);border-radius:2px;padding:8px 9px;width:100%
+}
+input[type=range]{width:100%;accent-color:var(--fail);margin:0}
+.rowline{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.val{font:500 13px var(--mono)}
+.band{position:relative;height:4px;background:var(--panel-hi);border:1px solid var(--line);border-top:0}
+.band i{position:absolute;top:0;bottom:0;left:0;width:25%;background:rgba(122,143,107,.55)}
+.bandlabels{display:flex;justify-content:space-between;font:400 10px var(--mono);color:var(--dim);padding-top:4px}
+.check{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--dim);cursor:pointer}
+.check input{accent-color:var(--fail);margin:0}
+
+/* ---- readout ---- */
+.verdict{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.chip{
+  font:500 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 7px;color:#0B0B0A;background:var(--dim)
+}
+.chip.pass{background:var(--pass)}
+.chip.warn{background:var(--warn)}
+.chip.fail{background:var(--fail);color:#fff}
+.verdict p{margin:0;font-size:12px;color:var(--dim)}
+.metric{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  padding:9px 0;border-top:1px solid var(--line)}
+.metric:first-of-type{border-top:0}
+.metric dt{font-size:12px;color:var(--dim);margin:0}
+.metric dd{margin:0;font:500 15px var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.metric dd small{font:400 11px var(--mono);color:var(--dim);display:block;text-align:right}
+dl{margin:0}
+.note{font-size:11px;line-height:1.5;color:var(--dim);margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.note b{color:var(--ink);font-weight:500}
+
+footer{border-top:1px solid var(--line);margin-top:30px;padding-top:16px;
+  color:var(--dim);font-size:12px;line-height:1.6;max-width:78ch}
+footer b{color:var(--ink);font-weight:500}
+.dragging{outline:2px dashed var(--fail);outline-offset:-10px}
+@media (prefers-reduced-motion:no-preference){
+  .frame,button{transition:border-color .12s ease,background .12s ease}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>Scrim proof</h1>
+    <p class="sub">Checks a SPIRITHAUS scene frame the way the storefront will show it: cropped to the ratios the theme actually renders, under the theme’s own ink scrim, with the type stack where the theme puts it — along the bottom.</p>
+  </div>
+  <div class="load">
+    <input type="file" id="picker" accept="image/*" multiple hidden>
+    <button type="button" id="loadBtn">Load frames</button>
+    <span class="hint">or drop images anywhere</span>
+  </div>
+</header>
+
+<div class="grid">
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+      <img class="proof" id="proof" alt="Frame under test">
+      <div class="scrim" id="scrim"></div>
+      <div class="typelayer bottom" id="typelayer">
+        <div class="stack">
+          <p class="kicker">Spirits, wines and cocktails</p>
+          <p class="headline" id="headline"></p>
+          <p class="body">We cannot beat the chains on price or breadth, so we do not try.</p>
+          <span class="cta">Browse the range</span>
+        </div>
+      </div>
+      <div class="guides" id="guides"></div>
+    </div>
+    <div class="stage-meta">
+      <span id="metaName">—</span>
+      <span id="axisNote">—</span>
+      <span id="metaDims">—</span>
+    </div>
+    <div class="strip" id="strip"></div>
+  </div>
+
+  <div class="rail">
+    <div class="card">
+      <h2>Slot</h2>
+      <div class="field">
+        <label for="slot">Treatment</label>
+        <select id="slot">
+          <option value="hero">Hero — bottom half quiet</option>
+          <option value="tile">Category tile — bottom third quiet</option>
+          <option value="life">Lifestyle — no type</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="ratio">Crop ratio</label>
+        <select id="ratio"></select>
+      </div>
+      <div class="field">
+        <div class="rowline"><label for="offset">Crop offset</label><span class="val" id="offsetVal">50%</span></div>
+        <input type="range" id="offset" min="0" max="100" value="50">
+      </div>
+      <div class="field">
+        <label for="headlineText">Headline</label>
+        <input type="text" id="headlineText" value="Small-batch spirits, delivered in Sydney">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Scrim</h2>
+      <div class="field">
+        <div class="rowline"><label for="opacity">Opacity</label><span class="val" id="opacityVal">60%</span></div>
+        <input type="range" id="opacity" min="58" max="90" value="58">
+        <div class="band"><i></i></div>
+        <div class="bandlabels"><span>58 floor</span><span>58 hero · 66 tiles</span><span>90</span></div>
+      </div>
+      <div class="field">
+        <label for="scrimMode">Coverage</label>
+        <select id="scrimMode">
+          <option value="full">Full frame (as the theme)</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <label class="check"><input type="checkbox" id="showGuides" checked> Show quiet-zone guides</label>
+    </div>
+
+    <div class="card">
+      <h2>Quiet zone</h2>
+      <div class="verdict">
+        <span class="chip" id="chip">—</span>
+        <p id="verdictText">Load a frame to measure.</p>
+      </div>
+      <dl>
+        <div class="metric">
+          <dt>Type contrast</dt>
+          <dd id="mContrast">—<small>on brightest patch</small></dd>
+        </div>
+        <div class="metric">
+          <dt>Zone intrusion</dt>
+          <dd id="mVar">—<small>above zone floor</small></dd>
+        </div>
+        <div class="metric">
+          <dt>Image survival</dt>
+          <dd id="mMean">—<small>highlights kept</small></dd>
+        </div>
+      </dl>
+      <p class="note" id="zoneNote"></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p><b>What this proves.</b> Three separate rules, measured on the composited frame. <b>Type contrast</b> is WCAG relative luminance for off-white type against the brightest patch of the quiet zone, not its average — one specular highlight is what breaks a headline, and a mean hides it. <b>Zone intrusion</b> is the peak level above the zone's own floor, which is what catches an object or edge entering the band that must stay empty; at a 58–66% scrim almost any patch clears the contrast bar, so this is the check that does the work in that band. <b>Image survival</b> reads the brightest tenth of the subject side rather than its average, because low-key work is supposed to have a dark mean — what tells you the photograph is still alive under a heavy scrim is whether its highlights survive. Contrast thresholds are the published ones; the other two are house limits calibrated against the sample frames and are best read as relative between frames.</p>
+  <p><b>What it cannot prove.</b> Whether a hand reads as 35 or as 20, and every other line of the ABAC list. Those stay a human pass over each frame before it ships — see part A of the prompt pack.</p>
+  <p><b>Where the numbers come from.</b> Ratios, scrim values and quiet zones are measured from the live theme (<code>sections/spirithaus-hero.liquid</code>, <code>sections/spirithaus-categories.liquid</code>, <code>assets/spirithaus.css</code>) as at 2026-09-24. The hero is 100vw by 76vh, dropping to 62vh on a phone, so it renders anywhere from 2.34:1 to 0.75:1; tiles are a 3-up grid in a 1200px page width at 34rem tall. Both sections bottom-align their type and both clamp the scrim to a 58% floor. If the theme changes, re-read it and update the prompt pack and this page together.</p>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // Ratios are the theme's own, measured from spirithaus.css on 2026-09-24:
+  // the hero is 100vw by 76vh (62vh on a phone), tiles are a 3-up grid inside a
+  // 1200px page width at 34rem tall, 1-up at 22rem below 750px.
+  var SLOTS = {
+    hero: {
+      ratios: ["2.34:1", "2.11:1", "0.99:1", "0.75:1"],
+      labels: {"2.34:1":"2.34 : 1  desktop 1920", "2.11:1":"2.11 : 1  laptop 1440",
+               "0.99:1":"0.99 : 1  tablet 768", "0.75:1":"0.75 : 1  phone 390"},
+      type: "bottom", zone: "half", scrim: 58
+    },
+    tile: {
+      ratios: ["1.05:1", "0.87:1", "0.62:1", "1.64:1"],
+      labels: {"1.05:1":"1.05 : 1  desktop", "0.87:1":"0.87 : 1  1024",
+               "0.62:1":"0.62 : 1  768", "1.64:1":"1.64 : 1  phone"},
+      type: "tile", zone: "third", scrim: 66
+    },
+    life: { ratios: ["4:5", "3:2"], labels: {}, type: "none", zone: "none", scrim: 58 }
+  };
+  var ZONE_NOTE = {
+    half: "Bottom half must hold no object, edge, or highlight — the hero type stack sits here, and the subject belongs in the top half, centred.",
+    third: "Bottom third must stay clear — the tile title and caption sit bottom-left.",
+    none: "No type is laid over this slot, so there is no quiet zone to hold."
+  };
+  var TEXT_LUM = relLum(255, 255, 255);  // --sh-white
+  var INK = [17, 17, 16];                // --sh-ink #111110, the scrim colour
+
+  var el = {};
+  ["picker","loadBtn","stage","proof","scrim","typelayer","headline","guides","metaName",
+   "metaDims","strip","slot","ratio","offset","offsetVal","headlineText","opacity","opacityVal",
+   "scrimMode","showGuides","chip","verdictText","mContrast","mMean","mVar","zoneNote","axisNote"]
+   .forEach(function(id){ el[id] = document.getElementById(id); });
+
+  var frames = [], current = -1;
+  var canvas = document.createElement("canvas");
+  var ctx = canvas.getContext("2d", {willReadFrequently:true});
+  var tainted = false;
+
+  /* ---------- colour maths ---------- */
+  function chan(v){ v = v/255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); }
+  function relLum(r,g,b){ return 0.2126*chan(r) + 0.7152*chan(g) + 0.0722*chan(b); }
+  function contrast(a,b){ var hi = Math.max(a,b), lo = Math.min(a,b); return (hi+0.05)/(lo+0.05); }
+
+  /* ---------- sample frames ---------- */
+  function synth(busyBottom){
+    var W = 1000, H = 1000, c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    var g = c.getContext("2d");
+    g.fillStyle = "#0a0907"; g.fillRect(0, 0, W, H);
+
+    // Bench line kept high, so the bottom half is empty air rather than a lit
+    // surface — the quiet zone the hero type needs.
+    var bench = g.createLinearGradient(0, H * 0.34, 0, H);
+    bench.addColorStop(0, "#2a1e13");
+    bench.addColorStop(0.35, "#140d07");
+    bench.addColorStop(1, "#0a0806");
+    g.fillStyle = bench; g.fillRect(0, H * 0.34, W, H * 0.66);
+
+    var key = g.createRadialGradient(W * 0.5, H * 0.27, 10, W * 0.5, H * 0.27, W * 0.40);
+    key.addColorStop(0, "rgba(255,196,96,0.98)");
+    key.addColorStop(0.35, "rgba(198,126,44,0.55)");
+    key.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = key; g.fillRect(0, 0, W, H);
+
+    // Bottle, centred and sitting in the top half.
+    g.fillStyle = "rgba(24,16,9,0.94)";
+    g.beginPath(); g.ellipse(W * 0.5, H * 0.26, W * 0.085, H * 0.20, 0, 0, Math.PI * 2); g.fill();
+    var glass = g.createLinearGradient(W * 0.42, 0, W * 0.58, 0);
+    glass.addColorStop(0, "rgba(255,196,110,0.14)");
+    glass.addColorStop(0.5, "rgba(255,219,150,0.88)");
+    glass.addColorStop(1, "rgba(255,196,110,0.10)");
+    g.fillStyle = glass;
+    g.beginPath(); g.ellipse(W * 0.5, H * 0.29, W * 0.068, H * 0.165, 0, 0, Math.PI * 2); g.fill();
+
+    if (busyBottom){
+      // A lit object low in frame: the failure the composition rule prevents.
+      var spill = g.createRadialGradient(W * 0.34, H * 0.74, 6, W * 0.34, H * 0.74, W * 0.22);
+      spill.addColorStop(0, "rgba(255,247,228,0.98)");
+      spill.addColorStop(0.5, "rgba(240,206,150,0.55)");
+      spill.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = spill; g.fillRect(0, H * 0.5, W, H * 0.5);
+    }
+
+    var d = g.getImageData(0, 0, W, H), p = d.data;
+    for (var i = 0; i < p.length; i += 4){
+      var n = (Math.random() - 0.5) * 9;
+      p[i] = clamp(p[i] + n); p[i + 1] = clamp(p[i + 1] + n); p[i + 2] = clamp(p[i + 2] + n);
+    }
+    g.putImageData(d, 0, 0);
+    return c.toDataURL("image/jpeg", 0.86);
+  }
+  function clamp(v){ return v < 0 ? 0 : v > 255 ? 255 : v; }
+
+  /* ---------- frame handling ---------- */
+  function detectSlot(name){
+    var n = name.toLowerCase();
+    if (/^(sh-)?hero-/.test(n)) return "hero";
+    if (/^(sh-)?tile-/.test(n)) return "tile";
+    if (/^(sh-)?life-/.test(n)) return "life";
+    return "hero";
+  }
+
+  function addFrame(name, src, slot){
+    var img = new Image();
+    img.onload = function(){
+      frames.push({name:name, img:img, slot:slot || detectSlot(name), offset:50});
+      renderStrip();
+      if (current === -1) select(frames.length-1);
+    };
+    img.onerror = function(){ console.warn("Could not read", name); };
+    img.src = src;
+  }
+
+  function takeFiles(list){
+    Array.prototype.forEach.call(list, function(f){
+      if (!/^image\//.test(f.type)) return;
+      addFrame(f.name, URL.createObjectURL(f));
+    });
+  }
+
+  function renderStrip(){
+    el.strip.textContent = "";
+    frames.forEach(function(f, i){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "frame";
+      b.setAttribute("aria-current", i === current ? "true" : "false");
+      var im = document.createElement("img"); im.src = f.img.src; im.alt = "";
+      var s = document.createElement("span"); s.textContent = f.name;
+      b.appendChild(im); b.appendChild(s);
+      b.addEventListener("click", function(){ select(i); });
+      el.strip.appendChild(b);
+    });
+  }
+
+  function select(i){
+    current = i;
+    var f = frames[i];
+    el.slot.value = f.slot;
+    fillRatios(f.slot);
+    el.opacity.value = SLOTS[f.slot].scrim;
+    el.offset.value = f.offset;
+    el.proof.src = f.img.src;
+    el.metaName.textContent = f.name;
+    el.metaDims.textContent = f.img.naturalWidth + " × " + f.img.naturalHeight + " px";
+    renderStrip();
+    draw();
+  }
+
+  function fillRatios(slot){
+    var keep = el.ratio.value;
+    el.ratio.textContent = "";
+    SLOTS[slot].ratios.forEach(function(r){
+      var o = document.createElement("option");
+      o.value = r; o.textContent = SLOTS[slot].labels[r] || r.replace(":", " : ");
+      el.ratio.appendChild(o);
+    });
+    if (SLOTS[slot].ratios.indexOf(keep) > -1) el.ratio.value = keep;
+  }
+
+  function ratioValue(){
+    var p = el.ratio.value.split(":");
+    return parseFloat(p[0]) / parseFloat(p[1]);
+  }
+
+  /* ---------- draw ---------- */
+  // The theme centre-crops with object-fit:cover. Which axis actually gets cut
+  // depends on the master: a square master loses top and bottom in a 2.34:1
+  // hero and loses its sides in a 0.75:1 one, so the offset control follows
+  // whichever axis is being cut.
+  function cropAxis(img, r){
+    return (img.naturalWidth / img.naturalHeight) > r ? "x" : "y";
+  }
+
+  function draw(){
+    var slot = el.slot.value, spec = SLOTS[slot], r = ratioValue();
+    var alpha = parseInt(el.opacity.value, 10) / 100;
+    var mode = el.scrimMode.value;
+    var off = parseInt(el.offset.value, 10);
+    var f = frames[current];
+
+    el.stage.style.aspectRatio = String(r);
+    el.offsetVal.textContent = off + "%";
+    el.opacityVal.textContent = Math.round(alpha * 100) + "%";
+
+    var axis = f ? cropAxis(f.img, r) : "y";
+    el.proof.style.objectPosition = axis === "x" ? (off + "% 50%") : ("50% " + off + "%");
+    el.axisNote.textContent = axis === "x" ? "cropping the sides" : "cropping top and bottom";
+
+    el.scrim.hidden = (mode === "none");
+    el.scrim.style.opacity = String(alpha);
+
+    el.typelayer.hidden = (spec.type === "none");
+    el.typelayer.className = "typelayer " + (spec.type === "tile" ? "bottom tile" : "bottom");
+    el.headline.textContent = el.headlineText.value;
+
+    el.zoneNote.textContent = ZONE_NOTE[spec.zone];
+    drawGuides(spec.zone);
+    if (f) f.offset = off;
+    measure(spec.zone, r, alpha, mode, off / 100, axis);
+  }
+
+  function drawGuides(zone){
+    el.guides.textContent = "";
+    if (!el.showGuides.checked || zone === "none") return;
+    var top = zone === "half" ? 50 : 66.666;
+    var line = document.createElement("i");
+    line.className = "h"; line.setAttribute("style", "top:" + top + "%");
+    el.guides.appendChild(line);
+    var tag = document.createElement("i");
+    tag.className = "tag"; tag.setAttribute("style", "left:0;top:" + top + "%");
+    tag.textContent = zone === "half" ? "bottom half" : "bottom third";
+    el.guides.appendChild(tag);
+  }
+
+  /* ---------- measure ---------- */
+  // Contrast is WCAG (4.5 comfortable, 3.0 the floor for display type). The
+  // other two are house limits for this brief, calibrated against the sample
+  // frames, and are read as relative between frames.
+  var INTRUDE_CLEAR = 12, INTRUDE_PRESENT = 30;   // peak above floor, 0-255
+  var SURVIVE_THIN = 8, SURVIVE_OK = 15;          // subject highlights, % of white
+
+  function pct(sorted, q){
+    return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * q))];
+  }
+
+  function measure(zone, r, alpha, mode, pos, axis){
+    if (current < 0 || zone === "none"){ setReadout(null, zone, mode); return; }
+
+    var img = frames[current].img;
+    var TW = 480, TH = Math.max(1, Math.round(TW / r));
+    canvas.width = TW; canvas.height = TH;
+
+    var iw = img.naturalWidth, ih = img.naturalHeight;
+    var srcW = Math.min(iw, ih * (TW / TH));
+    var srcH = Math.min(ih, iw * (TH / TW));
+    var sx = (iw - srcW) * (axis === "x" ? pos : 0.5);
+    var sy = (ih - srcH) * (axis === "y" ? pos : 0.5);
+    ctx.clearRect(0, 0, TW, TH);
+    ctx.drawImage(img, sx, sy, srcW, srcH, 0, 0, TW, TH);
+
+    var data;
+    try { data = ctx.getImageData(0, 0, TW, TH).data; }
+    catch (e){ tainted = true; setReadout(null, zone, mode); return; }
+
+    // The theme's scrim is ink #111110, not black, and the browser composites
+    // it per channel in sRGB before any luminance is taken.
+    var a = mode === "none" ? 0 : alpha, k = 1 - a;
+    var zoneTop = Math.round(zone === "half" ? TH / 2 : (TH * 2) / 3);
+    var zoneLums = [], zoneGreys = [], subjGreys = [];
+
+    for (var y = 0; y < TH; y++){
+      var inZone = y >= zoneTop;
+      for (var x = 0; x < TW; x++){
+        var i = (y * TW + x) * 4;
+        var R = data[i] * k + INK[0] * a;
+        var G = data[i + 1] * k + INK[1] * a;
+        var B = data[i + 2] * k + INK[2] * a;
+        var grey = 0.299 * R + 0.587 * G + 0.114 * B;
+        if (inZone){ zoneGreys.push(grey); zoneLums.push(relLum(R, G, B)); }
+        else { subjGreys.push(grey); }
+      }
+    }
+    if (!zoneGreys.length){ setReadout(null, zone, mode); return; }
+
+    zoneLums.sort(function(p, q){ return p - q; });
+    zoneGreys.sort(function(p, q){ return p - q; });
+    subjGreys.sort(function(p, q){ return p - q; });
+
+    setReadout({
+      contrast: contrast(TEXT_LUM, pct(zoneLums, 0.95)),
+      intrusion: pct(zoneGreys, 0.99) - pct(zoneGreys, 0.50),
+      survival: subjGreys.length ? (pct(subjGreys, 0.90) / 255) * 100 : 0
+    }, zone, mode);
+  }
+
+  var RANK = { pass: 0, warn: 1, fail: 2 };
+
+  function setReadout(m, zone, mode){
+    if (!m){
+      el.chip.className = "chip"; el.chip.textContent = "\u2014";
+      el.mContrast.childNodes[0].nodeValue = "\u2014";
+      el.mMean.childNodes[0].nodeValue = "\u2014";
+      el.mVar.childNodes[0].nodeValue = "\u2014";
+      el.verdictText.textContent =
+        tainted ? "The browser blocked pixel reads for this file. Serve the folder over http (python3 -m http.server) and reload."
+        : zone === "none" ? "Lifestyle frames carry no type, so there is no quiet zone to measure."
+        : "Load a frame to measure.";
+      return;
+    }
+
+    var cState = m.contrast >= 4.5 ? "pass" : m.contrast >= 3.0 ? "warn" : "fail";
+    var iState = m.intrusion < INTRUDE_CLEAR ? "pass" : m.intrusion < INTRUDE_PRESENT ? "warn" : "fail";
+    var sState = m.survival >= SURVIVE_OK ? "pass" : m.survival >= SURVIVE_THIN ? "warn" : "fail";
+
+    el.mContrast.childNodes[0].nodeValue = m.contrast.toFixed(2) + ":1";
+    el.mVar.childNodes[0].nodeValue = m.intrusion.toFixed(0) + " levels";
+    el.mMean.childNodes[0].nodeValue = m.survival.toFixed(1) + "%";
+
+    var worst = [cState, iState, sState].sort(function(p, q){ return RANK[q] - RANK[p]; })[0];
+    el.chip.className = "chip " + worst;
+    el.chip.textContent = worst === "pass" ? "Holds" : worst === "warn" ? "Marginal" : "Breaks";
+
+    var say = [];
+    if (iState === "fail") say.push("something bright sits in the quiet zone \u2014 re-shoot or re-crop");
+    else if (iState === "warn") say.push("faint structure in the quiet zone");
+    if (cState === "fail") say.push("white type fails against the brightest patch");
+    else if (cState === "warn") say.push("type passes at display size only");
+    if (sState === "fail") say.push("the scrim flattens the image to mud");
+    else if (sState === "warn") say.push("the image is losing its highlights under this scrim");
+
+    el.verdictText.textContent = say.length
+      ? say.join("; ").replace(/^./, function(c){ return c.toUpperCase(); }) + "."
+      : "Quiet zone is clear, type holds, and the image survives the scrim.";
+  }
+
+  /* ---------- wiring ---------- */
+  el.loadBtn.addEventListener("click", function(){ el.picker.click(); });
+  el.picker.addEventListener("change", function(e){ takeFiles(e.target.files); e.target.value = ""; });
+
+  el.slot.addEventListener("change", function(){
+    if (frames[current]) frames[current].slot = el.slot.value;
+    fillRatios(el.slot.value);
+    el.opacity.value = SLOTS[el.slot.value].scrim;
+    draw();
+  });
+  ["ratio","offset","opacity","scrimMode","showGuides","headlineText"].forEach(function(id){
+    el[id].addEventListener("input", draw);
+    el[id].addEventListener("change", draw);
+  });
+
+  ["dragenter","dragover"].forEach(function(ev){
+    document.addEventListener(ev, function(e){ e.preventDefault(); document.body.classList.add("dragging"); });
+  });
+  ["dragleave","drop"].forEach(function(ev){
+    document.addEventListener(ev, function(e){ e.preventDefault(); document.body.classList.remove("dragging"); });
+  });
+  document.addEventListener("drop", function(e){
+    if (e.dataTransfer && e.dataTransfer.files) takeFiles(e.dataTransfer.files);
+  });
+
+  /* ---------- open in a working state ---------- */
+  fillRatios("hero");
+  addFrame("sample-clean-bottom.jpg", synth(false), "hero");
+  addFrame("sample-lit-bottom.jpg",   synth(true),  "hero");
+})();
+</script>
+</body>
+</html>
