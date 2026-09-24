@@ -457,6 +457,106 @@ The rule that follows: **re-read a product's description immediately before
 writing it, not once for the whole batch.** Cheap, and it is the only thing
 standing between a bulk write and destroying someone's work.
 
+## Barcodes: what to actually do about the 215
+
+### What a GTIN buys, honestly
+
+The product JSON-LD types `gtin8/12/13/14` off the variant barcode, so with no
+barcode there is no GTIN, and GTIN is the strongest product-matching signal
+Google has. That much is real.
+
+What is *not* certain is the payoff people usually cite for it. Shopping and
+free listings are the standard GTIN argument, and this store sells alcohol in
+Australia, where those surfaces are restricted — and Google's alcohol policy
+was being revised with changes dated **30 September 2026**, days from now.
+Anyone who tells you to backfill 215 barcodes "for Shopping" is quoting a
+general e-commerce playbook at a licensed liquor retailer. Verify the policy
+against the current Merchant Center documentation before betting effort on it.
+
+The payoffs that do not depend on that policy:
+
+- product-entity matching in organic search, which is what makes a page rank
+  for the bottle rather than only for the brand
+- AI assistants resolving "is this the same bottle" across retailers
+- Bing, and price-comparison and aggregator sites, which match on GTIN
+
+So: worth doing, not an emergency. Sequence it behind work with a clearer
+return, and do it in one properly sourced pass rather than piecemeal.
+
+### Where to get them, ranked by yield
+
+1. **Supplier price files.** Distributor files almost always carry an EAN
+   column. One spreadsheet per supplier covers most of the range in a single
+   pass. Highest yield for the least effort — ask for the barcode column.
+2. **Scan the shelf.** This is a physical bottle shop with a POS, and the
+   bottles are in the room. A phone scanner to CSV, or a POS export, gives a
+   barcode verified against the exact unit being sold. Slowest, and the most
+   accurate.
+3. **Do not scrape open GTIN databases.** Spirits coverage is patchy and
+   accuracy is poor. A *wrong* GTIN is worse than none: it is a claim that this
+   page is that product, and it hands the listing to someone else's bottle.
+
+### 🔴 The gap that would have let bad barcodes through
+
+The theme refuses a barcode that is not digits-only or not 8/12/13/14 long. It
+does **not** verify the check digit — and every barcode carries one precisely
+so that a typo is detectable.
+
+A single transposed digit produces a barcode of the right length, all digits,
+that passes every check the theme has and is simply a different product. On a
+215-row backfill typed or exported by hand, that is not hypothetical.
+
+`tools/check-barcodes.py` closes it. Run it on any barcode file before a single
+value reaches the store:
+
+```bash
+python3 tools/check-barcodes.py supplier.csv
+python3 tools/check-barcodes.py supplier.csv --against products-export.csv
+```
+
+It catches, each one proven by feeding it the fault:
+
+| Guard | Why it exists |
+|---|---|
+| **Check digit** | The one the theme cannot catch. `9357984000475` for `…474` passes length and digits and is a different product |
+| Wrong length | Not 8/12/13/14 |
+| Non-digits | Text that reached the barcode column |
+| **Excel scientific notation** | `9.35798E+12`. Spreadsheets do this to long numbers silently, and it is the single most common way a barcode import is quietly destroyed |
+| Stripped leading zero | Flags 7/11-digit values with the likely cause named |
+| **Duplicate GTIN** | A GTIN identifies one sellable unit; two variants cannot share one |
+| **Partial import deleting variants** | With `--against`, refuses a Handle-keyed file listing fewer variants than the store has — the failure that already cost this store 23 variants across 17 products |
+
+A clean file exits 0 and says `safe to write`.
+
+### Already found: one duplicate in the three barcodes that exist
+
+`maybe-sammy-jasmine-negroni-500ml` has two variants both carrying
+`9357984000054`. Both are valid EAN-13 — the check digit computes correctly —
+but they cannot both be that GTIN. One of the two is wrong, and the store has
+only three barcodes in total, so the defect rate in the data that exists is one
+in three.
+
+That is the argument for validating the backfill rather than trusting the
+source.
+
+## ✅ Metafield coverage measured — and it is fine
+
+Listed under "not measured here" since 23 September. Measured now across active
+products: essentially every one carries all eight custom metafields — `abv`,
+`volume_ml`, `standard_drinks`, `style`, `region`, `country`, `producer`,
+`why_we_stock_it`.
+
+This was the section of the audit most likely to hold a nasty surprise, because
+`standard_drinks` is what an AI assistant answers with and nothing had ever
+counted it. It holds up.
+
+One exception found: **Aberlour A'bunadh** carries only five of the eight,
+missing `abv`, `volume_ml` and `standard_drinks` — the three numeric ones. That
+is explicable, since A'bunadh is cask strength and the ABV moves batch to
+batch, but the figures are still printed on the bottle in front of you and the
+spec table is blank without them. Read them off the label of the batch in
+stock.
+
 ## Order of work
 
 1. ~~Publish the 12 active-but-unpublished products~~ — **done**, all 12.
@@ -471,7 +571,5 @@ standing between a bulk write and destroying someone's work.
 
 ## Not measured here
 
-Metafield coverage — `abv`, `volume_ml`, `standard_drinks`, `style`, `region`,
-`country`, `producer`. These feed the spec table and `additionalProperty`, and
-`standard_drinks` in particular is what an AI assistant answers with. They need
-a separate metafield query; the counts above say nothing about them.
+Nothing outstanding. Metafield coverage was the last item and is measured
+above.
