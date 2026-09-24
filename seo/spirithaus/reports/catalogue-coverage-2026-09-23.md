@@ -360,12 +360,99 @@ Corrected to `Penfolds`.
 Worth noting the pattern: `SPIRITHAUS` appears to be what a product gets when
 nobody set a vendor. The peanuts legitimately have it. A wine does not.
 
+## 2026-09-24, later: 63 descriptions written — and the store moved underneath
+
+### Where it landed
+
+| | |
+|---|---|
+| Empty descriptions at the start | **69** of 217 active |
+| Written this session | **63** |
+| Still empty | **4** |
+| Filled by someone other than me | **2** |
+
+63 + 4 + 2 = 69. The reconciliation is exact, and the last column is the
+finding — see below.
+
+Written, in three passes:
+
+| Block | Count |
+|---|---|
+| Whisky, Scotch, Irish, Japanese, Indian, Australian | 39 |
+| Tequila | 16 |
+| Karu Distillery | 5 |
+| Tequila Blu, Winding Road, McGuigan Black Label Red | 3 |
+
+### The four left are left deliberately
+
+`karu-pourtrait-gin`, `karu-house-vodka`, `karu-outcask-old-fashioned` and
+`karu-morita-grapefruit-soda`. Karu has published nothing findable about these
+four. The other five in their range are written because the producer *has*
+described them — Affinity's Daintree vanilla and Hawkesbury pomegranate,
+Lightning's IWSC 2021 trophy for best contemporary gin, Morita's vapour-infused
+chipotle, Outcask's re-used casks, Orsa being built on Affinity rather than
+neutral spirit.
+
+Four blanks is the correct outcome here. Copy that reads plausibly and is
+quietly wrong is worse than a blank, and on a small independent distiller it is
+also a discourtesy to them. These need Karu's own words, which the owner can
+get by asking.
+
+Direct fetches to `karudistillery.com.au` return `EGRESS_BLOCKED` from this
+session, as the repository's own note warns. Web search works, which is how the
+other five were sourced.
+
+## 🔴 The store is being edited by someone else while this runs
+
+Not a guess — three independent signs, all inside this session:
+
+**1. Products moved from active to draft.**
+
+| | start of session | now |
+|---|---|---|
+| Active | 217 | **190** |
+| Draft | 134 | **160** |
+| Total | 351 | 351 |
+
+Twenty-seven products switched, nothing deleted. The batch timestamped
+`02:23` is the fine-wine block — Henschke Hill of Grace, Torbreck RunRig, Jim
+Barry The Armagh, Best's Thomson Family Shiraz, Yalumba The Octavius,
+Clonakilla Shiraz Viognier — plus **Lark Devil's Storm No. 183**.
+
+**2. Two products gained descriptions I did not write.** `karu-rested-morita`
+and `hibiki-japanese-harmony-700ml` were both empty in the first sweep and both
+carry copy now. The Rested Morita text is Karu's own marketing voice
+("We've taken our globally acclaimed World's Best Infused Vodka…"), so someone
+is pasting producer copy into the Karu range — exactly the four-product gap
+above.
+
+**3. A product type changed.** `karu-rested-morita` read `Tequila` in the first
+sweep and reads `Vodka` now.
+
+### What this means for the work
+
+**Two products I worked on are now drafts and invisible:** Lark Devil's Storm
+No. 183 (renamed, repriced, described, metafields set) and Tequila Blu (priced,
+SKU'd, typed, published, described). Both have a storefront URL and no
+storefront presence. If that is deliberate, nothing is wrong. If it is not, it
+undoes the 23 September work.
+
+**It also changes how writes should be sequenced from here.** Every batch in
+this session was built from a snapshot, then applied minutes later. That was
+safe while nobody else was in the admin. It is not safe now: a description
+written by the owner between the snapshot and the write would be silently
+overwritten, with no version history in Shopify to recover it from.
+
+The rule that follows: **re-read a product's description immediately before
+writing it, not once for the whole batch.** Cheap, and it is the only thing
+standing between a bulk write and destroying someone's work.
+
 ## Order of work
 
 1. ~~Publish the 12 active-but-unpublished products~~ — **done**, all 12.
    The two held at $0.00 were priced by the owner and are live.
-2. **Write the missing descriptions** — 39 of 69 done. Remaining: 17 tequila,
-   the 10-product Karu range (research first), and 2 strays.
+2. ~~Write the missing descriptions~~ — **63 of 69 done.** Four left, all
+   Karu, all needing the producer's own copy. Two were filled by someone else.
 3. ~~Fill blank image alt text~~ — **done**, 275 alts, full coverage.
 4. **Barcodes at import, from now on, without exception.** Backfill the
    existing 215 when convenient; never add a new SKU without one.
