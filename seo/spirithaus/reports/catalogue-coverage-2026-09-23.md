@@ -402,9 +402,15 @@ Direct fetches to `karudistillery.com.au` return `EGRESS_BLOCKED` from this
 session, as the repository's own note warns. Web search works, which is how the
 other five were sourced.
 
-## 🔴 The store is being edited by someone else while this runs
+## ✅ The store was being edited in parallel — owner confirmed
 
-Not a guess — three independent signs, all inside this session:
+Detected from the API, then confirmed by the owner: **the drafting was
+deliberate and theirs.** Recorded because the detection matters more than the
+answer did — a bulk write against a catalogue that is moving is a different
+risk from one against a static catalogue, and nothing in the process was
+watching for it until now.
+
+Three independent signs, all inside this session:
 
 **1. Products moved from active to draft.**
 
@@ -431,11 +437,15 @@ sweep and reads `Vodka` now.
 
 ### What this means for the work
 
-**Two products I worked on are now drafts and invisible:** Lark Devil's Storm
-No. 183 (renamed, repriced, described, metafields set) and Tequila Blu (priced,
-SKU'd, typed, published, described). Both have a storefront URL and no
-storefront presence. If that is deliberate, nothing is wrong. If it is not, it
-undoes the 23 September work.
+**Two products I worked on are now drafts: deliberate, and fine.** Lark Devil's
+Storm No. 183 and Tequila Blu were both drafted by the owner on purpose. The 23
+September work on them is not lost — price, SKU, product type, metafields and
+copy are all still on the products, ready for whenever they are published.
+
+Worth keeping in view: both now carry full descriptions and correct data while
+being invisible to search. That is a *deliberate* version of the 12
+active-but-unpublished products found on 23 September, and the two should not be
+confused when the storefront count is next measured.
 
 **It also changes how writes should be sequenced from here.** Every batch in
 this session was built from a snapshot, then applied minutes later. That was
