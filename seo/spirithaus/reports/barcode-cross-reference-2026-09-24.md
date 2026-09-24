@@ -7,7 +7,30 @@ Mark the **YOUR CALL** column in
 `worksheets/barcode-cross-check-2026-09-24.csv`, or just tell me the
 exceptions — I have pre-filled a verdict for every row.
 
-**Nothing in the `y` / `y*` / ASK sections has been written to Shopify yet.**
+**The `y` and `y*` sections are now written** — see Status below. The 6 ASK rows are not.
+
+## Status — 2026-09-24, after the owner's confirmation
+
+The owner confirmed all 17 recommend-yes and all 3 repaired rows. **25 of 50
+products now carry a Consumer GTIN in Shopify** (5 from ALM screens, 20 from
+this cross-reference). 6 rows await the owner's call, 19 have no match in the
+POS and need the ALM export.
+
+Five of the twenty were already written by an earlier pass and were confirmed
+to match, not rewritten: Yamazaki 12, Hakushu 12, Monkey Shoulder, Dimple 12,
+Rampur Double Cask.
+
+**Duplicate listing caught during the write.** There are two Hibiki Harmony
+products: `hibiki-japanese-harmony` (ARCHIVED, $199.99) and
+`hibiki-japanese-harmony-700ml` (ACTIVE, $199.00). The barcode went on the
+active one. The archived duplicate should still be deleted rather than left
+archived — it holds the better handle.
+
+The three repaired barcodes were stored in their 12-digit UPC-A form with the
+leading zero intact (`080432402931`, `080686934035`, `088110158606`). Shopify
+accepted them verbatim.
+
+---
 
 ---
 
