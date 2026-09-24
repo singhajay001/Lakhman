@@ -219,15 +219,69 @@ A note on verification: `productsCount` lagged by several minutes and reported
 the counter is eventually consistent. Do not use the count to confirm a write
 took effect.
 
+## ✅ Done 2026-09-24: image alt text — 275 alts across 182 products
+
+Measured across all 217 active products. The 40% sample taken earlier
+understated it badly:
+
+| | count | share |
+|---|---|---|
+| Product images total | 313 | |
+| **Blank alt before** | **275** | **88%** |
+| Products with at least one blank | **182** of 217 | 84% |
+| Blank alt after | **0** | — |
+
+Written locally, applied in four `fileUpdate` batches of ~70, then verified by
+re-reading the media of every published product. No `userErrors` on any batch.
+
+The rules the text was generated under, because each one is a way this goes
+wrong at scale:
+
+- **Existing alt is never overwritten.** Only blanks were filled. Hand-written
+  alts (`Yamazaki 12 Year Old Single Malt Whisky`, `Karu Affinity Gin`) survived
+  untouched.
+- **No noun.** Not "bottle of". The catalogue holds cans, cocktail tins and a
+  bag of salted peanuts; a wrong noun is worse than no noun. The volume carries
+  the format implicitly.
+- **The volume suffix is suppressed when the title already states a size.**
+  Otherwise `Jack Daniel's Old No. 7 1 Ltr` becomes `…1 Ltr, 1000mL`. Detected
+  by regex over ml/l/ltr/litre/cl/g/kg/pk/pack.
+- **Secondary images get `, image N`** rather than an invented description.
+  Nobody has looked at image 4; describing it would be fabrication, and a
+  screen reader is better served by an honest ordinal.
+- **ALL-CAPS titles are normalised in the alt only** — a screen reader spells
+  caps out letter by letter. Three titles needed this. The product titles
+  themselves remain a defect (see below).
+
+Result: every image on every published product now carries alt text — e.g.
+`Four Pillars Rare Dry Gin, 700mL`, `Laphroaig 10 Year Old Single Malt Whisky,
+image 2`, `Nobby's Salted Peanuts 170g`.
+
+Alt text is a weaker ranking signal than it was, but it is the only text Google
+Images has, it is an accessibility obligation on a retail site, and on a store
+where a third of products have no description it is briefly the *only*
+machine-readable text on those pages.
+
+### Two data defects surfaced in passing
+
+- 🔴 **Vendor typo: `Four Pilars`** should be `Four Pillars`. Vendor maps to
+  `brand` in the product JSON-LD, so this publishes a misspelled brand entity
+  to Google and splits the vendor facet in two. One-line fix, disproportionate
+  effect.
+- **`BELLARINE DISTILLERY TARTY TED - SPARKLING COCKTAIL 250ML`** is the only
+  ALL-CAPS product title. Normalised in the alt; the title itself still shouts
+  in search results and in the page `<h1>`.
+
 ## Order of work
 
-1. ~~Publish the 12 active-but-unpublished products~~ — **done**, bar the two
-   priced at $0.00.
+1. ~~Publish the 12 active-but-unpublished products~~ — **done**, all 12.
+   The two held at $0.00 were priced by the owner and are live.
 2. **Write the 66 missing descriptions.** Largest lever available. Start with
    the highest-margin or best-selling lines rather than alphabetically.
-3. **Barcodes at import, from now on, without exception.** Backfill the
+3. ~~Fill blank image alt text~~ — **done**, 275 alts, full coverage.
+4. **Barcodes at import, from now on, without exception.** Backfill the
    existing 215 when convenient; never add a new SKU without one.
-4. **Decide about the 134 drafts.** Either finish and publish them or accept
+5. **Decide about the 134 drafts.** Either finish and publish them or accept
    they are not part of the store.
 
 ## Not measured here
