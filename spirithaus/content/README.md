@@ -108,8 +108,8 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    deliberate decision rather than an accident of tagging.
 
 3. **`karu-morita-grapefruit-soda` has product type `Vodka`** but is a canned
-   RTD. It is correctly outside Spirits (it has no `spirits` tag), but the
-   product type will mislead any type-driven filter or feed.
+   RTD. It is out of Spirits now, but the product type will mislead any
+   type-driven filter or feed.
 
 4. **Four published collections are empty**: `low-no`, `new-this-month`,
    `specials`, `under-50`. Three more are near-empty: `gifting` (1),
@@ -132,7 +132,7 @@ duplicate is archived rather than deleted so it can be restored.
 now a single clause:
 
 ```
-appliedDisjunctively: true
+appliedDisjunctively: false
 TAG EQUALS "spirits"
 ```
 
@@ -143,10 +143,17 @@ canned cocktails including the three non-alcoholic Naked Life items), of which
 32 were active and customer-visible. All of them keep a home via their `wine`,
 `cocktails` or `canned` tags.
 
-Result: the collection went from 289 to 153 products, and
-`product_type:Wine AND tag:spirits` now returns **0**. Penfolds Koonunga Hill
-Shiraz, Pepperjack Barossa Shiraz and McGuigan Black Label resolve to `wine`,
-`red` and `australian-made` only.
+Two products then refused to leave — `karu-morita-grapefruit-soda` and
+`karu-outcask-old-fashioned` stayed in Spirits through a rule rewrite and a
+product re-save. They turned out to be **manual members layered on top of the
+rule**, not rule matches, so no tag or rule change could shift them;
+`collectionRemoveProducts` cleared them. Worth knowing that this collection can
+hold manual overrides the rule does not explain.
+
+Result: the collection went from 289 to 153 products, which matches
+`tag:spirits` exactly, and `product_type:Wine AND tag:spirits` now returns
+**0**. Penfolds Koonunga Hill Shiraz, Pepperjack Barossa Shiraz and McGuigan
+Black Label resolve to `wine`, `red` and `australian-made` only.
 
 Nothing was lost in the other direction: no active Whisky, Rum, Tequila, Gin,
 Bourbon, Brandy or Liqueur product is missing the `spirits` tag, so the rule
