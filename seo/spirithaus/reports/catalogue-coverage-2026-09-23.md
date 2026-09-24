@@ -136,7 +136,41 @@ states a bottle size, and the store's SKU convention encodes it. Seven of the
 eight existing tequilas are 700, so that is the house default — but it is a
 guess, and if the bottle is a 750 the SKU needs the last segment changed.
 
-### Lark Devil's Sonnet — priced and published
+### Lark Devil's Sonnet was the wrong product — replaced 2026-09-24
+
+The listing was misnamed. It is **Lark Devil's Storm No. 183 Single Malt
+Australian Whisky, 700mL**, and the owner supplied the correct copy and
+figures. Replaced in place rather than recreated, so the product keeps its
+images and history.
+
+| | was | now |
+|---|---|---|
+| Title | Devil's Sonnet Tasmanian Single Malt | Devil's Storm No. 183 Single Malt Australian Whisky |
+| Handle | `lark-devils-sonnet` | `lark-devils-storm-no-183` |
+| Price | $209.99 | **$199.99** |
+| Cost | $189.00 | **$180.00** |
+| SKU | `…-DEVILS-SONNET-500` | `SH-WHY-LARK-DEVILS-STORM-183-700` |
+| Description | empty | two paragraphs, producer copy |
+| Metafields | none | abv 42, volume_ml 700, country, region, producer, style |
+
+The handle changed because the URL carried the wrong product name. Shopify
+creates the redirect automatically, and nothing on this domain is indexed yet,
+so the cost is zero now and would not have been later.
+
+**The 10% margin was not a typo.** $19.99 on $199.99, against $20.99 on
+$209.99 — both figures moved together, so this is a genuinely thin line rather
+than a mistyped cost. The earlier flag is answered.
+
+**`standard_drinks` is deliberately empty.** 700mL at 42% computes to roughly
+23.2, but this repository's own rule is that the figure comes off the bottle
+label and is never derived, because a computed number that disagrees with the
+label is a compliance problem rather than a display bug. It needs reading off
+the bottle.
+
+Also worth checking: the product kept the image from the Sonnet listing. If
+that photograph is of a different bottle it now sits under the wrong name.
+
+### Superseded — the Devil's Sonnet entry below is kept for the record
 
 Owner supplied sell $209.99 / cost $189.00.
 
