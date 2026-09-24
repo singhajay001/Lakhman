@@ -115,11 +115,19 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    strong commercial query and the product title is a ranking signal, so both
    titles are leaving something on the table.
 
-5. **The `whisky` collection holds all 52 whisky products, bourbon included.**
-   Jack Daniel's, Jim Beam and Wild Turkey sit in the same collection as
-   Lagavulin. There is a `bourbon` tag already, so a split is cheap if wanted.
+5. **Maker's Mark is listed twice.** `makers-mark` ("Maker's Mark Kentucky
+   Straight Bourbon Whisky", product type Whisky) and `makers-mark-bourbon`
+   ("Maker's Mark Kentucky Straight Bourbon", product type Bourbon) are the
+   same product. Both now sit in Bourbon & Tennessee, side by side, so the
+   duplication is plain to see. Same shape as the Hibiki pair — tell me which
+   to keep and I will port the copy, 301 the loser and archive it.
 
-6. **Nearly everything reads as zero inventory.** If that is real rather than
+6. **No collection has an SEO title or meta description set** — all 28 return
+   null, and most have an empty description too. Category pages are the
+   strongest commercial landings on the store and they are shipping with
+   whatever the theme generates.
+
+7. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
 
 **Done in this pass:** the duplicate Hibiki listing is resolved — the good copy
@@ -210,6 +218,44 @@ above.
 
 This gives `articles/first-single-malt.md` a real destination: its
 `/collections/single-malt` link previously landed on a one-product page.
+
+**Bourbon split out of Whisky.** The Whisky collection was the only category
+collection in the store built on a two-tag OR — `tag:whisky OR tag:whiskey` —
+and the `whiskey` half was doing double duty, marking Irish whiskey *and* every
+bourbon. That is why all 52 whisk(e)y products sat in one collection.
+
+Rather than bolt an exclusion onto the rule, I brought Whisky in line with
+every other category collection in the store, which is a single tag applied
+conjunctively:
+
+```
+appliedDisjunctively: false
+TAG EQUALS "whisky"
+```
+
+To make that work, three Jameson products that carried only `whiskey` were
+given the `whisky` tag. Nothing was removed — the change is purely additive,
+and the now-vestigial `whiskey` tag drives no collection.
+
+`makers-mark` needed care: it is typed `Whisky` and tagged `whiskey`, so under
+the new rule it would have dropped out of Whisky without landing anywhere. It
+is a Kentucky straight bourbon, so it was tagged `bourbon`.
+
+**New collection: Bourbon & Tennessee** (`/collections/bourbon`), rule
+`TAG EQUALS "bourbon"`, 15 products. Published to Online Store, Point of Sale
+and Shop — a new collection is published to no channel by default, so without
+that step the URL would have been dead.
+
+Titled "Bourbon & Tennessee" rather than "Bourbon" because Jack Daniel's,
+Gentleman Jack and Tennessee Honey are Tennessee whiskey, a separate
+designation from bourbon. The handle stays `bourbon` so the commercial query
+keeps the URL, and the ampersand matches the house style already used by
+Liqueurs & Aperitifs and Fortified & Dessert. One word to change if you
+disagree.
+
+Result: Whisky 52 → **37**, Bourbon **15**, and nothing orphaned —
+`(tag:whisky OR tag:whiskey OR tag:bourbon) AND NOT tag:whisky AND NOT
+tag:bourbon` returns 0.
 
 **`karu-rested-morita` — confirmed fixed by the client.** Product type now
 reads `Vodka`, tags `australian, spirits, staff-pick, vodka`. It stays in
