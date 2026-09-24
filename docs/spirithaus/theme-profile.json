@@ -1,0 +1,325 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-24T23:17:57.533Z",
+  "source": {
+    "shop": "spirithaus.com.au",
+    "themeId": "gid://shopify/OnlineStoreTheme/161468449014",
+    "themeName": "spirithaus-theme/main",
+    "role": "MAIN",
+    "themeUpdatedAt": "2026-09-18T02:23:56Z",
+    "files": {
+      "assets/spirithaus.css": {
+        "checksumMd5": "f1b34be7fb1765519db4ee257bf83a86",
+        "updatedAt": "2026-09-15T14:13:21Z"
+      },
+      "assets/base.css": {
+        "checksumMd5": "478cca03c9e19a42f41bb96e51754811",
+        "updatedAt": "2026-08-31T05:53:41Z"
+      },
+      "sections/spirithaus-hero.liquid": {
+        "checksumMd5": "718aa6d2391a05f5c896f1c57e2d1566",
+        "updatedAt": "2026-09-05T03:36:39Z"
+      },
+      "sections/spirithaus-categories.liquid": {
+        "checksumMd5": "745bbff81f62f9bd0fe4c869f88b60e2",
+        "updatedAt": "2026-09-05T03:36:39Z"
+      },
+      "config/settings_data.json": {
+        "checksumMd5": "5a13413e85490984fb307c9da3a3c2ec",
+        "updatedAt": "2026-09-18T02:23:56Z"
+      },
+      "templates/index.json": {
+        "checksumMd5": "0d0f3ef8c2139d709d3a74ad87c4a397",
+        "updatedAt": "2026-09-16T07:37:44Z"
+      }
+    }
+  },
+  "root": {
+    "fontPx": 10,
+    "pageWidthPx": 1200,
+    "breakpointPx": 750
+  },
+  "tokens": {
+    "ink": "#111110",
+    "white": "#ffffff",
+    "bone": "#f2efe9",
+    "red": "#cf1c29",
+    "fontDisplay": "Archivo",
+    "fontMono": "Space Mono",
+    "weights": {
+      "light": 300,
+      "regular": 400,
+      "bold": 700,
+      "black": 900
+    }
+  },
+  "viewports": [
+    {
+      "id": "desktop-1920",
+      "label": "desktop 1920",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "id": "laptop-1440",
+      "label": "laptop 1440",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "id": "small-1024",
+      "label": "small 1024",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "id": "tablet-768",
+      "label": "tablet 768",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "id": "phone-390",
+      "label": "phone 390",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "placements": {
+    "hero": {
+      "section": "spirithaus-hero",
+      "box": {
+        "widthCss": "100vw",
+        "heightCss": [
+          {
+            "minWidth": 0,
+            "value": "62vh"
+          },
+          {
+            "minWidth": 750,
+            "value": "76vh"
+          }
+        ]
+      },
+      "image": {
+        "fit": "cover",
+        "positionX": 0.5,
+        "positionY": 0.5
+      },
+      "scrim": {
+        "color": "#111110",
+        "opacity": 0.58,
+        "minOpacity": 0.58,
+        "maxOpacity": 0.9,
+        "coverage": "full"
+      },
+      "text": {
+        "anchor": "bottom-left",
+        "container": {
+          "maxWidthPx": 1200,
+          "paddingXPx": [
+            {
+              "minWidth": 0,
+              "value": 15
+            },
+            {
+              "minWidth": 750,
+              "value": 50
+            }
+          ],
+          "paddingTopPx": [
+            {
+              "minWidth": 0,
+              "value": 60
+            },
+            {
+              "minWidth": 750,
+              "value": 100
+            }
+          ],
+          "paddingBottomPx": [
+            {
+              "minWidth": 0,
+              "value": 48
+            },
+            {
+              "minWidth": 750,
+              "value": 72
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "role": "kicker",
+            "family": "mono",
+            "sizePx": 12,
+            "weight": 400,
+            "lineHeight": 1,
+            "trackingEm": 0.12,
+            "transform": "uppercase",
+            "marginBottomPx": 16,
+            "color": "#ffffff",
+            "text": "Spirits, Wines and Cocktails"
+          },
+          {
+            "role": "heading",
+            "family": "display",
+            "sizePx": [
+              {
+                "minWidth": 0,
+                "value": 36
+              },
+              {
+                "minWidth": 750,
+                "value": 64
+              }
+            ],
+            "weight": 300,
+            "strongWeight": 900,
+            "lineHeight": 1.1,
+            "trackingEm": -0.01,
+            "maxCh": 18,
+            "marginBottomPx": 16,
+            "color": "#ffffff",
+            "text": "Every bottle chosen. <strong>Every one explained.</strong>"
+          },
+          {
+            "role": "body",
+            "family": "display",
+            "sizePx": [
+              {
+                "minWidth": 0,
+                "value": 16
+              },
+              {
+                "minWidth": 750,
+                "value": 18
+              }
+            ],
+            "weight": 400,
+            "lineHeight": 1.6,
+            "maxCh": 46,
+            "marginBottomPx": 28,
+            "color": "#ffffff",
+            "text": "We cannot beat the chains on price or breadth, so we do not try. Every bottle here earned its place, and we tell you why."
+          },
+          {
+            "role": "cta",
+            "kind": "button",
+            "family": "display",
+            "sizePx": 15,
+            "minHeightPx": 47,
+            "paddingXPx": 30,
+            "background": "#cf1c29",
+            "color": "#ffffff",
+            "label": "Browse the range"
+          }
+        ]
+      }
+    },
+    "tile": {
+      "section": "spirithaus-categories",
+      "grid": {
+        "columns": [
+          {
+            "minWidth": 0,
+            "value": 1
+          },
+          {
+            "minWidth": 750,
+            "value": 3
+          }
+        ],
+        "gapPx": [
+          {
+            "minWidth": 0,
+            "value": 12
+          },
+          {
+            "minWidth": 750,
+            "value": 16
+          }
+        ],
+        "minHeightPx": [
+          {
+            "minWidth": 0,
+            "value": 220
+          },
+          {
+            "minWidth": 750,
+            "value": 340
+          }
+        ],
+        "paddingPx": [
+          {
+            "minWidth": 0,
+            "value": 18
+          },
+          {
+            "minWidth": 750,
+            "value": 24
+          }
+        ],
+        "container": {
+          "maxWidthPx": 1200,
+          "paddingXPx": [
+            {
+              "minWidth": 0,
+              "value": 15
+            },
+            {
+              "minWidth": 750,
+              "value": 50
+            }
+          ]
+        }
+      },
+      "image": {
+        "fit": "cover",
+        "positionX": 0.5,
+        "positionY": 0.5
+      },
+      "scrim": {
+        "color": "#111110",
+        "opacity": 0.66,
+        "minOpacity": 0.58,
+        "maxOpacity": 0.9,
+        "coverage": "full"
+      },
+      "text": {
+        "anchor": "bottom-left",
+        "blocks": [
+          {
+            "role": "title",
+            "family": "display",
+            "sizePx": [
+              {
+                "minWidth": 0,
+                "value": 24
+              },
+              {
+                "minWidth": 750,
+                "value": 32
+              }
+            ],
+            "weight": 300,
+            "lineHeight": 1.1,
+            "trackingEm": -0.01,
+            "color": "#ffffff"
+          },
+          {
+            "role": "caption",
+            "family": "mono",
+            "sizePx": 12,
+            "weight": 400,
+            "lineHeight": 1,
+            "trackingEm": 0.12,
+            "transform": "uppercase",
+            "marginTopPx": 6,
+            "color": "#ffffff"
+          }
+        ]
+      }
+    }
+  }
+}
