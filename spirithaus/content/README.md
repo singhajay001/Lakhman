@@ -96,29 +96,23 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
 
 ### Still open, and not writing work
 
-1. **`low-no` is empty because of a tag mismatch.** Its rule is
-   `tag = low-no`, but the Naked Life products that belong there are tagged
-   `non-alcoholic`. Either retag the products or change the rule to
-   `tag = non-alcoholic`; the second is less work and matches how the rest of
-   the catalogue is tagged.
-
-2. **22 Ready-to-Drink products carry the `spirits` tag**, so pre-mixed cans
+1. **22 Ready-to-Drink products carry the `spirits` tag**, so pre-mixed cans
    and bottles — Curatif, Maybe Sammy, Brookies Gin & Tonic — sit alongside
    750ml bottles in `/collections/spirits`. Defensible either way, but worth a
    deliberate decision rather than an accident of tagging.
 
-3. **`karu-morita-grapefruit-soda` has product type `Vodka`** but is a canned
+2. **`karu-morita-grapefruit-soda` has product type `Vodka`** but is a canned
    RTD. It is out of Spirits now, but the product type will mislead any
    type-driven filter or feed.
 
-4. **Four published collections are empty**: `low-no`, `new-this-month`,
-   `specials`, `under-50`. Three more are near-empty: `gifting` (1),
+3. **Three published collections are still empty**: `new-this-month`,
+   `specials`, `under-50`. Four more are thin: `low-no` (3), `gifting` (1),
    `canned-cocktails` (1), `premium-collabs` (2). Thin pages, poor landings.
 
-5. **`single-malt` holds one product and has no rule**, while `whisky` holds 52.
+4. **`single-malt` holds one product and has no rule**, while `whisky` holds 52.
    "Single malt" is a strong commercial query and that page is a dead end.
 
-6. **Nearly everything reads as zero inventory.** If that is real rather than
+5. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
 
 **Done in this pass:** the duplicate Hibiki listing is resolved — the good copy
@@ -158,6 +152,23 @@ Black Label resolve to `wine`, `red` and `australian-made` only.
 Nothing was lost in the other direction: no active Whisky, Rum, Tequila, Gin,
 Bourbon, Brandy or Liqueur product is missing the `spirits` tag, so the rule
 change dropped no real spirit.
+
+**`low-no` collection rule — fixed.** The rule looked for `tag = low-no`, a
+tag no product in the catalogue carries, so the page was empty. It now reads:
+
+```
+appliedDisjunctively: false
+TAG EQUALS "non-alcoholic"
+```
+
+Changing the rule rather than retagging the products, because `non-alcoholic`
+is the tag already in use and nothing else depends on `low-no`.
+
+The collection now holds the three Naked Life products — Classic G&T, Pink
+Paloma, Passionfruit Martini — all active. I checked for low- and no-alcohol
+stock hiding under other naming (`zero`, `0.0`, `alcohol-free`, `alcohol free`)
+and found none, so three is the true size of the range, not a rule artefact.
+The page works now, but three products is still thin for a category landing.
 
 **`karu-rested-morita` — confirmed fixed by the client.** Product type now
 reads `Vodka`, tags `australian, spirits, staff-pick, vodka`. It stays in
