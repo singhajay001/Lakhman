@@ -47,18 +47,11 @@ a bare brand search does.
 
 ## Two things to check
 
-### 1. The file may be truncated
+### 1. File integrity — RESOLVED
 
-The supplied content ends mid-sentence:
-
-> `# Microsoft — Bing Copilot draws from the Bing index, so no extra rule is`
-> `# needed beyond bingbot, which Shopify's defaults already`
-
-No closing word, no trailing rule. This is most likely the paste being cut
-rather than the file itself, but it is worth confirming the live file ends
-cleanly. A truncated `robots.txt` is usually still parsed — directives are read
-line by line and a malformed trailing comment is ignored — so even in the worst
-case this is cosmetic. Confirm and move on.
+The full file was supplied and ends cleanly at
+`# needed beyond bingbot, which Shopify's defaults already allow.`
+The earlier truncation was the paste, not the file.
 
 ### 2. `/policies/` is disallowed — verify nothing important lives there
 
@@ -85,3 +78,88 @@ meta descriptions. Fine Wine's promises eight named wines that cannot be bought.
 
 robots.txt is working as intended. These pages are a catalogue problem, and the
 open crawl path means Google will find them.
+
+---
+
+## DEFECT — the AI crawler groups have no restrictions at all
+
+This is the one real problem in the file, and it is subtle.
+
+**robots.txt user-agent groups do not inherit from each other.** Under the
+Robots Exclusion Protocol (RFC 9309), a crawler obeys the single most specific
+group that matches its name and **ignores `User-agent: *` entirely**. Groups
+are not merged.
+
+The AI block gives each crawler its own group containing one line:
+
+```
+User-agent: GPTBot
+Allow: /
+```
+
+So GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot and Google-Extended are
+**not** bound by any of the careful fencing written for `*`. Every one of them
+may currently crawl:
+
+| Path | Fenced for `*` | Fenced for AI crawlers |
+|---|---|---|
+| `/search` | yes | **no** |
+| `/collections/*sort_by*` | yes | **no** |
+| `/collections/*+*`, `%2B`, `%2b` | yes | **no** |
+| `*/collections/*filter*&*filter*` | yes | **no** |
+| `/cart`, `/checkout`, `/checkouts/` | yes | **no** |
+| `/account`, `/orders`, `/carts` | yes | **no** |
+| `/*preview_theme_id*` | yes | **no** |
+
+### Why this matters here specifically
+
+It will not hurt Google rankings — none of these are Google's indexing crawler,
+and Google-Extended does not affect Search. The damage is to the exact goal the
+block was written to serve.
+
+Faceted navigation on a 200-product store generates thousands of URL
+combinations. An AI crawler with a finite budget that is free to wander
+`/collections/red?sort_by=price-ascending&filter.v.price.gte=20` will spend that
+budget on permutations instead of on the 207 product pages that carry the
+descriptions, the ABV, the region and the `why_we_stock_it` copy.
+
+The AI-citation channel is more valuable to Spirithaus than to most retailers,
+because the `spirithouse.com.au` homophone makes brand search a lost cause.
+Handing those crawlers an unbounded URL space undercuts the one channel that
+routes around the problem.
+
+### The fix
+
+Each AI crawler group needs its own copy of the restrictions. The file lives in
+the theme as `templates/robots.txt.liquid` — the AI block is a custom addition,
+so that file already exists in `singhajay001/spirithaus-theme`.
+
+Minimum viable version, repeated per crawler:
+
+```
+User-agent: GPTBot
+Disallow: /search
+Disallow: /cart
+Disallow: /carts
+Disallow: /checkout
+Disallow: /checkouts/
+Disallow: /account
+Disallow: /orders
+Disallow: /collections/*sort_by*
+Disallow: /collections/*+*
+Disallow: /collections/*%2B*
+Disallow: /collections/*%2b*
+Disallow: */collections/*filter*&*filter*
+Disallow: /*preview_theme_id*
+Disallow: /*preview_script_id*
+Allow: /
+```
+
+`Allow: /` is kept last as the explicit statement of intent; it is redundant
+against the default-allow behaviour but documents the decision for the next
+reader.
+
+**Do not** simply delete the AI groups to make them fall back to `*`. That
+would work mechanically, but it would also delete the deliberate Google-Extended
+opt-in and the reasoning attached to it, which is the most valuable comment in
+the file.
