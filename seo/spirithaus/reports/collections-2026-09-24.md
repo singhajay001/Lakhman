@@ -97,3 +97,103 @@ SEO one:
 - **`templates/collection.json` appends a third section** — `spirithaus-hero`,
   the homepage hero — after the grid on every collection page. Worth confirming
   that is deliberate rather than left over from a theme edit.
+
+---
+
+# Done: the seven thin collections, and images on all 28
+
+## They were never broken — nothing was ever tagged
+
+All six of the thin collections are **automated collections driven by tags**,
+and the tags were simply never applied to any product. `under-50` looked for a
+tag `under-50`, `specials` for `on-special`, `canned-cocktails` for `canned`.
+No product carried any of them.
+
+Two of the six should never have been tag-driven at all, and were rebuilt:
+
+| Collection | Was | Now |
+|---|---|---|
+| **Under $50** | tag `under-50` | rule **`VARIANT_PRICE < 50`** |
+| **Specials** | tag `on-special` | rule **`IS_PRICE_REDUCED`** |
+
+A price tag goes stale the moment a price changes — and twelve gin prices
+changed earlier today, which would have silently falsified it. A price *rule*
+cannot go stale. `Under $50` went from 0 products to **195**.
+
+The other four were populated by tagging the right products:
+
+| | was | now |
+|---|---|---|
+| Canned Cocktails | 1 | **13** |
+| Premium & Collabs | 2 | **13** |
+| Gifting | 1 | **12** |
+| New This Month | 0 | 0 — see below |
+
+`canned` was applied only to products that are actually in cans: the six
+Curatif 130mL, Brookie's G&T, Four Pillars Yuzu, the three Naked Life, Bellarine
+and Karu's soda. The Maybe Sammy range and Starward's negroni are **bottles**
+and were deliberately excluded, since a collection called Canned Cocktails that
+contains bottles is worse than one with two products in it.
+
+`Premium & Collabs` was given a definition it did not have: bar
+collaborations. The Maybe Sammy range — a Sydney bar on the World's 50 Best
+list bottling its own cocktails — is a genuine collaboration. The "Premium"
+half of that title still needs the owner's definition; it currently overlaps
+with Gifting.
+
+**New This Month stays empty on purpose.** Shopify's smart-collection rules
+have no "created in the last 30 days" condition, so this one genuinely does
+need a tag, applied as stock arrives. It has copy and an SEO title ready for
+when it fills. Until then it should be excluded from the sitemap rather than
+indexed empty.
+
+## Images: 28 of 29
+
+Every collection now has an image except `frontpage` — Shopify's built-in
+homepage collection, which is not a landing page.
+
+They are representative product shots drawn from each collection's own range,
+uploaded to the collection, with descriptive alt text. That closes the social
+preview gap: before today every category URL shared anywhere fell back to the
+logo.
+
+**These are a stopgap and should be said to be one.** A bottle on white is not
+a designed category card. Purpose-made 1200×630 images, with the category name
+set in the brand's type, would be materially better for link previews and for
+the collection grid. What is there now is real, accurate and better than
+nothing.
+
+The first product in each collection turned out to be a poor hero — sorting put
+a 375mL tawny at the front of Wine and a bag of peanuts at the front of
+Under $50 — so each image was picked by hand instead.
+
+## 🔴 Three defects the new rules exposed
+
+**1. Inverted compare-at prices.** The `IS_PRICE_REDUCED` rule immediately
+pulled in two products whose `compareAtPrice` sits *below* their price:
+
+| Product | Price | Compare at |
+|---|---|---|
+| Nobby's Salted Peanuts 170g (**active**) | $3.99 | $2.00 |
+| Tapanappa Whalebone (draft) | $95.00 | $70.00 |
+
+A compare-at price is a claim about a former higher price. Inverted, it is
+meaningless data, and it is what put a bag of peanuts into Specials. The active
+one was cleared. The draft one is flagged.
+
+**2. The drafts are an unpriced import, not a staging decision.** The price rule
+surfaced a long list of draft products sitting at **$0.00** — Krug Grande
+Cuvée, Dom Pérignon, Pol Roger Sir Winston Churchill, Veuve Clicquot La Grande
+Dame, House of Arras, Seppeltsfield Para 21, and many more.
+
+This answers a question open since 23 September. The 160 drafts are not
+deliberately held back; they cannot be published because **they have no
+prices**. That reframes the job from "decide about the drafts" to "price the
+import", and it is worth knowing before anyone tries to publish them in bulk.
+
+**3. Lark Classic Cask's product image is a bottle of Nikka.** The featured
+image file is `NIkka-Whisky-from-the-Barrel-500ml…webp`. Wrong product, on a
+$199 bottle. Found while picking collection heroes; it was not used. The same
+class of error as the Glenfiddich/Glenlivet mismatch recorded earlier in this
+project, and worth a sweep of the other product images rather than assuming it
+is the only one.
