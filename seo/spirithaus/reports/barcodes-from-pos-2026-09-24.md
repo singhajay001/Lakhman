@@ -152,3 +152,71 @@ now share the Rare Dry barcode** and two Aberlours would carry the 12's.
 
 The rule this earns: a single candidate is evidence of a thin shelf, not of a
 match. The expression has to be read.
+
+---
+
+# ALM detail screens: the POS barcode independently confirmed, and two of the eight resolved
+
+The owner pasted three ALM product screens. They do two things at once.
+
+## 1. The Aberlour 12 barcode is confirmed by a second source
+
+| | |
+|---|---|
+| Written earlier today, from the **Trafalgar POS** `Plu` column | `3047100056251` |
+| ALM's **Consumer GTIN** for ABERLOUR 12YO SCOTCH 700ML | `3047100056251` |
+
+Two unrelated systems — a supermarket POS and a national distributor —
+independently carry the same number for the same bottle. That is the strongest
+validation available without scanning the bottle, and it retrospectively
+supports the whole POS-derived set.
+
+## 2. Two of the eight "none" now have their real barcodes
+
+Aberlour A'bunadh and Aberlour 14 were both rejected this morning because the
+only POS row carrying "Aberlour" was the 12 Year Old. ALM has them as separate
+lines, so they are no longer guesses:
+
+| | Consumer GTIN | Outer GTIN |
+|---|---|---|
+| Aberlour A'bunadh | `5010739261523` | 5010739261882 |
+| Aberlour 14 Year Old | `5000299620915` | 5000299620946 |
+
+Both consumer GTINs validated and written. Both outer GTINs recorded here and
+discarded.
+
+## 🔴 The outer GTIN cannot be derived from the consumer one
+
+Three products, three different relationships between the two numbers:
+
+| Product | Consumer | Outer | Relationship |
+|---|---|---|---|
+| Trafalgar POS example | 9339423003505 | 19339423003502 | same number, indicator digit prefixed (GTIN-14) |
+| Aberlour A'bunadh | 5010739261523 | 5010739261882 | same company prefix, **different item reference** |
+| Aberlour 12 | 3047100056251 | 5000299639160 | **entirely different GS1 prefixes** — France vs UK |
+
+Any heuristic — strip the leading digit, compare prefixes, assume they are
+close — gets one of these three wrong. All six numbers pass their check digit.
+**The column label is the only safe signal**, which is exactly what
+`tools/check-barcodes.py` was changed to rely on.
+
+## Costs loaded, and three prices moved to the 20% floor
+
+ALM carton costs, divided by carton size:
+
+| | Cost | Was | Margin was | Now | Margin now |
+|---|---|---|---|---|---|
+| Aberlour 12 Year Old | $94.87 | $109.00 | **13.0%** | **$118.99** | 20.3% |
+| Aberlour A'bunadh | $129.06 | $154.99 | **16.7%** | **$161.99** | 20.3% |
+| Aberlour 14 Year Old | $131.61 | $159.99 | **17.7%** | **$164.99** | 20.2% |
+
+All three were live and under the floor. Repriced under the standing 20%
+instruction, rounding up to the next `.99` so nothing lands fractionally short.
+
+Worth noting what this says about the range: every Aberlour in the catalogue
+was selling under 18%, and none of them showed it, because no cost had ever
+been recorded. That is three products found by three pasted screens. The
+all-category ALM export would answer the same question for all 197.
+
+An allowance of $6.20 runs on the Aberlour 12 to **31 January 2027**, already
+included in the $569.24 carton cost.
