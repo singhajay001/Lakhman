@@ -85,6 +85,13 @@ def main() -> int:
     if bc_col is None:
         print(f"no barcode column found. looked for {'/'.join(BARCODE_COLS)}")
         print(f"columns present: {', '.join(fields)}")
+        itemish = [f for f in fields
+                   if re.search(r"item\s*code|product\s*code|sku|article", f or "", re.I)]
+        if itemish:
+            print(f"\n{', '.join(repr(f) for f in itemish)} is a SUPPLIER code, not a "
+                  f"barcode.\nThey are often the same length as a real GTIN and are a "
+                  f"different number entirely.\nDo not map one to the other. Ask the "
+                  f"supplier for an EAN/GTIN column instead.")
         return 2
     print(f"barcode column: {bc_col!r}   identifier column: {id_col!r}")
     print(f"{len(rows)} rows\n")
@@ -130,6 +137,20 @@ def main() -> int:
 
         seen[bc].append(f"row {n} [{ident}]")
         ok += 1
+
+    # An 8-digit "barcode" is usually not one. Supplier item codes are commonly
+    # 8 digits, EAN-8 is rare in retail (it is for packs too small for EAN-13),
+    # and roughly 1 in 10 arbitrary 8-digit numbers passes the check digit by
+    # chance. So the check digit alone does NOT protect against a column of
+    # supplier item codes relabelled as barcodes — say so loudly.
+    eights = [b for b in seen if len(b) == 8]
+    if eights and len(eights) > max(2, 0.2 * max(ok, 1)):
+        warnings.append(
+            f"{len(eights)} of {ok} values are 8 digits. EAN-8 is rare in retail "
+            f"and supplier item codes are commonly 8 digits — about 1 in 10 of "
+            f"those passes an EAN-8 check digit by chance, so this check cannot "
+            f"catch them all. Confirm this column is a barcode and not an item "
+            f"code before writing any of it.")
 
     for bc, where in seen.items():
         if len(where) > 1:
