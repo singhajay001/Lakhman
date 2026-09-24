@@ -203,15 +203,18 @@ faces, people, young hands, smooth hands, drinking, glass at lips, empty glasses
 
 ## Working order for the session
 
-1. Paste Part A. Ask the model to confirm the ABAC list back to you in its own
+1. Read "Existing assets — reshoot list" at the end of this file first. The
+   heroes and tiles already in the store were built to the earlier rules and are
+   the wrong shape; assume you are replacing them, not topping them up.
+2. Paste Part A. Ask the model to confirm the ABAC list back to you in its own
    words before generating anything — if it can't, the persona hasn't taken.
-2. Run `hero-home` first. Iterate until the bottom half is truly empty and the
+3. Run `hero-home` first. Iterate until the bottom half is truly empty and the
    subject sits centred in the top half; that one frame is worth more than the
    rest combined.
-3. Whisky hero, then gin, then the others in the brief's order.
-4. Tiles as re-stages of the heroes you liked.
-5. Lifestyle last.
-6. Before you use anything, run it through `scrim-proof.html` in this folder: it
+4. Whisky hero, then gin, then the others in the brief's order.
+5. Tiles as re-stages of the heroes you liked.
+6. Lifestyle last.
+7. Before you use anything, run it through `scrim-proof.html` in this folder: it
    crops to the theme's real ratios, applies the real scrim, and measures whether
    the quiet zone holds. Then check every hand against the under-25 rule with a
    cold eye. AI hands skew young.
@@ -270,6 +273,56 @@ section, the prompts, and `scrim-proof.html` together.
 **Type colour** is `--sh-white: #ffffff`, not the off-white used elsewhere in the
 palette. The off-white is the page background; headline type over photography is
 pure white.
+
+## Existing assets — reshoot list
+
+Audited 2026-09-24 against the theme geometry in the previous section. Every hero and tile currently in
+the store was built to the pack's earlier rules, before the theme was read. They
+encode the left-third composition the theme does not use, and the masters are
+the wrong shape for the crop range the theme puts them through.
+
+**Reshoot as 1:1.** These cannot be salvaged by re-cropping — a 3:1 master has no
+pixels above and below to build a square from.
+
+| File | Now | Renders down to | What goes wrong |
+| --- | --- | --- | --- |
+| `hero-whisky.jpg` | 1536×512, 3:1 | 0.75:1 on a phone | only the central 25% of the width survives; the left third is gone and the right-of-centre subject clips |
+| `hero-gin.jpg` | 1536×512, 3:1 | 0.75:1 | as above |
+| `hero-rum.jpg` | 1536×512, 3:1 | 0.75:1 | as above |
+| `hero-tequila.jpg` | 1536×512, 3:1 | 0.75:1 | as above |
+| `hero-vodka.jpg` | 1536×512, 3:1 | 0.75:1 | as above |
+| `hero-cocktails.jpg` | 1536×512, 3:1 | 0.75:1 | as above |
+| `hero-liqueurs.jpg` | 1536×512, 3:1 | 0.75:1 | as above |
+| `tile-whisky.jpg` | 819×1024, 4:5 | 1.64:1 on a phone | only the central 49% of the height survives, so objects pushed to the top and bottom edges are both cropped away and the tile renders as the empty middle |
+| `tile-cocktails.jpg` | 819×1024, 4:5 | 1.64:1 | as above |
+| `tile-tequila.jpg` | 819×1024, 4:5 | 1.64:1 | as above |
+
+**Proof before deciding.** `hero-home.jpg` is 3072×1335 (2.30:1) and survives the
+desktop crop nearly intact, losing about 1% top and bottom at 2.34:1. It still
+drops to the central third of its width on a phone, and it was still composed
+with a quiet left third rather than a quiet bottom half. Run it through
+`scrim-proof.html` at 2.34:1 and 0.75:1 before committing to a reshoot.
+
+**Lifestyle frames are unaffected** as lifestyle. `life-packing.jpg`,
+`life-sydney.jpg`, `life-craft.jpg`, `life-service.jpg` and `life-shop.jpg` carry
+no type, so they have no quiet zone to hold and no fixed ratio to meet.
+
+**One fix that is not a reshoot.** The three homepage tile slots in
+`templates/index.json` currently point at three different kinds of master:
+
+| Tile block | Image it uses | What that file is |
+| --- | --- | --- |
+| spirits | `hero-whisky.jpg` | a 3:1 hero master |
+| wine | `tile-whisky.jpg` | a 4:5 tile master, on a block keyed to the `whisky` collection |
+| cocktails | `life-craft.jpg` | a 1.6:1 lifestyle frame |
+
+Only one of the three is a tile master at all. Whatever is reshot, these three
+settings need pointing at the matching `tile-<category>.jpg` file.
+
+**Not yet verified.** Whether any of these frames happens to keep its required
+quiet zone clear is a pixel question, and the measurement has not been run — the
+container could not reach the Shopify CDN. Download them from the Files area in
+Shopify admin and drop them onto `scrim-proof.html` to settle it.
 
 ## Palette
 
