@@ -264,10 +264,12 @@ machine-readable text on those pages.
 
 ### Two data defects surfaced in passing
 
-- 🔴 **Vendor typo: `Four Pilars`** should be `Four Pillars`. Vendor maps to
-  `brand` in the product JSON-LD, so this publishes a misspelled brand entity
-  to Google and splits the vendor facet in two. One-line fix, disproportionate
-  effect.
+- ~~🔴 **Vendor typo: `Four Pilars`**~~ — **fixed 2026-09-24.** Vendor maps to
+  `brand` in the product JSON-LD, so this was publishing a misspelled brand
+  entity to Google. Corrected to **`Four Pillars Gin`**, not `Four Pillars`:
+  the store's other four Four Pillars products all use `Four Pillars Gin`, and
+  correcting the spelling into a third spelling would have left the brand split
+  anyway. All five now share one vendor string; the typo returns no products.
 - **`BELLARINE DISTILLERY TARTY TED - SPARKLING COCKTAIL 250ML`** is the only
   ALL-CAPS product title. Normalised in the alt; the title itself still shouts
   in search results and in the page `<h1>`.
