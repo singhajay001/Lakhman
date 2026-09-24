@@ -100,3 +100,55 @@ Two carry malformed Plus in the POS itself and should be corrected there
 first: `HIBIKI WHISKY HARMONY 700ML` at 11 digits and
 `JOSE CUERVO ESP GOLD TEQ 700ML` at 11 — both look like UPC-A values with a
 leading zero lost somewhere in an export.
+
+---
+
+# Owner-confirmed: 7 more written. GTIN coverage 14 → 21.
+
+Presented for review because the matcher would not write them: in each the POS
+description names the same expression as the Spirithaus product, but the
+wording differs too far for an automatic accept.
+
+| Handle | Barcode | POS row |
+|---|---|---|
+| yamazaki-12-year-old | 4901777165755 | YAMAZAKI WHISKY 12YO 43% 700ML |
+| hakushu-12-year-old | 4901777256149 | HAKUSHU WHISKY 12YO 3S 700ML |
+| aberlour-12-year-old | 3047100056251 | ABERLOUR 12YO SCOTCH 700ML |
+| monkey-shoulder | 5010327105215 | MONKEY SHOULDER SCOTCH 700ML |
+| dimple-12-year-old | 5000281012872 | DIMPLE SCOTCH 12YO 700ML |
+| rampur-double-cask | 8902147004052 | RAMPUR DBL CASK SGLE MALT 700ML |
+| archie-rose-signature-dry-gin | 9350657004779 | ARCHIE ROSE SIG DRY GIN 700ML |
+
+All seven revalidated before writing — length, digits, check digit, no
+duplicate inside the set — and each read back by handle afterwards.
+
+**Note for anyone verifying this:** a `barcode:*` product-variant search run
+straight after the write returned only 18 of the 21, missing four that had just
+been written. The search index lags; reading each product by handle is
+authoritative. Same lesson as `productsCount` on 23 September — do not use a
+search or a counter to confirm a write took effect.
+
+## 🔴 Eight marked "none" — and why single-candidate is not a signal
+
+Fifteen products had exactly one candidate, same size, valid check digit. That
+combination looks like confidence and is not: **eight of the fifteen were the
+wrong bottle.**
+
+| Spirithaus product | Only candidate offered | |
+|---|---|---|
+| Aberlour 14 Year Old | ABERLOUR 12YO SCOTCH | the 12 |
+| Aberlour A'bunadh | ABERLOUR 12YO SCOTCH | the 12 |
+| Archie Rose Single Malt Whisky | ARCHIE ROSE SIG DRY GIN | a gin |
+| Archie Rose Distiller's Strength Gin | ARCHIE ROSE SIG DRY GIN | the Signature |
+| Four Pillars Bloody Shiraz Gin | FOUR PILLARS RARE DRY GIN | the Rare Dry |
+| Four Pillars Navy Strength Gin | FOUR PILLARS RARE DRY GIN | the Rare Dry |
+| Four Pillars Olive Leaf Gin | FOUR PILLARS RARE DRY GIN | the Rare Dry |
+| Hendrick's Neptunia Gin | HENDRICKS GIN | the standard |
+
+Trafalgar stocks the brand and not that variant, so the only row carrying the
+brand is a different bottle. Had "one candidate, size matches, check digit
+passes" been treated as sufficient, **three separate Four Pillars gins would
+now share the Rare Dry barcode** and two Aberlours would carry the 12's.
+
+The rule this earns: a single candidate is evidence of a thin shelf, not of a
+match. The expression has to be read.
