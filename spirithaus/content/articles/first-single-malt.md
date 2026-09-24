@@ -86,7 +86,7 @@ honey, often with sherry cask influence. This is the safest place to start.
 
 **Islay** is smoke. Peated, coastal, polarising. Wonderful, but not a first
 bottle. We have written about it separately in
-[the Islay guide](/blogs/journal/islay-whisky-guide).
+[the Islay guide](/blogs/news/islay-whisky-guide).
 
 **Highland** is the largest region and the least consistent as a style, running
 from light and floral to rich and heavy.

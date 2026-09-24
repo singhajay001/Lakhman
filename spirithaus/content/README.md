@@ -59,50 +59,90 @@ to convert. ABAC runs a pre-vetting service.
 Also confirm your site's age-verification arrangement covers the blog, not
 just checkout.
 
-## What will move the needle more than these articles
+## Catalogue audit — corrected 24 Sep 2026, 03:45
 
-Pulled from the live catalogue while writing. Ranked by what I'd fix first:
+**A correction to what I reported earlier.** When I first pulled the catalogue
+I found 15 of 20 sampled whiskies and all 16 tequilas with empty descriptions,
+and said so. Re-checking after writing, the whisky range is now fully
+described — `updatedAt` on those products had moved from 02:15 to 03:23–03:40,
+i.e. someone was populating them while I worked. The finding was true when I
+made it and is no longer true. The tequila half I fixed myself.
 
-1. **Most product pages have no description.** Of the 20 active whiskies I
-   sampled, 15 had an empty `description` — including Aberlour 12, Chivas 12
-   and 18, Johnnie Walker Black, Double Black and 18, Glenfiddich 18. Product
-   pages are the money pages; right now most of them have nothing for Google
-   to rank. Articles send traffic *to* pages that cannot convert it. The five
-   that do have copy (Glenfiddich 12, Hakushu 12, Hibiki, Lagavulin 16,
-   Laphroaig 10) are genuinely well written — that voice, applied to the other
-   47, is worth more than any blog post here.
+State of the spirits catalogue as of the last check:
 
-2. **The Spirits collection is pulling in wine.** Its rule is
-   `tag:spirits OR tag:GIN OR tag:Australian`, applied disjunctively — so
-   anything tagged `australian` lands in Spirits. Penfolds Koonunga Hill
-   Shiraz, Pepperjack Barossa Shiraz and McGuigan Black Label are all sitting
-   in `/collections/spirits` right now. That is 289 products in a collection
-   that should be smaller, and a confusing page for anyone landing on it.
+| Category | Described | Empty |
+|---|---|---|
+| Whisky (imported) | 29 / 29 | — |
+| Whisky (Australian) | 3 / 3 | — |
+| Tequila | 15 / 15 | — *(written in this pass)* |
+| Rum | 16 / 16 | — *(3 written in this pass)* |
+| Vodka | 13 / 15 | 2 Karu |
+| Gin | 26 / 29 | 3 Karu |
 
-3. **Duplicate Hibiki listing.** `hibiki-japanese-harmony` ($199.99, no stock)
-   and `hibiki-japanese-harmony-700ml` ($199.00, 12 in stock) are the same
-   product on two URLs. Two pages compete for the same query and the one more
-   likely to rank is the one you cannot sell. Merge, and 301 the loser.
+### The seven I did not write
 
-4. **Four published collections are empty**: `low-no`, `new-this-month`,
+All Karu Distillery (Richmond, NSW):
+
+`karu-affinity-gin` · `karu-lightning-gin` · `karu-pourtrait-gin` ·
+`karu-house-vodka` · `karu-morita-chipotle-vodka` · `karu-rested-morita` ·
+`karu-outcask-wild-rum`
+
+I have no reliable information about these specific expressions — what is in
+them, how they are made, how they taste. Writing tasting notes for a product I
+cannot identify is inventing claims on a live commercial page, so I stopped.
+
+Send me the distillery's own copy, or one line per product on the base spirit,
+botanicals or cask and the flavour direction, and they will take ten minutes.
+
+### Still open, and not writing work
+
+1. **The Spirits collection is pulling in wine.** Its rule is
+   `tag:spirits OR tag:GIN OR tag:Australian`, applied disjunctively, so
+   anything tagged `australian` lands in Spirits — Penfolds Koonunga Hill
+   Shiraz, Pepperjack Barossa Shiraz and McGuigan Black Label are all in
+   `/collections/spirits` right now.
+
+2. **`karu-rested-morita` is mis-tagged.** Its product type is Tequila but its
+   tags are `australian, spirits, staff-pick, vodka` — so it sits in the Vodka
+   collection and not in Tequila. Separately, an Australian agave spirit cannot
+   be labelled tequila at all; the product type is worth revisiting too.
+
+3. **Four published collections are empty**: `low-no`, `new-this-month`,
    `specials`, `under-50`. Three more are near-empty: `gifting` (1),
-   `canned-cocktails` (1), `premium-collabs` (2). Empty collection pages are
-   thin content and a poor landing experience. Fill them or unpublish them.
+   `canned-cocktails` (1), `premium-collabs` (2). Thin pages, poor landings.
 
-5. **`single-malt` holds one product and has no rule**, while `whisky` holds
-   52. "Single malt" is a strong commercial query and that collection is
-   currently a dead end. Give it a rule.
+4. **`single-malt` holds one product and has no rule**, while `whisky` holds 52.
+   "Single malt" is a strong commercial query and that page is a dead end.
 
-6. **Nearly everything shows zero inventory.** If that is real rather than
-   untracked, out-of-stock items get demoted or dropped from Shopping and
-   organic over time.
+5. **Nearly everything reads as zero inventory.** If that is real rather than
+   untracked, expect demotion from Shopping and organic over time.
 
-None of that is writing work, which is why it is listed separately — but if
-you only have time for one thing this month, it is item 1.
+**Done in this pass:** the duplicate Hibiki listing is resolved — the good copy
+was ported to `hibiki-japanese-harmony-700ml` (the one with stock), a 301
+redirect now points `/products/hibiki-japanese-harmony` at it, and the
+duplicate is archived rather than deleted so it can be restored.
 
-## Publishing
+## Published
 
-Markdown with YAML front matter. For Shopify, the body converts straight to
-the blog post editor; the front matter maps to the SEO title, meta
-description and handle fields. I can publish these to your Shopify blog
-directly if you want them live rather than in files.
+All six are live on the **News** blog at spirithaus.com.au, 24 Sep 2026:
+
+| URL | |
+|---|---|
+| `/blogs/news/islay-whisky-guide` | Islay Whisky |
+| `/blogs/news/first-single-malt` | Choosing Your First Single Malt |
+| `/blogs/news/tequila-blanco-reposado-anejo` | Blanco, Reposado, Añejo |
+| `/blogs/news/japanese-whisky-and-gin` | Japanese Whisky and Gin |
+| `/blogs/news/australian-spirits-guide` | Australian Spirits |
+| `/blogs/news/stocking-a-bar-for-an-event` | Stocking a Bar for an Event |
+
+Published to the existing `news` blog rather than creating a second one. SEO
+title and meta description are set per article via the `global.title_tag` and
+`global.description_tag` metafields, which is where the Shopify admin reads
+them from. Author is set to SPIRITHAUS.
+
+Cross-links between articles use `/blogs/news/...` to match. If you later
+rename the blog handle to something like `journal`, those three cross-links
+need updating and the old URLs need redirects.
+
+The markdown in `articles/` remains the source of truth — edit there and
+re-publish, or edit in the Shopify admin and treat these as the drafts.

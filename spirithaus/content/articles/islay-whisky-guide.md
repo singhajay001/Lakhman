@@ -126,7 +126,7 @@ not a variation on Speyside — it is a different proposition entirely, and if i
 lands for you, it tends to land permanently.
 
 If you are still working out where your palate sits, our guide to
-[choosing a first single malt](/blogs/journal/first-single-malt) covers the
+[choosing a first single malt](/blogs/news/first-single-malt) covers the
 gentler end of the scale and is a more sensible starting point.
 
 ---
