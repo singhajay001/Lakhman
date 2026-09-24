@@ -10,8 +10,8 @@
 | Website | `spirithaus.com.au` — **`www` is the primary host**, canonicals carry the www prefix |
 | Platform | **Shopify** — Dawn theme v16.0.0 (verified) |
 | Theme repo | `singhajay001/spirithaus-theme` @ `7ae5c95` |
-| Catalogue size | 1 product imported so far; barcode column exists in the import CSV |
-| Store status | **password-protected, theme is a draft** — external validators cannot crawl it |
+| Catalogue size | 350 products: 209 live, 141 draft. 25 products use variants for pack size. |
+| Store status | **LIVE — password removed 2026-09-24.** Theme `spirithaus-theme/main` is published (role MAIN). The store is now crawlable and indexable. |
 | Ships to | TODO — AU-wide? VIC only? click-and-collect? |
 | Physical presence | TODO — if yes, this also needs a local profile |
 

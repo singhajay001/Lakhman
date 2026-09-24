@@ -143,3 +143,35 @@ ABV changes every batch.
 `variants(first: 1)`.** This store uses variants for pack size on 25 products.
 Query `variantsCount` first, or fetch all variants and check `variant.title`
 before drawing any conclusion about a price.
+
+---
+
+## Update — 2026-09-24, after the owner's changes
+
+Owner removed the storefront password, deleted the archived Hibiki duplicate,
+and set Curatif Negroni Single Can to $12.99. Verified in Shopify.
+
+**The store is now live and crawlable, so everything in the sitemap audit is a
+live defect rather than pre-launch tidying.** Three collections are published
+with nothing or almost nothing in them:
+
+| Collection | Live products | Note |
+|---|---|---|
+| `/collections/fine-wine` | **0** of 139 | Written meta description names eight wines that cannot be bought |
+| `/collections/specials` | **0** | Rule is `IS_PRICE_REDUCED`; nothing is currently reduced |
+| `/collections/frontpage` | 1 | Shopify's handling in the sitemap varies |
+
+Still thin: Fortified & Dessert 2, Liqueurs 3, Low & No 3, Champagne 4,
+Moscato 4, Rosé 6, White 10, Red 11.
+
+**Not done despite being on the list:** the two Maybe Sammy duplicate pairs are
+still live. `maybe-sammy-jasmine-negroni` and `maybe-sammy-jasmine-negroni-500ml`
+are both ACTIVE under the title "Maybe Sammy Jasmine Negroni"; same for the two
+Old Fashioneds.
+
+**Newly available:** the handle `hibiki-japanese-harmony` is now free. The live
+product sits at `hibiki-japanese-harmony-700ml`. Reclaiming the clean handle is
+cheapest to do now, before Google crawls the current URL.
+
+Egress is still blocked in this session, so `robots.txt` and the live
+`sitemap.xml` could not be fetched to confirm crawlability from outside.
