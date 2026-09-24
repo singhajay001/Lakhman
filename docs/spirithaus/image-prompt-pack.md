@@ -146,7 +146,7 @@ on a phone, so a square master is again the one that survives. The type sits
 bottom-left, so the bottom third is the quiet zone — not the middle.
 
 ```
-SPIRITHAUS scene image. Homepage category tile, portrait.
+SPIRITHAUS scene image. Homepage category tile, square.
 Re-stage the [whisky / gin / cocktails] category hero as a square frame. Lift every object into the top two-thirds — a cask end or bottle shoulder entering from above, botanicals or ice gathered high and centred — and leave the bottom third as clean, dark, empty surface with no object, edge, or highlight, because white type sits there. Keep the subject clear of both side edges. Single warm light from one side, deep shadow elsewhere, same palette and lens as the hero. Photographic, no text.
 ```
 
@@ -323,6 +323,73 @@ settings need pointing at the matching `tile-<category>.jpg` file.
 quiet zone clear is a pixel question, and the measurement has not been run — the
 container could not reach the Shopify CDN. Download them from the Files area in
 Shopify admin and drop them onto `scrim-proof.html` to settle it.
+
+## Reshoot run sheet
+
+Ten files, in the order to shoot them. Each hero prompt is in section 2 above and
+needs no editing; the three tile prompts are resolved below, because the template
+in section 3 carries a placeholder and the store needs these three specifically.
+
+**Before anything: settle `hero-home.jpg`.** It is the only existing file that may
+survive. Run it through `scrim-proof.html` at 2.34:1 and again at 0.75:1. If the
+quiet zone holds at both, keep it and shoot ten files. If it does not, it becomes
+the eleventh and is shot first, because it is worth more than the rest combined.
+
+| # | File | Prompt |
+| --- | --- | --- |
+| 1 | `hero-whisky.jpg` | §2 Whisky |
+| 2 | `hero-gin.jpg` | §2 Gin |
+| 3 | `hero-tequila.jpg` | §2 Tequila & agave |
+| 4 | `hero-rum.jpg` | §2 Rum |
+| 5 | `hero-vodka.jpg` | §2 Vodka |
+| 6 | `hero-cocktails.jpg` | §2 Cocktails |
+| 7 | `hero-liqueurs.jpg` | §2 Liqueurs & aperitifs |
+| 8 | `tile-whisky.jpg` | below |
+| 9 | `tile-cocktails.jpg` | below |
+| 10 | `tile-tequila.jpg` | below |
+
+All ten are square masters at the largest size the tool will produce.
+
+### `tile-whisky.jpg`
+
+```
+SPIRITHAUS scene image. Homepage category tile, square.
+The charred end of an oak cask fills the top two-thirds, centred, char texture and a copper hoop catching one low warm light from the right. A tulip glass holding two fingers of amber whisky stands against it, backlit so the liquid glows, still well clear of the lower third. The bottom third is bare dark stone falling to black — no object, no edge, no highlight, because the tile title sits there. Nothing important within a hand's width of either side edge. 85 mm, f/2.2, amber and near-black, photographic, no text.
+```
+
+### `tile-cocktails.jpg`
+
+```
+SPIRITHAUS scene image. Homepage category tile, square.
+A dark bar-top. Across the top two-thirds, centred: two slim cans and one small bottle of pre-mixed cocktail, labels turned away and in shadow, with a steel jigger and a bar spoon laid beside them and a small pile of clear ice in a glass dish. Nothing poured, nothing finished. One warm light from upper right. The bottom third is bare dark bar surface, completely empty. Warm neutrals, brushed steel, near-black; no bright can colours. 50 mm, f/2.5, photographic, no text.
+```
+
+### `tile-tequila.jpg`
+
+```
+SPIRITHAUS scene image. Homepage category tile, square.
+A split roasted agave piña sits centred in the top two-thirds on a dark clay surface, its caramelised fibres lit by a single hard light from the right, a thin curl of wood smoke drifting up through the beam. A short clear bottle and a small clay copita stand beside it, both unused — nobody has drunk anything. The bottom third is dark clay and shadow, completely empty. Terracotta, char, amber, near-black. 85 mm, f/2, photographic, no text.
+```
+
+### Accepting a frame
+
+A file is done when all of this is true, not when it looks good:
+
+1. In `scrim-proof.html`, at **every** ratio in its slot's dropdown, not just the
+   default: zone intrusion under 12 levels, type contrast at or above 4.5:1, image
+   survival at or above 15%.
+2. The subject is still legible at the narrowest ratio. The harness measures the
+   quiet zone, not whether the bottle survived the crop — that one is your eye.
+3. The hands pass the under-25 rule, read cold. AI hands skew young.
+4. The ABAC list in Part A, run once more against the finished frame.
+
+Fail any of the four and it is a re-roll, not a retouch.
+
+### After the ten
+
+Point the three homepage tile slots in `templates/index.json` at the matching
+`tile-<category>.jpg`. Today they point at a hero master, a tile master and a
+lifestyle frame — see the reshoot list above.
 
 ## Palette
 
