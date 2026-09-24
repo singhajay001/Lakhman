@@ -1,0 +1,121 @@
+{
+  "summary": {
+    "health_score": null,
+    "health_score_note": "Not scored. Only the Sitemap category could be measured in this session; egress is blocked so 12 of 13 specialist agents could not run.",
+    "business_type": "E-commerce - online spirits and wine retail (Shopify, Dawn 16.0.0)",
+    "audit_scope": "PARTIAL - sitemap / indexable surface only, from Shopify Admin API",
+    "top_findings": [
+      "/collections/fine-wine holds 139 products and 0 are live - an empty page in the sitemap with a written meta description naming eight wines that cannot be bought",
+      "139 of the 141 draft products are wine; every thin wine collection traces to this one cause",
+      "/collections/new-this-month matches TAG='new' and no product carries that tag - a permanently empty collection with SEO copy",
+      "All 209 live products have seo.title and seo.description unset",
+      "Storefront password status could not be confirmed and changes the severity of everything above"
+    ],
+    "quick_wins": [
+      "Delete or tag New This Month (0 products, rule can never match)",
+      "Delete the ARCHIVED duplicate hibiki-japanese-harmony and reclaim its handle",
+      "Confirm password protection state in Admin -> Online Store -> Preferences"
+    ]
+  },
+  "categories": [
+    {
+      "name": "Sitemap & Indexable Surface",
+      "score": 42,
+      "what_works": [
+        "209 products, 29 collections, 7 pages, 1 blog and 6 articles all publish cleanly to the sitemap (~252 URLs)",
+        "No product is suppressed by a seo.hidden metafield - verified directly",
+        "All 7 policy/info pages are published",
+        "All 6 blog articles are published",
+        "Every collection has a hand-written description and SEO title/description",
+        "Spirits side is healthy: Spirits 150/153 live, Gin 29/29, Whisky 35/37",
+        "Product metafields well populated (abv, country, producer, region, standard_drinks, style, volume_ml, why_we_stock_it)",
+        "Live theme is spirithaus-theme/main with role MAIN - published, not a draft"
+      ],
+      "findings": [
+        {
+          "title": "/collections/fine-wine is an empty page nominated by the sitemap",
+          "severity": "Critical",
+          "description": "139 products in the collection, 0 live - all are DRAFT. The collection carries the SEO title 'Fine Wine - Hill of Grace, RunRig, The Armagh | Spirithaus' and a meta description naming eight producers. Google is invited to a page that promises collectable wine and renders nothing.",
+          "recommendation": "Price and publish the wine drafts (114 sit at $0.00; worksheet: seo/spirithaus/worksheets/draft-pricing-2026-09-24.csv), or unpublish the collection until they are ready. Do not rewrite the copy - the copy is not the problem."
+        },
+        {
+          "title": "The wine half of the catalogue is hollow across every collection",
+          "severity": "Critical",
+          "description": "Live vs total: Fine Wine 0/139, Fortified & Dessert 2/12, Champagne 4/14, Rose 6/16, White 10/50, Red 11/60, Sparkling 19/49, Wine 52/191. The Red collection description promises a range up to Henschke Hill of Grace, which is one of the drafts.",
+          "recommendation": "Single fix: publish the 139 wine drafts. Every collection above recovers at once."
+        },
+        {
+          "title": "New This Month can never match a product",
+          "severity": "High",
+          "description": "Smart collection rule is TAG EQUALS 'new'. No product carries the tag 'new', so the collection holds 0 products. Unlike Fine Wine this will not resolve when the drafts publish.",
+          "recommendation": "Tag recent arrivals 'new', or delete the collection. Do not leave an empty collection with written SEO copy in the sitemap."
+        },
+        {
+          "title": "Specials collection holds one product",
+          "severity": "Low",
+          "description": "Rule IS_PRICE_REDUCED IS_SET, currently matching 1 product. Functioning as designed, but a one-product page in the sitemap has nothing to rank on.",
+          "recommendation": "Acceptable as-is. Revisit if it stays near-empty after the drafts publish."
+        },
+        {
+          "title": "No product has a custom SEO title or meta description",
+          "severity": "Medium",
+          "description": "All sampled live products return seo.title and seo.description unset; Shopify falls back to the product title and body copy. With brand queries lost to the spirithouse.com.au homophone, the product-query snippet is the channel that actually converts.",
+          "recommendation": "Write meta descriptions for the top ~40 products by search demand, targeting 'buy <brand> <expression> australia'."
+        },
+        {
+          "title": "Duplicate Hibiki listing splits the better handle from the live product",
+          "severity": "Medium",
+          "description": "hibiki-japanese-harmony is ARCHIVED and holds the clean handle; hibiki-japanese-harmony-700ml is ACTIVE and carries the barcode and price. The live URL and title both contain a data-entry artefact ('700Ml').",
+          "recommendation": "Delete the archived duplicate, then rename the active product's handle to hibiki-japanese-harmony."
+        },
+        {
+          "title": "Storefront password state unknown",
+          "severity": "Info",
+          "description": "The profile records the store as password-protected as of 2026-09-10. The Admin API exposes no field for this and egress is blocked, so it could not be confirmed. If protection is still on, robots.txt disallows everything and none of the above has reached Google.",
+          "recommendation": "Check Admin -> Online Store -> Preferences. It determines whether the findings above are pre-launch housekeeping or live defects."
+        }
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {
+        "name": "Phase 1: Critical Fixes",
+        "timeframe": "Week 1",
+        "items": [
+          "Confirm storefront password-protection state",
+          "Price and publish the 139 wine drafts, or unpublish the collections that depend on them",
+          "Tag or delete New This Month"
+        ]
+      },
+      {
+        "name": "Phase 2: High-Impact Improvements",
+        "timeframe": "Weeks 2-3",
+        "items": [
+          "Write meta descriptions for the top ~40 products",
+          "Resolve the duplicate Hibiki listing and reclaim the handle",
+          "Verify /collections/frontpage handling against the live sitemap"
+        ]
+      },
+      {
+        "name": "Phase 3: Content & Authority",
+        "timeframe": "Month 2",
+        "items": [
+          "Run the 12 categories that need live page fetches, from a local terminal"
+        ]
+      },
+      {
+        "name": "Phase 4: Monitoring & Iteration",
+        "timeframe": "Ongoing",
+        "items": [
+          "Establish a drift baseline once the store is publicly reachable"
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": null,
+    "screenshots_note": "No screenshots - Playwright cannot reach the site through the blocked proxy."
+  }
+}
