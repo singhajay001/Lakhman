@@ -34,7 +34,16 @@ from collections import Counter, defaultdict
 
 VALID_LENGTHS = {8, 12, 13, 14}
 
-BARCODE_COLS = ("barcode", "ean", "gtin", "upc", "variant barcode")
+# Preference order matters. A supplier feed often carries BOTH a consumer GTIN
+# (the barcode on the bottle) and an outer GTIN (the barcode on the carton it
+# ships in). Both are valid EAN-13 and both pass the check digit; they usually
+# differ only in the last couple of digits. Putting the outer on a
+# single-bottle product tells Google the page is a six-pack.
+CONSUMER_COLS = ("consumer gtin", "consumer barcode", "unit gtin", "each gtin",
+                 "variant barcode", "barcode", "ean", "gtin", "upc")
+OUTER_COLS = ("outer gtin", "case gtin", "carton gtin", "outer barcode",
+              "case barcode", "carton barcode", "tun")
+BARCODE_COLS = CONSUMER_COLS
 SKU_COLS = ("sku", "variant sku")
 HANDLE_COLS = ("handle", "product handle")
 
@@ -80,7 +89,24 @@ def main() -> int:
         print("no rows in that file")
         return 2
 
-    bc_col = find_column(fields, BARCODE_COLS)
+    outer_col = find_column(fields, OUTER_COLS)
+    # Look for the consumer column among the fields that are NOT the carton one.
+    # "Outer GTIN" contains "gtin", so a plain substring search matches it and
+    # the refusal below would never fire.
+    consumer_fields = [f for f in fields if f != outer_col]
+    bc_col = find_column(consumer_fields, CONSUMER_COLS)
+
+    # An outer/case GTIN is never a product barcode. If that is the only
+    # candidate, refuse rather than guess.
+    if outer_col is not None and bc_col is None:
+        print(f"the only barcode-shaped column is {outer_col!r}, which is a CARTON "
+              f"barcode.\nIt identifies the shipper, not the bottle, and it is a valid "
+              f"EAN-13 — so\nnothing downstream will catch it. Ask the supplier for the "
+              f"consumer/unit GTIN.")
+        return 2
+    if outer_col is not None and bc_col is not None:
+        print(f"note: ignoring {outer_col!r} (carton barcode); using {bc_col!r}")
+
     id_col = find_column(fields, SKU_COLS) or find_column(fields, HANDLE_COLS)
     if bc_col is None:
         print(f"no barcode column found. looked for {'/'.join(BARCODE_COLS)}")
@@ -134,6 +160,13 @@ def main() -> int:
                           f"(expected {expected}, got {actual}) — a real barcode "
                           f"cannot look like this, so it is a typo or the wrong product")
             continue
+
+        if outer_col is not None:
+            outer = re.sub(r"[\s-]", "", (row.get(outer_col) or "").strip())
+            if outer and outer == bc:
+                errors.append(f"row {n} [{ident}]: {bc} is this row's CARTON barcode, "
+                              f"not the bottle's. Valid EAN-13, wrong unit.")
+                continue
 
         seen[bc].append(f"row {n} [{ident}]")
         ok += 1

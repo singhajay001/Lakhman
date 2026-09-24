@@ -173,3 +173,81 @@ repriced — but the buying decision is still there to be made.
 Lastly: the ALM file is dated 5 September and several allowances in it have
 already expired, so these costs are what ALM charged three weeks ago, not
 necessarily today.
+
+---
+
+# 2026-09-24: ALM does hold the barcodes — they were left out of the export
+
+An ALM product detail screen for one line:
+
+```
+ARCHIE ROSE LEMON SCENTED GUM GIN 700ML
+Item Code: 30854154    Supplier code: AR030
+Outer GTIN:    9350657002133
+Consumer GTIN: 9350657002126
+$398.05   Carton of 6 units
+Category: SPIRITS / GIN ALL / GIN     Product Unit Size: 700 ML
+Tax Type: G.S.T. 10.0% WET NIL
+```
+
+This settles the barcode question. **ALM's system carries the GTIN. The export
+simply did not include the column.** The fix is a different export, not a
+different supplier — and it is the same request that would also solve the draft
+pricing and the missing costs.
+
+## 🔴 But there are two GTINs, and only one belongs in Shopify
+
+| | | |
+|---|---|---|
+| **Consumer GTIN** | `9350657002126` | the barcode on **the bottle** — this is the one |
+| **Outer GTIN** | `9350657002133` | the barcode on **the carton of six** |
+
+Both were validated: **both are perfectly valid EAN-13**, check digits 6 and 3
+respectively, both computed and confirmed. They differ only in the last two
+digits.
+
+That is the whole danger. Every guard built so far — digits-only, length
+8/12/13/14, check digit, the EAN-8 item-code warning — **passes the outer GTIN
+without complaint.** Put it on a single-bottle product and the page tells
+Google, and every aggregator, that it is selling a six-pack. Nothing downstream
+catches it, ever.
+
+The only defence is picking the right column, so the tool now does that.
+
+## `tools/check-barcodes.py` updated
+
+- **Column preference.** `consumer gtin`, `consumer barcode`, `unit gtin` and
+  `each gtin` now rank above the generic `barcode`/`gtin`/`ean`.
+- **Carton columns are excluded by name** — `outer gtin`, `case gtin`,
+  `carton gtin`, `tun` and the rest. When both exist the tool says
+  `note: ignoring 'Outer GTIN' (carton barcode); using 'Consumer GTIN'`.
+- **A file offering only a carton column is refused outright**, exit 2, naming
+  why: *"It identifies the shipper, not the bottle, and it is a valid EAN-13 —
+  so nothing downstream will catch it."*
+- **Row-level backstop.** If a value equals that row's own outer GTIN it is
+  rejected even if the column names were misleading.
+
+One bug found and fixed while testing: the original refusal never fired,
+because `"gtin"` is a substring of `"Outer GTIN"` and the generic search
+matched the carton column as if it were the consumer one. The row-level check
+caught it anyway, which is the argument for having two layers.
+
+Verified against the real Archie Rose figures: consumer GTIN only → `safe to
+write`; both columns → uses the consumer one; carton only → refused.
+
+## The one request to send ALM
+
+> The product export, **all categories**, including **Consumer GTIN**, cost and
+> unit size.
+
+Not the outer GTIN. That single file closes the 215 missing barcodes, the 114
+unpriced drafts and the uncosted whisky, rum, vodka, wine and RTD ranges at
+once.
+
+Worth noting from the same screen: **`Tax Type: G.S.T. 10.0% WET NIL`** confirms
+spirits carry GST but no Wine Equalisation Tax — so the wine lines in a
+full-category export will be taxed differently, and cost comparisons across
+categories are not like for like.
+
+Archie Rose Lemon Scented Gum Gin is not currently in the Spirithaus range.
+ALM carries it at $398.05 a six — $66.34 a bottle.
