@@ -51,33 +51,24 @@ was missing, the fact was left out rather than invented.
    bourbon range added on 11 September — 14 products, a genuine new category —
    is now tagged. The collection fills itself from here.
 
-## NOT done: seven live products cannot sell at their current price
+## CORRECTED — the "seven mispriced products" finding was wrong
 
-These are single units carrying what look like carton prices. **No price was
-changed** — the correct retail figure is the owner's to set, and guessing it is
-how a $12 can ends up at $120.
+An earlier version of this report listed seven live products as unsellable at
+their price, and two size/price relationships as inverted. **All of it was
+wrong.** Those products have variants — Single Can / Pack of 4 / Carton of 24,
+or 100ml / 500ml — and the figures I read were correctly priced cartons. I had
+queried `variants(first: 1)` and Shopify returned the carton.
 
-| Product | Size | Listed | Comparable products |
-|---|---|---|---|
-| Curatif Negroni | 130 mL can | **$236.99** | every other Curatif can $12.99–14.99 |
-| Bellarine Tarty Ted | 250 mL can | **$256.99** | RTD cans $12–17 |
-| Brookie's Gin & Tonic | 275 mL can | **$129.99** | RTD cans $12–17 |
-| Naked Life Classic G&T | 250 mL | **$100.99** | Naked Life Pink Paloma $16.99 |
-| Naked Life Passionfruit Martini | 250 mL | **$100.99** | same range, same size |
-| Four Pillars Yuzu Gin & Soda | 250 mL | **$30.99** | RTD cans $12–17 |
-| Many Worlds Pillar of Autumn | 700 mL | $92.99 | plausible for a 700 mL bottled cocktail — lowest confidence of the seven |
+Three variants were changed before the error was caught and have been restored
+to their exact original values. See `overnight-2026-09-24.md` section 1.
 
-Two further price relationships are inverted:
+Twelve SEO titles written in this pass named a size the product does not
+uniquely have (Absolut Vodka, and 11 Maybe Sammy cocktails). All twelve have
+been rewritten to name both sizes. The two product titles renamed to "… 500ml"
+are reverted.
 
-- **Maker's Mark 1 L is $59.99 while Maker's Mark 700 mL is $62.99.** The larger
-  bottle is cheaper. One of the two is wrong.
-- **Maybe Sammy 500 mL bottles are $19.99 while the 100 mL singles are $17.99.**
-  Five times the volume for two dollars more.
-
-Five of these sit in the `Under $50` and `Cocktails` collections, which are
-among the store's better-merchandised pages. A $236.99 can on a cocktail
-collection page does more damage than one broken product — it reads as a store
-that does not check its own prices.
+The margin audit has been redone across all 55 variants of the 24 multi-variant
+products: zero fall below the 20% floor.
 
 ## Still open
 
