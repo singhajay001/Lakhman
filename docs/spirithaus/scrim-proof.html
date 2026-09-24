@@ -47,20 +47,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,.rrow:focus-visibl
   container-type:inline-size;border:1px solid var(--line)}
 #proof{position:absolute;inset:0;width:100%;height:100%;display:block}
 .scrim{position:absolute;inset:0;background:#111110;pointer-events:none}
-.typelayer{position:absolute;inset:0;pointer-events:none;display:flex;padding:0 4.5cqw;
-  align-items:flex-end;justify-content:flex-start}
-.typelayer .stack{width:100%;padding-bottom:6cqw;display:flex;flex-direction:column;
-  gap:1.6cqw;align-items:flex-start}
-.typelayer .kicker{color:#fff;font:500 1.5cqw/1 var(--mono);letter-spacing:.14em;
-  text-transform:uppercase;margin:0;opacity:.9}
-.headline{color:#fff;font-weight:600;line-height:1.08;letter-spacing:-.02em;
-  text-wrap:balance;margin:0;max-width:18ch;font-size:5.2cqw}
-.typelayer .body{color:#fff;margin:0;max-width:46ch;font:400 2cqw/1.5 var(--sans);opacity:.92}
-.typelayer .cta{background:var(--fail);color:#fff;font:500 1.8cqw/1 var(--sans);
-  padding:1.6cqw 2.6cqw;margin-top:1cqw}
-.typelayer.tile .stack{padding-bottom:7cqw}
-.typelayer.tile .headline{font-size:8cqw;max-width:none}
-.typelayer.tile .body,.typelayer.tile .cta{display:none}
+.typelayer{position:absolute;inset:0;pointer-events:none;display:flex;align-items:flex-end;
+  justify-content:flex-start}
+.typelayer .stack{display:flex;flex-direction:column;align-items:flex-start}
+.typelayer p,.typelayer span{margin:0;display:block}
+.typelayer .cta{display:inline-flex;align-items:center;justify-content:center}
+.fatal{border:1px solid var(--fail);background:#1b0e0f;padding:18px;margin:24px 0;
+  font:400 13px/1.6 var(--sans);color:var(--ink)}
+.fatal b{display:block;margin-bottom:6px;color:var(--fail)}
+.prov{color:var(--dim);font:400 11px/1.5 var(--mono);padding-top:10px;
+  border-top:1px solid var(--line);margin-top:14px}
+.prov b{color:var(--ink);font-weight:500}
 .guides{position:absolute;inset:0;pointer-events:none}
 .guides .h{position:absolute;left:0;right:0;height:0;border-top:1px dashed rgba(207,28,41,.85)}
 .guides .tag{position:absolute;font:500 10px/1 var(--mono);letter-spacing:.06em;
@@ -122,6 +119,334 @@ footer b{color:var(--ink);font-weight:500}
 </style>
 </head>
 <body>
+<script type="application/json" id="theme-profile">
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-24T23:17:57.533Z",
+  "source": {
+    "shop": "spirithaus.com.au",
+    "themeId": "gid://shopify/OnlineStoreTheme/161468449014",
+    "themeName": "spirithaus-theme/main",
+    "role": "MAIN",
+    "themeUpdatedAt": "2026-09-18T02:23:56Z",
+    "files": {
+      "assets/spirithaus.css": {
+        "checksumMd5": "f1b34be7fb1765519db4ee257bf83a86",
+        "updatedAt": "2026-09-15T14:13:21Z"
+      },
+      "assets/base.css": {
+        "checksumMd5": "478cca03c9e19a42f41bb96e51754811",
+        "updatedAt": "2026-08-31T05:53:41Z"
+      },
+      "sections/spirithaus-hero.liquid": {
+        "checksumMd5": "718aa6d2391a05f5c896f1c57e2d1566",
+        "updatedAt": "2026-09-05T03:36:39Z"
+      },
+      "sections/spirithaus-categories.liquid": {
+        "checksumMd5": "745bbff81f62f9bd0fe4c869f88b60e2",
+        "updatedAt": "2026-09-05T03:36:39Z"
+      },
+      "config/settings_data.json": {
+        "checksumMd5": "5a13413e85490984fb307c9da3a3c2ec",
+        "updatedAt": "2026-09-18T02:23:56Z"
+      },
+      "templates/index.json": {
+        "checksumMd5": "0d0f3ef8c2139d709d3a74ad87c4a397",
+        "updatedAt": "2026-09-16T07:37:44Z"
+      }
+    }
+  },
+  "root": {
+    "fontPx": 10,
+    "pageWidthPx": 1200,
+    "breakpointPx": 750
+  },
+  "tokens": {
+    "ink": "#111110",
+    "white": "#ffffff",
+    "bone": "#f2efe9",
+    "red": "#cf1c29",
+    "fontDisplay": "Archivo",
+    "fontMono": "Space Mono",
+    "weights": {
+      "light": 300,
+      "regular": 400,
+      "bold": 700,
+      "black": 900
+    }
+  },
+  "viewports": [
+    {
+      "id": "desktop-1920",
+      "label": "desktop 1920",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "id": "laptop-1440",
+      "label": "laptop 1440",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "id": "small-1024",
+      "label": "small 1024",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "id": "tablet-768",
+      "label": "tablet 768",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "id": "phone-390",
+      "label": "phone 390",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "placements": {
+    "hero": {
+      "section": "spirithaus-hero",
+      "box": {
+        "widthCss": "100vw",
+        "heightCss": [
+          {
+            "minWidth": 0,
+            "value": "62vh"
+          },
+          {
+            "minWidth": 750,
+            "value": "76vh"
+          }
+        ]
+      },
+      "image": {
+        "fit": "cover",
+        "positionX": 0.5,
+        "positionY": 0.5
+      },
+      "scrim": {
+        "color": "#111110",
+        "opacity": 0.58,
+        "minOpacity": 0.58,
+        "maxOpacity": 0.9,
+        "coverage": "full"
+      },
+      "text": {
+        "anchor": "bottom-left",
+        "container": {
+          "maxWidthPx": 1200,
+          "paddingXPx": [
+            {
+              "minWidth": 0,
+              "value": 15
+            },
+            {
+              "minWidth": 750,
+              "value": 50
+            }
+          ],
+          "paddingTopPx": [
+            {
+              "minWidth": 0,
+              "value": 60
+            },
+            {
+              "minWidth": 750,
+              "value": 100
+            }
+          ],
+          "paddingBottomPx": [
+            {
+              "minWidth": 0,
+              "value": 48
+            },
+            {
+              "minWidth": 750,
+              "value": 72
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "role": "kicker",
+            "family": "mono",
+            "sizePx": 12,
+            "weight": 400,
+            "lineHeight": 1,
+            "trackingEm": 0.12,
+            "transform": "uppercase",
+            "marginBottomPx": 16,
+            "color": "#ffffff",
+            "text": "Spirits, Wines and Cocktails"
+          },
+          {
+            "role": "heading",
+            "family": "display",
+            "sizePx": [
+              {
+                "minWidth": 0,
+                "value": 36
+              },
+              {
+                "minWidth": 750,
+                "value": 64
+              }
+            ],
+            "weight": 300,
+            "strongWeight": 900,
+            "lineHeight": 1.1,
+            "trackingEm": -0.01,
+            "maxCh": 18,
+            "marginBottomPx": 16,
+            "color": "#ffffff",
+            "text": "Every bottle chosen. <strong>Every one explained.<\/strong>"
+          },
+          {
+            "role": "body",
+            "family": "display",
+            "sizePx": [
+              {
+                "minWidth": 0,
+                "value": 16
+              },
+              {
+                "minWidth": 750,
+                "value": 18
+              }
+            ],
+            "weight": 400,
+            "lineHeight": 1.6,
+            "maxCh": 46,
+            "marginBottomPx": 28,
+            "color": "#ffffff",
+            "text": "We cannot beat the chains on price or breadth, so we do not try. Every bottle here earned its place, and we tell you why."
+          },
+          {
+            "role": "cta",
+            "kind": "button",
+            "family": "display",
+            "sizePx": 15,
+            "minHeightPx": 47,
+            "paddingXPx": 30,
+            "background": "#cf1c29",
+            "color": "#ffffff",
+            "label": "Browse the range"
+          }
+        ]
+      }
+    },
+    "tile": {
+      "section": "spirithaus-categories",
+      "grid": {
+        "columns": [
+          {
+            "minWidth": 0,
+            "value": 1
+          },
+          {
+            "minWidth": 750,
+            "value": 3
+          }
+        ],
+        "gapPx": [
+          {
+            "minWidth": 0,
+            "value": 12
+          },
+          {
+            "minWidth": 750,
+            "value": 16
+          }
+        ],
+        "minHeightPx": [
+          {
+            "minWidth": 0,
+            "value": 220
+          },
+          {
+            "minWidth": 750,
+            "value": 340
+          }
+        ],
+        "paddingPx": [
+          {
+            "minWidth": 0,
+            "value": 18
+          },
+          {
+            "minWidth": 750,
+            "value": 24
+          }
+        ],
+        "container": {
+          "maxWidthPx": 1200,
+          "paddingXPx": [
+            {
+              "minWidth": 0,
+              "value": 15
+            },
+            {
+              "minWidth": 750,
+              "value": 50
+            }
+          ]
+        }
+      },
+      "image": {
+        "fit": "cover",
+        "positionX": 0.5,
+        "positionY": 0.5
+      },
+      "scrim": {
+        "color": "#111110",
+        "opacity": 0.66,
+        "minOpacity": 0.58,
+        "maxOpacity": 0.9,
+        "coverage": "full"
+      },
+      "text": {
+        "anchor": "bottom-left",
+        "blocks": [
+          {
+            "role": "title",
+            "family": "display",
+            "sizePx": [
+              {
+                "minWidth": 0,
+                "value": 24
+              },
+              {
+                "minWidth": 750,
+                "value": 32
+              }
+            ],
+            "weight": 300,
+            "lineHeight": 1.1,
+            "trackingEm": -0.01,
+            "color": "#ffffff"
+          },
+          {
+            "role": "caption",
+            "family": "mono",
+            "sizePx": 12,
+            "weight": 400,
+            "lineHeight": 1,
+            "trackingEm": 0.12,
+            "transform": "uppercase",
+            "marginTopPx": 6,
+            "color": "#ffffff"
+          }
+        ]
+      }
+    }
+  }
+}
+</script>
+
 <div class="wrap">
 
 <header>
@@ -141,14 +466,7 @@ footer b{color:var(--ink);font-weight:500}
     <div class="stage" id="stage">
       <canvas id="proof"></canvas>
       <div class="scrim" id="scrim"></div>
-      <div class="typelayer" id="typelayer">
-        <div class="stack">
-          <p class="kicker">Spirits, wines and cocktails</p>
-          <p class="headline" id="headline"></p>
-          <p class="body">We cannot beat the chains on price or breadth, so we do not try.</p>
-          <span class="cta">Browse the range</span>
-        </div>
-      </div>
+      <div class="typelayer" id="typelayer"><div class="stack" id="typestack"></div></div>
       <div class="guides" id="guides"></div>
     </div>
     <div class="stage-meta">
@@ -168,6 +486,7 @@ footer b{color:var(--ink);font-weight:500}
       </div>
       <div id="rows"></div>
       <p class="note" id="zoneNote"></p>
+      <p class="prov" id="prov"></p>
     </div>
 
     <div class="card">
@@ -227,29 +546,119 @@ footer b{color:var(--ink);font-weight:500}
 (function(){
   "use strict";
 
-  /* ---------- the theme, measured ---------- */
-  var SLOTS = {
-    hero: {
-      ratios: ["2.34:1", "2.11:1", "0.99:1", "0.75:1"],
-      labels: {"2.34:1":"2.34:1  desktop 1920", "2.11:1":"2.11:1  laptop 1440",
-               "0.99:1":"0.99:1  tablet 768", "0.75:1":"0.75:1  phone 390"},
-      type: "hero", zone: "half", scrim: 58
-    },
-    tile: {
-      ratios: ["1.05:1", "0.87:1", "0.62:1", "1.64:1"],
-      labels: {"1.05:1":"1.05:1  desktop", "0.87:1":"0.87:1  1024",
-               "0.62:1":"0.62:1  768", "1.64:1":"1.64:1  phone"},
-      type: "tile", zone: "third", scrim: 66
-    },
-    life: { ratios: ["4:5", "3:2"], labels: {}, type: "none", zone: "none", scrim: 58 }
-  };
+  /* ---------- the theme, read from theme-profile.json ---------- */
+  // Nothing about the theme is written down here any more. The profile is
+  // embedded at build time by tools/embed-profile.mjs; if it is missing or the
+  // wrong shape the page refuses to render rather than falling back to values
+  // that were true in September.
+  function fatal(msg, detail){
+    var box = document.createElement("div");
+    box.className = "fatal";
+    var b = document.createElement("b"); b.textContent = msg;
+    box.appendChild(b);
+    box.appendChild(document.createTextNode(detail));
+    var wrap = document.querySelector(".wrap");
+    wrap.insertBefore(box, wrap.firstChild.nextSibling);
+    throw new Error(msg);
+  }
+
+  var profile = (function(){
+    var node = document.getElementById("theme-profile"), p = null;
+    try { p = JSON.parse(node.textContent); } catch (e) { p = null; }
+    if (!p || p.schemaVersion !== 1 || !p.placements || !p.viewports){
+      fatal("No theme profile embedded.",
+        "This page renders from theme-profile.json, which is injected at build time. " +
+        "Run: node tools/build-theme-profile.mjs … then node tools/embed-profile.mjs " +
+        "--profile theme-profile.json --page scrim-proof.html");
+    }
+    return p;
+  })();
+
+  // POLICY, not theme data. A coarse stand-in for the real text box until the
+  // typography engine measures rendered glyphs. Held at the pre-migration values
+  // so this step changes where numbers come from, never what they are.
+  var QUIET_ZONE_TOP = { hero: 0.5, tile: 2 / 3 };
+  var VEIL_TOP       = { hero: 0.5, tile: 0.60 };
+
+  // Also policy: lifestyle frames are not placed under type by the theme, so the
+  // profile says nothing about them and neither can we measure them.
+  var LIFE_RATIOS = [
+    { id: "social-4x5", label: "4:5  social", ratio: 0.8 },
+    { id: "about-3x2",  label: "3:2  about",  ratio: 1.5 }
+  ];
+
   var ZONE_NOTE = {
-    half: "Bottom half must hold no object, edge, or highlight — the hero type stack sits there, and the subject belongs in the top half, centred.",
-    third: "Bottom third must stay clear — the tile title and caption sit bottom-left.",
+    hero: "Bottom half must hold no object, edge, or highlight — the hero type stack sits there, and the subject belongs in the top half, centred.",
+    tile: "Bottom third must stay clear — the tile title and caption sit bottom-left.",
     none: "No type is laid over this slot, so there is no quiet zone and nothing to correct."
   };
-  var INK = [17, 17, 16];
-  var TEXT_LUM = relLum(255, 255, 255);
+
+  function hexRgb(hex){
+    var m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+    if (!m) fatal("Bad colour in theme profile.", hex + " is not a six-digit hex colour.");
+    return [parseInt(m[1],16), parseInt(m[2],16), parseInt(m[3],16)];
+  }
+
+  function resolveAt(list, width){
+    var v = null;
+    for (var i = 0; i < list.length; i++) if (width >= list[i].minWidth) v = list[i].value;
+    if (v === null) fatal("Theme profile has no value at this width.", JSON.stringify(list));
+    return v;
+  }
+
+  function cssLengthPx(css, vpW, vpH){
+    var m = /^([\d.]+)(vh|vw|px)$/.exec(String(css).trim());
+    if (!m) fatal("Unsupported CSS length in theme profile.", String(css));
+    var n = parseFloat(m[1]);
+    return m[2] === "vh" ? vpH * n / 100 : m[2] === "vw" ? vpW * n / 100 : n;
+  }
+
+  // Ratios are derived here rather than stored in the profile, so a change to the
+  // theme's 76vh moves every one of them without anybody editing a list.
+  function deriveViews(key){
+    var pl = profile.placements[key];
+    return profile.viewports.map(function(vp){
+      var w, h;
+      if (pl.box){
+        w = cssLengthPx(pl.box.widthCss, vp.width, vp.height);
+        h = cssLengthPx(resolveAt(pl.box.heightCss, vp.width), vp.width, vp.height);
+      } else {
+        var g = pl.grid;
+        var cols = resolveAt(g.columns, vp.width);
+        var gap  = resolveAt(g.gapPx, vp.width);
+        var padX = resolveAt(g.container.paddingXPx, vp.width);
+        var content = Math.min(vp.width, g.container.maxWidthPx) - 2 * padX;
+        w = (content - gap * (cols - 1)) / cols;
+        h = resolveAt(g.minHeightPx, vp.width);
+      }
+      return { id: vp.id, vp: vp, cssW: w, cssH: h, ratio: w / h,
+               label: (w / h).toFixed(2) + ":1  " + vp.label };
+    });
+  }
+
+  function placementSlot(key){
+    var pl = profile.placements[key];
+    if (!pl) fatal("Theme profile has no placement \"" + key + "\".", "Regenerate the profile.");
+    return {
+      placement: key,
+      views: deriveViews(key),
+      zone: key,
+      scrim: Math.round(pl.scrim.opacity * 100),
+      scrimMin: Math.round(pl.scrim.minOpacity * 100),
+      scrimMax: Math.round((pl.scrim.maxOpacity || 0.9) * 100)
+    };
+  }
+
+  var SLOTS = {
+    hero: placementSlot("hero"),
+    tile: placementSlot("tile"),
+    life: { placement: null, views: LIFE_RATIOS.map(function(r){
+              return { id: r.id, vp: null, cssW: r.ratio, cssH: 1, ratio: r.ratio, label: r.label };
+            }), zone: "none", scrim: 58, scrimMin: 58, scrimMax: 90 }
+  };
+
+  var INK = hexRgb(profile.tokens.ink);
+  var TYPE_COLOUR = profile.tokens.white;
   var INTRUDE_CLEAR = 12, INTRUDE_PRESENT = 30;
   var SURVIVE_THIN = 8, SURVIVE_OK = 15;
   var RANK = { pass: 0, warn: 1, fail: 2 };
@@ -261,7 +670,7 @@ footer b{color:var(--ink);font-weight:500}
   var EXPORT_MAX = 2048; // cap on the exported master's side
 
   var el = {};
-  ["picker","loadBtn","stage","proof","scrim","typelayer","headline","guides","metaName",
+  ["picker","loadBtn","stage","proof","scrim","typelayer","typestack","guides","prov","metaName",
    "metaMaster","metaDims","strip","slot","ratio","window","windowVal","gradient","gradientVal",
    "opacity","opacityVal","headlineText","showGuides","chip","verdictText","rows","zoneNote",
    "fixBtn","saveBtn","fixLog"].forEach(function(id){ el[id] = document.getElementById(id); });
@@ -274,6 +683,7 @@ footer b{color:var(--ink);font-weight:500}
   function chan(v){ v = v/255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); }
   function relLum(r,g,b){ return 0.2126*chan(r) + 0.7152*chan(g) + 0.0722*chan(b); }
   function contrast(a,b){ var hi = Math.max(a,b), lo = Math.min(a,b); return (hi+0.05)/(lo+0.05); }
+  var TEXT_LUM = (function(c){ return relLum(c[0], c[1], c[2]); })(hexRgb(TYPE_COLOUR));
   function pct(sorted, q){ return sorted[Math.min(sorted.length-1, Math.floor(sorted.length*q))]; }
   function clamp(v){ return v < 0 ? 0 : v > 255 ? 255 : v; }
 
@@ -287,11 +697,6 @@ footer b{color:var(--ink);font-weight:500}
     return a > 1 ? "x" : "y";
   }
 
-  // Every rendered crop is vertically centred, so a crop's own midline is the
-  // master's midline: a gradient starting at the master's half line covers the
-  // bottom half of every hero crop. A tile's bottom third starts lower, and the
-  // widest tile crop puts it at 0.5 + (1/1.64)/6 of the master.
-  function gradientTop(zone){ return zone === "third" ? 0.60 : 0.50; }
 
   function buildMaster(frame, size){
     var img = frame.img, iw = img.naturalWidth, ih = img.naturalHeight;
@@ -311,7 +716,7 @@ footer b{color:var(--ink);font-weight:500}
       // sinks the floor faster than a highlight sitting higher up the band, so
       // the spread survives and the frame reads worse. A flat veil scales peak
       // and floor together, which is what actually buries an intrusion.
-      var top = gradientTop(SLOTS[frame.slot].zone) * size;
+      var top = (VEIL_TOP[frame.slot] || 0.5) * size;
       var feather = size * 0.10;
       var grd = g.createLinearGradient(0, top - feather, 0, top);
       grd.addColorStop(0, "rgba(17,17,16,0)");
@@ -325,11 +730,9 @@ footer b{color:var(--ink);font-weight:500}
   }
 
   /* ---------- measurement ---------- */
-  function ratioOf(str){ var p = str.split(":"); return parseFloat(p[0]) / parseFloat(p[1]); }
-
   // Centre-crop the master to r, composite the theme's ink scrim, and read the
   // quiet zone. Mirrors object-fit:cover with the default 50% position.
-  function analyse(master, r, alpha, zone, width){
+  function analyse(master, r, alpha, zoneTopFrac, width){
     var TW = width, TH = Math.max(1, Math.round(TW / r));
     var M = master.width;
     var sw = r >= 1 ? M : M * r;
@@ -344,7 +747,7 @@ footer b{color:var(--ink);font-weight:500}
     catch (e){ tainted = true; return null; }
 
     var a = alpha, k = 1 - a;
-    var zoneTop = Math.round(zone === "half" ? TH / 2 : (TH * 2) / 3);
+    var zoneTop = Math.round(TH * zoneTopFrac);
     var zl = [], zg = [], sg = [];
     for (var y = 0; y < TH; y++){
       var inZone = y >= zoneTop;
@@ -393,9 +796,10 @@ footer b{color:var(--ink);font-weight:500}
     if (spec.zone === "none") return null;
     var master = buildMaster(frame, Math.max(width * 2, 360));
     var alpha = frame.scrim / 100;
-    var rows = spec.ratios.map(function(key){
-      var m = analyse(master, ratioOf(key), alpha, spec.zone, width);
-      return { key: key, label: spec.labels[key] || key, m: m, state: m ? stateOf(m) : "fail" };
+    var frac = QUIET_ZONE_TOP[frame.slot];
+    var rows = spec.views.map(function(v){
+      var m = analyse(master, v.ratio, alpha, frac, width);
+      return { key: v.id, label: v.label, m: m, state: m ? stateOf(m) : "fail" };
     });
     var worst = rows.map(function(r){ return r.state; })
                     .sort(function(p,q){ return RANK[q]-RANK[p]; })[0];
@@ -463,7 +867,7 @@ footer b{color:var(--ink);font-weight:500}
 
   function drawStage(){
     var f = currentFrame(); if (!f) return;
-    var r = ratioOf(el.ratio.value || SLOTS[f.slot].ratios[0]);
+    var r = currentView().ratio;
     var box = el.stage.getBoundingClientRect();
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var w = Math.max(1, Math.round(box.width)), h = Math.max(1, Math.round(box.width / r));
@@ -476,16 +880,98 @@ footer b{color:var(--ink);font-weight:500}
     g.drawImage(f.master, (M-sw)/2, (M-sh)/2, sw, sh, 0, 0, el.proof.width, el.proof.height);
   }
 
+  // The type stack is rendered from the profile's own metrics, scaled out of the
+  // theme's CSS pixels into the preview. Sizes, weights, tracking, line-height,
+  // container padding and copy all come from theme-profile.json — the previous
+  // implementation invented all of them in viewport-relative units.
+  function renderType(slotKey, view){
+    var stack = el.typestack;
+    stack.textContent = "";
+    var pl = profile.placements[slotKey];
+    if (!pl){ el.typelayer.hidden = true; return; }
+    el.typelayer.hidden = false;
+
+    var stageW = el.stage.getBoundingClientRect().width || 1;
+    var s = stageW / view.cssW;            // theme CSS px -> preview px
+    var vpW = view.vp ? view.vp.width : view.cssW;
+
+    var padX, padBottom, boxW;
+    if (pl.box){
+      var c = pl.text.container;
+      var inner = resolveAt(c.paddingXPx, vpW);
+      padX = Math.max((vpW - c.maxWidthPx) / 2, 0) + inner;
+      padBottom = resolveAt(c.paddingBottomPx, vpW);
+      boxW = Math.min(vpW, c.maxWidthPx) - 2 * inner;
+    } else {
+      padX = resolveAt(pl.grid.paddingPx, vpW);
+      padBottom = padX;
+      boxW = view.cssW - 2 * padX;
+    }
+
+    el.typelayer.style.padding = "0 " + (padX * s).toFixed(2) + "px";
+    stack.style.paddingBottom = (padBottom * s).toFixed(2) + "px";
+    stack.style.width = (boxW * s).toFixed(2) + "px";
+
+    var fam = { display: profile.tokens.fontDisplay, mono: profile.tokens.fontMono };
+    pl.text.blocks.forEach(function(b){
+      var editable = b.role === "heading" || b.role === "title";
+      var copy = editable ? el.headlineText.value : (b.text || "");
+      if (b.kind !== "button" && !copy) return;   // tile caption copy comes from the
+                                                  // collection, not the theme files
+      var size = (typeof b.sizePx === "number" ? b.sizePx : resolveAt(b.sizePx, vpW)) * s;
+      var node = document.createElement(b.kind === "button" ? "span" : "p");
+      if (b.role === "cta") node.className = "cta";
+      node.style.fontFamily = '"' + fam[b.family] + '", ' + (b.family === "mono" ? "monospace" : "sans-serif");
+      node.style.fontSize = size.toFixed(2) + "px";
+      node.style.color = b.color || profile.tokens.white;
+      if (b.weight) node.style.fontWeight = String(b.weight);
+      if (b.lineHeight) node.style.lineHeight = String(b.lineHeight);
+      if (b.trackingEm) node.style.letterSpacing = (b.trackingEm * size).toFixed(3) + "px";
+      if (b.transform) node.style.textTransform = b.transform;
+      if (b.maxCh) node.style.maxWidth = b.maxCh + "ch";
+      if (b.marginBottomPx) node.style.marginBottom = (b.marginBottomPx * s).toFixed(2) + "px";
+      if (b.marginTopPx) node.style.marginTop = (b.marginTopPx * s).toFixed(2) + "px";
+      if (b.kind === "button"){
+        node.style.background = b.background;
+        node.style.minHeight = (b.minHeightPx * s).toFixed(2) + "px";
+        node.style.padding = "0 " + (b.paddingXPx * s).toFixed(2) + "px";
+        node.textContent = b.label || "";
+      } else if (b.strongWeight){
+        emphasise(node, copy, b.strongWeight);
+      } else {
+        node.textContent = copy;
+      }
+      stack.appendChild(node);
+    });
+  }
+
+  // The heading is light with black emphasis spans. Rendering it at one weight is
+  // what made the old preview optimistic, so the two weights are kept apart here.
+  function emphasise(node, html, strongWeight){
+    var parts = String(html).split(/(<strong>|<\/strong>)/i);
+    var strong = false;
+    parts.forEach(function(part){
+      if (/^<strong>$/i.test(part)) { strong = true; return; }
+      if (/^<\/strong>$/i.test(part)) { strong = false; return; }
+      if (!part) return;
+      var span = document.createElement("span");
+      span.textContent = part;
+      span.style.display = "inline";
+      if (strong) span.style.fontWeight = String(strongWeight);
+      node.appendChild(span);
+    });
+  }
+
   function drawGuides(zone){
     el.guides.textContent = "";
     if (!el.showGuides.checked || zone === "none") return;
-    var top = zone === "half" ? 50 : 66.666;
+    var top = QUIET_ZONE_TOP[zone] * 100;
     var line = document.createElement("i");
     line.className = "h"; line.setAttribute("style", "top:" + top + "%");
     el.guides.appendChild(line);
     var tag = document.createElement("i");
     tag.className = "tag"; tag.setAttribute("style", "left:0;top:" + top + "%");
-    tag.textContent = zone === "half" ? "bottom half" : "bottom third";
+    tag.textContent = zone === "hero" ? "bottom half" : "bottom third";
     el.guides.appendChild(tag);
   }
 
@@ -518,10 +1004,8 @@ footer b{color:var(--ink);font-weight:500}
     el.window.disabled = !f || !cropAxis(f.img);
 
     el.scrim.style.opacity = String((f ? f.scrim : spec.scrim) / 100);
-    el.typelayer.hidden = spec.type === "none";
-    el.typelayer.className = "typelayer" + (spec.type === "tile" ? " tile" : "");
-    el.headline.textContent = el.headlineText.value;
     el.zoneNote.textContent = ZONE_NOTE[spec.zone];
+    if (spec.zone === "none") el.typelayer.hidden = true;
 
     if (!f){
       el.chip.className = "chip"; el.chip.textContent = "—";
@@ -531,9 +1015,10 @@ footer b{color:var(--ink);font-weight:500}
     }
 
     f.master = buildMaster(f, PREVIEW_M);
-    var r = ratioOf(el.ratio.value);
-    el.stage.style.aspectRatio = String(r);
+    var view = currentView();
+    el.stage.style.aspectRatio = String(view.ratio);
     drawStage();
+    renderType(spec.placement, view);
     drawGuides(spec.zone);
 
     var a = audit(f, ANALYSE_W);
@@ -615,11 +1100,18 @@ footer b{color:var(--ink);font-weight:500}
 
   function fillRatios(slot){
     el.ratio.textContent = "";
-    SLOTS[slot].ratios.forEach(function(r){
+    SLOTS[slot].views.forEach(function(v){
       var o = document.createElement("option");
-      o.value = r; o.textContent = SLOTS[slot].labels[r] || r;
+      o.value = v.id; o.textContent = v.label;
       el.ratio.appendChild(o);
     });
+  }
+
+  function currentView(){
+    var f = currentFrame();
+    var views = SLOTS[f ? f.slot : "hero"].views;
+    for (var i = 0; i < views.length; i++) if (views[i].id === el.ratio.value) return views[i];
+    return views[0];
   }
 
   function select(i){
@@ -629,6 +1121,8 @@ footer b{color:var(--ink);font-weight:500}
     fillRatios(f.slot);
     el.window.value = Math.round(f.window * 100);
     el.gradient.value = Math.round(f.gradient * 100);
+    el.opacity.min = String(SLOTS[f.slot].scrimMin);
+    el.opacity.max = String(SLOTS[f.slot].scrimMax);
     el.opacity.value = f.scrim;
     el.metaName.textContent = f.name;
     el.metaDims.textContent = f.img.naturalWidth + " × " + f.img.naturalHeight + " px";
@@ -773,6 +1267,10 @@ footer b{color:var(--ink);font-weight:500}
     g.putImageData(d,0,0);
     return c.toDataURL("image/jpeg", 0.86);
   }
+
+  el.prov.textContent = "Theme profile: " + profile.source.themeName
+    + " \u00b7 theme updated " + profile.source.themeUpdatedAt.slice(0, 10)
+    + " \u00b7 profile built " + profile.generatedAt.slice(0, 10);
 
   fillRatios("hero");
   addFrame("sample-clean-bottom.jpg", synth(false, false), "hero");
