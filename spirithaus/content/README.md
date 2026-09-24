@@ -96,31 +96,66 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
 
 ### Still open, and not writing work
 
-1. **The Spirits collection is pulling in wine.** Its rule is
-   `tag:spirits OR tag:GIN OR tag:Australian`, applied disjunctively, so
-   anything tagged `australian` lands in Spirits — Penfolds Koonunga Hill
-   Shiraz, Pepperjack Barossa Shiraz and McGuigan Black Label are all in
-   `/collections/spirits` right now.
+1. **`low-no` is empty because of a tag mismatch.** Its rule is
+   `tag = low-no`, but the Naked Life products that belong there are tagged
+   `non-alcoholic`. Either retag the products or change the rule to
+   `tag = non-alcoholic`; the second is less work and matches how the rest of
+   the catalogue is tagged.
 
-2. **`karu-rested-morita` is mis-tagged.** Its product type is Tequila but its
-   tags are `australian, spirits, staff-pick, vodka` — so it sits in the Vodka
-   collection and not in Tequila. Separately, an Australian agave spirit cannot
-   be labelled tequila at all; the product type is worth revisiting too.
+2. **22 Ready-to-Drink products carry the `spirits` tag**, so pre-mixed cans
+   and bottles — Curatif, Maybe Sammy, Brookies Gin & Tonic — sit alongside
+   750ml bottles in `/collections/spirits`. Defensible either way, but worth a
+   deliberate decision rather than an accident of tagging.
 
-3. **Four published collections are empty**: `low-no`, `new-this-month`,
+3. **`karu-morita-grapefruit-soda` has product type `Vodka`** but is a canned
+   RTD. It is correctly outside Spirits (it has no `spirits` tag), but the
+   product type will mislead any type-driven filter or feed.
+
+4. **Four published collections are empty**: `low-no`, `new-this-month`,
    `specials`, `under-50`. Three more are near-empty: `gifting` (1),
    `canned-cocktails` (1), `premium-collabs` (2). Thin pages, poor landings.
 
-4. **`single-malt` holds one product and has no rule**, while `whisky` holds 52.
+5. **`single-malt` holds one product and has no rule**, while `whisky` holds 52.
    "Single malt" is a strong commercial query and that page is a dead end.
 
-5. **Nearly everything reads as zero inventory.** If that is real rather than
+6. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
 
 **Done in this pass:** the duplicate Hibiki listing is resolved — the good copy
 was ported to `hibiki-japanese-harmony-700ml` (the one with stock), a 301
 redirect now points `/products/hibiki-japanese-harmony` at it, and the
 duplicate is archived rather than deleted so it can be restored.
+
+**Spirits collection rule — fixed.** The rule was
+`tag:spirits OR tag:GIN OR tag:Australian`, applied disjunctively, so every
+`australian`-tagged product landed in Spirits regardless of what it was. It is
+now a single clause:
+
+```
+appliedDisjunctively: true
+TAG EQUALS "spirits"
+```
+
+Two checks before changing it. The `GIN` clause was redundant — all 29 gins
+already carry `spirits`, so dropping it removes nothing. The `Australian`
+clause was the whole problem: 136 products rode on it alone (131 wines, 5
+canned cocktails including the three non-alcoholic Naked Life items), of which
+32 were active and customer-visible. All of them keep a home via their `wine`,
+`cocktails` or `canned` tags.
+
+Result: the collection went from 289 to 153 products, and
+`product_type:Wine AND tag:spirits` now returns **0**. Penfolds Koonunga Hill
+Shiraz, Pepperjack Barossa Shiraz and McGuigan Black Label resolve to `wine`,
+`red` and `australian-made` only.
+
+Nothing was lost in the other direction: no active Whisky, Rum, Tequila, Gin,
+Bourbon, Brandy or Liqueur product is missing the `spirits` tag, so the rule
+change dropped no real spirit.
+
+**`karu-rested-morita` — confirmed fixed by the client.** Product type now
+reads `Vodka`, tags `australian, spirits, staff-pick, vodka`. It stays in
+Spirits on the new rule and now sits consistently in Vodka rather than being
+split across Tequila and Vodka.
 
 ## Published
 
