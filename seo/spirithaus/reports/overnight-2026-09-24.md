@@ -175,3 +175,17 @@ cheapest to do now, before Google crawls the current URL.
 
 Egress is still blocked in this session, so `robots.txt` and the live
 `sitemap.xml` could not be fetched to confirm crawlability from outside.
+
+### Duplicates — all resolved 2026-09-24
+
+| Removed | Survivor |
+|---|---|
+| `hibiki-japanese-harmony` (was ARCHIVED) | `hibiki-japanese-harmony-700ml` |
+| `maybe-sammy-jasmine-negroni-500ml` | `maybe-sammy-jasmine-negroni` — 100ml $17.99 / 500ml $66.99 |
+| `maybe-sammy-old-fashioned-500ml` | `maybe-sammy-old-fashioned` — 100ml $17.99 / 500ml $66.99 |
+
+Live product count 209 → 207. Both surviving Maybe Sammy products already carry
+the corrected SEO copy naming both sizes.
+
+The handle `hibiki-japanese-harmony` is free and unclaimed. The live product
+still sits on the weaker `hibiki-japanese-harmony-700ml`.
