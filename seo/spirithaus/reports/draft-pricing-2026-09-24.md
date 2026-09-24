@@ -120,3 +120,72 @@ Shopify blocks publishing a $0.00 product.**
 
 The rule to hold: **price before publish, verified by reading the price back**
 — never the two in one action. Same rule the 23 September incident earned.
+
+---
+
+# Done: 19 published. The ALM file cannot price the other 114.
+
+## Published — 19, storefront 190 → 209
+
+The everyday wine block, draft since 12 September. Every price and cost was
+read back from the API immediately before publishing, then status and channel
+were set as two separate operations. The price write and the publish were never
+in the same mutation — the rule the 23 September $0.00 incident earned.
+
+Verified live: `rawsons-retreat-shiraz-cabernet` now resolves at
+`https://www.spirithaus.com.au/products/rawsons-retreat-shiraz-cabernet` at
+$8.99 against a $6.17 cost.
+
+## ⚠️ Four of the "23 ready" were deliberately held back, and were not published
+
+Checked `updatedAt` before acting. These four carry **today's 02:23 timestamp** —
+the batch the owner confirmed drafting on purpose a few hours ago:
+
+| | Price | Cost | Margin |
+|---|---|---|---|
+| Penfolds Grandfather Rare Tawny | $99.99 | $70.00 | 30% |
+| Morris of Rutherglen Old Premium Rare Muscat | $122.99 | $98.00 | 20.3% |
+| Lark Devil's Storm No. 183 | $199.99 | $180.00 | 10% |
+| Tequila Blu | $75.99 | $49.99 | 34% |
+
+All four are finished and would publish cleanly. They are held because
+publishing them would reverse a decision the owner made and confirmed today,
+and "publish the 23 that are ready" was almost certainly not meant to undo it.
+One word and they go live.
+
+## 🔴 The ALM file cannot price the 114, and the reason matters
+
+The instruction was to price the remaining 114 from the ALM product export.
+That file cannot do it, and this was tested rather than assumed:
+
+| | |
+|---|---|
+| ALM rows | 913 |
+| Distinct categories in the file | **one** — `SPIRITS / GIN ALL / GIN` |
+| The 114 unpriced products | **all wine** |
+| Overlap | **none** |
+
+Of 22 fine-wine producers sampled from the unpriced list — Henschke, Moss Wood,
+Mount Mary, Krug, Dom Pérignon, Pol Roger, Beaucastel, Grosset, Cloudy Bay,
+Leeuwin, Giaconda, Yattarna, Bass Phillip, Tolpuddle, Trimbach, Dagueneau and
+the rest — **exactly one produced a match**, and it is the best possible
+illustration of why fuzzy matching is dangerous here:
+
+```
+"grange"  ->  BATHURST GRANGE DISTILLERY AUSTRALIAN DRY GIN 700ML
+              BATHURST GRANGE DISTILLERY BLUE MOUNTAIN GIN 700ML
+```
+
+A name-matching script pointed at this file would have priced **Penfolds
+Grange**, a wine that runs to around nine hundred dollars a bottle, from a
+$50 Bathurst gin. It would have run without error and produced a confident,
+catastrophic number.
+
+**What is actually needed** is the same export from ALM with the wine
+categories selected instead of `SPIRITS / GIN ALL / GIN` — and ideally every
+category, since that would also cost the 23 fine wines that are priced but have
+no cost, and the whisky, rum, vodka and RTD ranges that are still uncosted.
+
+One request to ALM covers all of it: **the product export across all
+categories, with the EAN/GTIN column included.** That single file would close
+the barcode gap, the draft pricing gap and the missing-cost gap together.
