@@ -274,12 +274,98 @@ machine-readable text on those pages.
   ALL-CAPS product title. Normalised in the alt; the title itself still shouts
   in search results and in the page `<h1>`.
 
+## Descriptions: 39 of 69 written, 2026-09-24
+
+### The count, measured again
+
+Re-measured directly rather than trusted. Across all **217 active** products,
+**69** have an entirely empty description — the same 32% the earlier pass
+found, three higher because three of the newly published products carried
+none either.
+
+The useful finding is not the total but where it sits. The gap is not spread
+evenly; it is whole categories:
+
+| | empty | of |
+|---|---|---|
+| Whisky, Scotch, Irish, Japanese, Bourbon | ~39 | the block |
+| Tequila | **17** | 17 — every one |
+| Karu Distillery, entire range | **10** | 10 — every one |
+| Odds (Bundaberg, Bacardi, Winding Road, McGuigan) | 4 | |
+
+Gin, rum, wine and RTD are almost fully described. So this was never a
+catalogue-wide content problem; it is three untouched blocks. That changes
+the work from a 69-item slog into three coherent passes.
+
+### Written and live: 39
+
+The whisky block, in two passes — the 20 highest-value Scotch, Japanese and
+blended lines first, then the remaining single malts, Irish whiskey and the
+Australian and Indian distillers.
+
+Each is two short paragraphs: what it is and where it comes from, then how it
+tastes and how to drink it. Roughly 70–110 words, which is enough for Google
+to have something to rank and enough for an assistant to answer "what does
+this taste like" without inventing an answer.
+
+**The rule these were written under: no numbers that belong on a label.** No
+ABV, no standard drinks, no cask counts presented as fact where the producer
+has not published one. Prose describes character; figures come off the bottle
+and go in metafields. This is the same rule that left `standard_drinks` empty
+on the Devil's Storm, applied consistently.
+
+Where a producer's own account is well documented — Aberlour's double-cask
+marriage, Amrut's two barleys, Lark restarting Tasmanian distilling after 153
+years — that is in the copy, because it is checkable and it is exactly what a
+citation engine quotes. Where nothing is documented, nothing was invented.
+
+### Remaining: 30
+
+| | count | note |
+|---|---|---|
+| Tequila | 17 | Straightforward; well-documented producers |
+| **Karu Distillery** | 10 | **Needs research, not recall** |
+| Winding Road, McGuigan Black Label Red | 2 | |
+| Hibiki 700mL | 1 | Deliberately skipped — see below |
+
+Karu is a small independent and its range is not something to write from
+memory. Those ten need the producer's own material read first, or they will
+read plausibly and be quietly wrong — which is worse than blank.
+
+## 🔴 Hibiki is listed twice
+
+Two active products, both live:
+
+| handle | vendor | inventory | created |
+|---|---|---|---|
+| `hibiki-japanese-harmony` | House of Suntory | 0 | 1 Sept |
+| `hibiki-japanese-harmony-700ml` | Suntory | 12 | 4 Sept |
+
+Same whisky, two pages, two prices ($199.99 and $199.00), two vendor spellings.
+Duplicate listings compete with each other for the same query and split
+whatever authority either earns. The one customers can actually buy is the
+second; the one created first has no stock.
+
+Not merged here, because deleting or redirecting a product is the owner's call
+and the stock sits on the newer one. The description was deliberately written
+on one only — giving both the same copy would have made the duplication worse.
+
+## ✅ Second vendor defect fixed
+
+`penfolds-koonunga-hill-shiraz-cabernet` carried the vendor **`SPIRITHAUS`**
+while its two siblings carried `Penfolds`. Vendor is `brand` in the product
+schema, so the store was publishing itself as the producer of a Penfolds wine.
+Corrected to `Penfolds`.
+
+Worth noting the pattern: `SPIRITHAUS` appears to be what a product gets when
+nobody set a vendor. The peanuts legitimately have it. A wine does not.
+
 ## Order of work
 
 1. ~~Publish the 12 active-but-unpublished products~~ — **done**, all 12.
    The two held at $0.00 were priced by the owner and are live.
-2. **Write the 66 missing descriptions.** Largest lever available. Start with
-   the highest-margin or best-selling lines rather than alphabetically.
+2. **Write the missing descriptions** — 39 of 69 done. Remaining: 17 tequila,
+   the 10-product Karu range (research first), and 2 strays.
 3. ~~Fill blank image alt text~~ — **done**, 275 alts, full coverage.
 4. **Barcodes at import, from now on, without exception.** Backfill the
    existing 215 when convenient; never add a new SKU without one.
