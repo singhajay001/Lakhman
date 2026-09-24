@@ -109,10 +109,17 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    `specials`, `under-50`. Four more are thin: `low-no` (3), `gifting` (1),
    `canned-cocktails` (1), `premium-collabs` (2). Thin pages, poor landings.
 
-4. **`single-malt` holds one product and has no rule**, while `whisky` holds 52.
-   "Single malt" is a strong commercial query and that page is a dead end.
+4. **Two Aberlour titles omit "Single Malt".** `aberlour-12-year-old` and
+   `aberlour-14-year-old` are titled "Double Cask Matured" with no category
+   word. They are single malts and are tagged as such, but "single malt" is a
+   strong commercial query and the product title is a ranking signal, so both
+   titles are leaving something on the table.
 
-5. **Nearly everything reads as zero inventory.** If that is real rather than
+5. **The `whisky` collection holds all 52 whisky products, bourbon included.**
+   Jack Daniel's, Jim Beam and Wild Turkey sit in the same collection as
+   Lagavulin. There is a `bourbon` tag already, so a split is cheap if wanted.
+
+6. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
 
 **Done in this pass:** the duplicate Hibiki listing is resolved — the good copy
@@ -169,6 +176,40 @@ Paloma, Passionfruit Martini — all active. I checked for low- and no-alcohol
 stock hiding under other naming (`zero`, `0.0`, `alcohol-free`, `alcohol free`)
 and found none, so three is the true size of the range, not a rule artefact.
 The page works now, but three products is still thin for a category landing.
+
+**`single-malt` collection rule — fixed.** The collection had **no rule at
+all**: it was a manual collection holding a single product, Aberlour A'bunadh.
+Nothing in the catalogue identified a single malt, so there was nothing to
+write a rule against — the tag had to be created first.
+
+I classified all 52 whisky and whiskey products and tagged the 22 single malts
+`single-malt`, following the hyphenated `staff-pick` / `non-alcoholic`
+convention and matching the collection handle. The rule is now:
+
+```
+appliedDisjunctively: false
+TAG EQUALS "single-malt"
+```
+
+The collection holds **22 products, 21 of them active** (Lark Devil's Storm No.
+183 is in draft and will appear when published). That is up from 1.
+
+Excluded as genuinely not single malt: **Monkey Shoulder** (a *blended* malt —
+a vatting of three Speyside single malts, which is a different category),
+**Starward Two-Fold** (double grain, malt blended with wheat), **Hibiki
+Japanese Harmony** and **Nikka From The Barrel** (both blends), all Johnnie
+Walker, Chivas Regal, Dimple and Royal Salute (blended Scotch), all Jameson
+(Irish blend), and every bourbon and Tennessee whiskey.
+
+Twenty of the 22 say "Single Malt" in the title, so the classification is the
+catalogue's own. The two that do not are Aberlour 12 and Aberlour 14 Double
+Cask Matured — both are core expressions of a Speyside single malt distillery,
+which is why a title-matching rule would have been wrong here and a tag is the
+right mechanism. It is also why those two titles are listed as still open
+above.
+
+This gives `articles/first-single-malt.md` a real destination: its
+`/collections/single-malt` link previously landed on a one-product page.
 
 **`karu-rested-morita` — confirmed fixed by the client.** Product type now
 reads `Vodka`, tags `australian, spirits, staff-pick, vodka`. It stays in
