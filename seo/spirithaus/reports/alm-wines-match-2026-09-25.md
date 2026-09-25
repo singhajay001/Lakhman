@@ -164,3 +164,61 @@ What that implies, for the decision before publishing:
 
 None of the twelve has a product image. Publishing a $414.99 Veuve Clicquot
 La Grande Dame with no photograph would be worse than leaving it in draft.
+
+---
+
+## FINAL — launch pricing applied, 2026-09-25
+
+Owner chose to launch at the sharp price with **no strikethrough**, rather than
+publish high and discount later.
+
+Reason, beyond compliance: these products have never sold at any price, so a
+`compareAtPrice` behind them would be a "was" with no trading history — the
+pattern the ACCC treats as misleading under the ACL. Separately, a new store
+whose entire wine range launches "on sale" reads as a permanent-sale outlet
+rather than a specialist.
+
+### Six launched at market — `compareAtPrice` deliberately null
+
+| Wine | Cost | Launch price | GP |
+|---|---|---|---|
+| Dal Zotto Pucino Prosecco | $16.60 | **$19.99** | 17.0% |
+| Chrismont La Zona Pinot Grigio | $17.74 | **$20.99** | 15.5% |
+| Turkey Flat Rosé | $23.07 | **$26.99** | 14.5% |
+| Shaw + Smith Sauvignon Blanc | $25.27 | **$29.99** | 15.7% |
+| Greywacke Wild Sauvignon | $38.50 | **$46.99** | 18.1% |
+| Penfolds St Henri Shiraz | $101.65 | **$124.99** | 18.7% |
+
+Blended **17.5% GP**. Verified after writing: all six carry a null
+`compareAtPrice`, so nothing renders a sale badge and nothing enters
+`/collections/specials` on a fabricated reduction.
+
+$19.99 and $29.99 cross round-number thresholds from above — on a $22.99
+prosecco, getting under $20 is worth more than the $3 it costs.
+
+### Six held at the 25% floor
+
+Katnook Merlot $46.99 · Shaw + Smith M3 $55.99 · Cloudy Bay Sauvignon Blanc
+$57.99 · Cloudy Bay Te Koko $98.99 · House of Arras EJ Carr $247.99 · Veuve
+Clicquot La Grande Dame $414.99.
+
+Three of these — Katnook and both Cloudy Bays — go to or below cost at market.
+That is a supplier problem, not a pricing one: **ALM is not a competitive source
+for those labels.** They are priced to policy and held in draft pending a
+decision on whether to range them at all.
+
+### The deferred consequence
+
+The 25% wine floor now applies to **six** of the twelve rather than all twelve.
+The other six launch at 14.5–18.7%. That was the trade the owner chose
+knowingly: meet the market on the labels shoppers price-check, protect margin
+where they do not.
+
+Worth revisiting once there is sales data — it is a launch decision, not a
+permanent one.
+
+### `/collections/specials` is still empty
+
+Option B does not populate it, by design. The compliant route to filling it is
+a genuine promotion on the **207 live products**, which do have trading history.
+That remains open.
