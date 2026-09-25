@@ -538,7 +538,7 @@ footer b{color:var(--ink);font-weight:500}
         <label for="focalR">Focal radius (% of master)</label><input type="number" id="focalR" min="2" max="30" step="1" value="9">
         <label for="minCrop">Min visible after crop (%)</label><input type="number" id="minCrop" min="0" max="100" step="1" value="90">
         <label for="maxType">Max under type (%)</label><input type="number" id="maxType" min="0" max="100" step="1" value="5">
-        <label for="maxScrim">Max lost to scrim (%)</label><input type="number" id="maxScrim" min="0" max="100" step="1" value="40">
+        <label for="maxScrim">Max scrim loss (%)</label><input type="number" id="maxScrim" min="0" max="100" step="1" value="40">
       </div>
       <div class="verdict">
         <span class="chip" id="focalChip">—</span>
@@ -862,12 +862,14 @@ footer b{color:var(--ink);font-weight:500}
     // Focal retention, sampled over a disc on the master and classified against the
     // same crop, type region and composited pixels the rest of the pass used. The
     // three losses are diagnosed independently because they have different fixes:
-    // re-crop, re-compose, or lighten the subject.
+    // re-crop, re-compose, or lift the scrim. Scrim loss is a DELTA — what the veil
+    // took away — not an absolute reading, so a subject the photographer put in deep
+    // shadow is not scored as a rendering defect.
     if (focal){
       var M = master.width;
       var sw = r >= 1 ? M : M * r, sh = r >= 1 ? M / r : M;
       var sx0 = (M - sw) / 2, sy0 = (M - sh) / 2;
-      var N = 48, total = 0, vis = 0, underType = 0, lost = 0;
+      var N = 48, total = 0, vis = 0, underType = 0, lost = 0, rawOk = 0, postOk = 0;
       for (var gy = 0; gy < N; gy++){
         for (var gx = 0; gx < N; gx++){
           var ux = ((gx + 0.5) / N) * 2 - 1, uy = ((gy + 0.5) / N) * 2 - 1;
@@ -880,15 +882,35 @@ footer b{color:var(--ink);font-weight:500}
           var px = Math.floor(cxp), py = Math.floor(cyp);
           if (zone.kind === "band" ? (py >= zone.top) : !!zone.data[py * TW + px]) underType++;
           var j = (py * TW + px) * 4;
-          if (contrast(relLum(data[j] * k + INK[0] * a,
-                              data[j+1] * k + INK[1] * a,
-                              data[j+2] * k + INK[2] * a), INK_LUM) < SCRIM_VISIBLE_CONTRAST) lost++;
+          // Sampled twice against the same ink: once from the photograph as shot,
+          // once from the composited pixel. `data` holds the pre-scrim frame — the
+          // veil is applied arithmetically here — so both readings come from one
+          // buffer with no second render.
+          var rawVis = contrast(relLum(data[j], data[j+1], data[j+2]),
+                                INK_LUM) >= SCRIM_VISIBLE_CONTRAST;
+          var postVis = contrast(relLum(data[j] * k + INK[0] * a,
+                                        data[j+1] * k + INK[1] * a,
+                                        data[j+2] * k + INK[2] * a),
+                                 INK_LUM) >= SCRIM_VISIBLE_CONTRAST;
+          if (rawVis) rawOk++;
+          if (postVis) postOk++; else lost++;
         }
       }
+      // Measured over the samples that survive the crop, not over the whole disc, so
+      // crop loss stays in `cropVisible` and cannot leak into the scrim's account.
+      var rawPct = vis ? (rawOk / vis) * 100 : 0;
+      var postPct = vis ? (postOk / vis) * 100 : 0;
       out.focal = {
         cropVisible: total ? +((vis / total) * 100).toFixed(1) : 0,
         typeOccluded: total ? +((underType / total) * 100).toFixed(1) : 0,
-        scrimCovered: total ? +((lost / total) * 100).toFixed(1) : 0
+        // Absolute distinguishability of the composited pixel. Retained as a
+        // diagnostic only: on low-key photography it reports the subject's own
+        // darkness, which is a compositional choice and not a rendering defect.
+        // Never blocking. `scrimLoss` is the quantity the focal check acts on.
+        scrimCovered: total ? +((lost / total) * 100).toFixed(1) : 0,
+        rawDistinguishable: +rawPct.toFixed(1),
+        postScrimDistinguishable: +postPct.toFixed(1),
+        scrimLoss: +Math.max(0, rawPct - postPct).toFixed(1)
       };
     }
     return out;
@@ -1260,7 +1282,7 @@ footer b{color:var(--ink);font-weight:500}
     var reasons = [];
     if (fm.cropVisible < (+el.minCrop.value)) reasons.push("crop loss");
     if (fm.typeOccluded > (+el.maxType.value)) reasons.push("typography occlusion");
-    if (fm.scrimCovered > (+el.maxScrim.value)) reasons.push("scrim obscuration");
+    if (fm.scrimLoss > (+el.maxScrim.value)) reasons.push("scrim obscuration");
     return {
       retention: fm.cropVisible >= 99.5 ? "full" : fm.cropVisible <= 0.5 ? "lost" : "partial",
       reasons: reasons,
@@ -1279,6 +1301,9 @@ footer b{color:var(--ink);font-weight:500}
         cropVisible: fm ? fm.cropVisible : null,
         typeOccluded: fm ? fm.typeOccluded : null,
         scrimCovered: fm ? fm.scrimCovered : null,
+        rawDistinguishable: fm ? fm.rawDistinguishable : null,
+        postScrimDistinguishable: fm ? fm.postScrimDistinguishable : null,
+        scrimLoss: fm ? fm.scrimLoss : null,
         status: st ? st.status : "unknown",
         reasons: st ? st.reasons : []
       };
@@ -1329,7 +1354,7 @@ footer b{color:var(--ink);font-weight:500}
       row.appendChild(name);
       [[r.cropVisible, r.reasons.indexOf("crop loss") > -1],
        [r.typeOccluded, r.reasons.indexOf("typography occlusion") > -1],
-       [r.scrimCovered, r.reasons.indexOf("scrim obscuration") > -1]].forEach(function(pair){
+       [r.scrimLoss, r.reasons.indexOf("scrim obscuration") > -1]].forEach(function(pair){
         var n = document.createElement("span");
         n.className = "n";
         n.textContent = (pair[0] === null ? "\u2014" : pair[0] + "%");
@@ -1733,7 +1758,7 @@ footer b{color:var(--ink);font-weight:500}
       fonts: fontsLoaded ? "loaded" : "substituted",
       focal: focalSpec(f),
       thresholds: { minCropVisible: +el.minCrop.value, maxTypeOccluded: +el.maxType.value,
-                    maxScrimCovered: +el.maxScrim.value },
+                    maxScrimLoss: +el.maxScrim.value },
       viewports: lastFocal.rows,
       worst: lastFocal.worst,
       status: lastFocal.status

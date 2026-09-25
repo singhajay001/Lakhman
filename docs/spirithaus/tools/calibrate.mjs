@@ -197,7 +197,7 @@ for (const file of files) {
     );
     sweep.push({ y, viewports: (r.focal ? r.focal.rows : []).map(v => ({
       viewport: v.viewport, cropVisible: v.cropVisible, typeOccluded: v.typeOccluded,
-      scrimCovered: v.scrimCovered, status: v.status })) });
+      scrimCovered: v.scrimCovered, scrimLoss: v.scrimLoss, status: v.status })) });
   }
 
   // `result.focal` is the focal REPORT; keep the spec under its own key or one
@@ -228,7 +228,10 @@ const perAsset = assets.map(a => {
     worstSurvival: worstOf(g, "survival", "higher"),
     worstCropVisible: worstOf(f, "cropVisible", "higher"),
     worstTypeOccluded: worstOf(f, "typeOccluded", "lower"),
-    worstScrimCovered: worstOf(f, "scrimCovered", "lower")
+    worstScrimCovered: worstOf(f, "scrimCovered", "lower"),
+    worstRawDistinguishable: worstOf(f, "rawDistinguishable", "higher"),
+    worstPostScrimDistinguishable: worstOf(f, "postScrimDistinguishable", "higher"),
+    worstScrimLoss: worstOf(f, "scrimLoss", "lower")
   };
 });
 
@@ -261,19 +264,21 @@ const newlyPassed = perAsset.filter(a => a.legacy !== "pass" && a.current === "p
 // Safe-zone: at each Y, across every asset and viewport, how often does the focal survive?
 const sweepYs = assets.length ? assets[0].sweep.map(s => s.y) : [];
 const safeZone = sweepYs.map((y, i) => {
-  let total = 0, survived = 0, cropSum = 0, typeSum = 0, scrimSum = 0;
+  let total = 0, survived = 0, cropSum = 0, typeSum = 0, scrimSum = 0, lossSum = 0;
   for (const a of assets) {
     for (const v of a.sweep[i].viewports) {
       total++;
       if (v.status === "pass") survived++;
       cropSum += v.cropVisible; typeSum += v.typeOccluded; scrimSum += v.scrimCovered;
+      lossSum += v.scrimLoss;
     }
   }
   return { y, samples: total,
            survivalRate: total ? +((survived / total) * 100).toFixed(1) : null,
            meanCropVisible: total ? +(cropSum / total).toFixed(1) : null,
            meanTypeOccluded: total ? +(typeSum / total).toFixed(1) : null,
-           meanScrimCovered: total ? +(scrimSum / total).toFixed(1) : null };
+           meanScrimCovered: total ? +(scrimSum / total).toFixed(1) : null,
+           meanScrimLoss: total ? +(lossSum / total).toFixed(1) : null };
 });
 
 // The sweep's shape is the point: survival is squeezed from above by the crop and
@@ -298,8 +303,14 @@ const METRICS = [
     note: "Share of the focal disc surviving the crop." },
   { key: "worstTypeOccluded", label: "Type occlusion", dir: "lower", unit: "%", current: 5,
     note: "Share of the focal disc under rendered glyphs." },
-  { key: "worstScrimCovered", label: "Scrim obscuration", dir: "lower", unit: "%", current: 40,
-    note: "Share of the focal disc indistinguishable from the ink." }
+  { key: "worstScrimLoss", label: "Scrim loss", dir: "lower", unit: "%", current: 40,
+    note: "Share of the focal disc the scrim took from distinguishable to not. "
+        + "Blocking. The 40 is inherited from the absolute metric this replaced and "
+        + "has never been derived from labels \u2014 treat it as provisional." },
+  { key: "worstScrimCovered", label: "Absolute darkness (diagnostic)", dir: "lower", unit: "%",
+    current: null,
+    note: "Share of the focal disc indistinguishable from the ink after compositing. "
+        + "Tracks how low-key the photograph is, not what the scrim did. Not blocking." }
 ];
 
 const thresholds = METRICS.map(m => ({
@@ -346,7 +357,8 @@ const csvEsc = (v) => {
 };
 const csvRows = [["file", "slot", "label", "mode", "viewport", "ratio", "state",
                   "contrast", "intrusion", "survival", "cropVisible", "typeOccluded",
-                  "scrimCovered", "focalStatus"]];
+                  "scrimCovered", "rawDistinguishable", "postScrimDistinguishable",
+                  "scrimLoss", "focalStatus"]];
 for (const a of assets) {
   const focalByVp = Object.fromEntries((a.focal?.rows || []).map(r => [r.viewport, r]));
   for (const mode of ["band", "glyph"]) {
@@ -354,7 +366,9 @@ for (const a of assets) {
       const f = mode === "glyph" ? focalByVp[r.viewport] : null;
       csvRows.push([a.file, a.slot, a.label, mode, r.viewport, r.ratio, r.state,
                     r.contrast, r.intrusion, r.survival,
-                    f?.cropVisible ?? "", f?.typeOccluded ?? "", f?.scrimCovered ?? "", f?.status ?? ""]);
+                    f?.cropVisible ?? "", f?.typeOccluded ?? "", f?.scrimCovered ?? "",
+                    f?.rawDistinguishable ?? "", f?.postScrimDistinguishable ?? "",
+                    f?.scrimLoss ?? "", f?.status ?? ""]);
     }
   }
 }
@@ -383,7 +397,7 @@ function renderHtml(r){
       <td class="n">${s.survivalRate === null ? "&mdash;" : s.survivalRate + "%"}</td>
       <td class="n">${s.meanCropVisible}%</td>
       <td class="n">${s.meanTypeOccluded}%</td>
-      <td class="n">${s.meanScrimCovered}%</td></tr>`;
+      <td class="n">${s.meanScrimLoss}%</td></tr>`;
   }).join("\n");
 
   const thresholdBlocks = r.thresholds.map(t => {
@@ -394,7 +408,8 @@ function renderHtml(r){
     const brk = t.naturalBreak
       ? `<p class="dim">Largest gap in the observed values sits at ${t.naturalBreak.at} (between ${t.naturalBreak.below} and ${t.naturalBreak.above}). Suggestive only &mdash; a gap is not a verdict.</p>` : "";
     return `<div class="card">
-      <h3>${esc(t.label)} <span class="dim">&middot; currently ${t.current}${t.unit === ":1" ? ":1" : " " + t.unit}</span></h3>
+      <h3>${esc(t.label)} <span class="dim">&middot; ${t.current === null ? "not blocking"
+        : "currently " + t.current + (t.unit === ":1" ? ":1" : " " + t.unit)}</span></h3>
       <p class="dim">${esc(t.note)}</p>
       ${d ? `<table class="mini"><tr><th>n</th><th>min</th><th>p10</th><th>p25</th><th>median</th><th>p75</th><th>p90</th><th>max</th></tr>
       <tr><td>${d.n}</td><td>${d.min}</td><td>${d.p10}</td><td>${d.p25}</td><td>${d.median}</td><td>${d.p75}</td><td>${d.p90}</td><td>${d.max}</td></tr></table>` : "<p class='dim'>No values.</p>"}
@@ -474,7 +489,7 @@ ${rows(r.failureMatrix, f => [esc(f.file), esc(f.viewport), esc(f.type), chip(f.
 ${r.sweepVerdict ? `<div class="card"><h3>Best observed position: y = ${r.sweepVerdict.bestY.toFixed(2)} <span class="dim">&middot; ${r.sweepVerdict.survivalRate}% of samples survive</span></h3>
 <p class="dim">Squeezed from above by ${esc(r.sweepVerdict.limitedAbove || "\u2014")} and from below by ${esc(r.sweepVerdict.limitedBelow || "\u2014")}. ${r.sweepVerdict.inTargetBand ? "This sits inside the current 0.33\u20130.40 target band." : "<b>This sits outside the current 0.33\u20130.40 target band.</b>"}</p>
 <p class="dim">The window depends on how big the subject is: this sweep used a focal disc of ${(FOCAL_R * 100).toFixed(0)}% of the master. A smaller subject has more room, a larger one less.</p></div>` : ""}
-<table><tr><th>Subject Y</th><th>Survival</th><th>Rate</th><th>Mean visible</th><th>Mean under type</th><th>Mean lost to scrim</th></tr>
+<table><tr><th>Subject Y</th><th>Survival</th><th>Rate</th><th>Mean visible</th><th>Mean under type</th><th>Mean scrim loss</th></tr>
 ${sweepBars}</table>
 
 <h2>Threshold analysis</h2>
