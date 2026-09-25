@@ -281,6 +281,13 @@ for (const file of files) {
                 labelReason: labelReasons ? (labelReasons[file] || null) : null, sweep });
   process.stderr.write(`${result.modes.band?.worst ?? "-"} -> ${result.modes.glyph?.worst ?? "-"}\n`);
 }
+// The safe zone depends on the master's aspect, which is only known once every source
+// has been read — so it is asked for here, while the page is still open. Reaching for
+// the page after the browser has closed is how the first run of this died.
+const slotsForMaster = (MASTER === "source" && srcAspects.size === 1)
+  ? await page.evaluate(ma => window.scrimProof.slots(ma), [...srcAspects][0])
+  : meta.slots;
+
 await browser.close();
 
 /* -------------------------------------------------------------- analysis */
@@ -535,9 +542,7 @@ const report = {
   masterAspect: MASTER === "source"
     ? (srcAspects.size === 1 ? [...srcAspects][0] : null) : 1,
   sourceAspects: [...srcAspects].sort((a, b) => a - b),
-  slots: MASTER === "source" && srcAspects.size === 1
-    ? await page.evaluate(ma => window.scrimProof.slots(ma), [...srcAspects][0])
-    : meta.slots,
+  slots: slotsForMaster,
   focalKnown: assets.filter(a => a.focalKnown).length,
   unusableFocals,
   labelled: labelledCount,
