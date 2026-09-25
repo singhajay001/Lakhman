@@ -11,7 +11,7 @@
 | Platform | **Shopify** — Dawn theme v16.0.0 (verified) |
 | Theme repo | `singhajay001/spirithaus-theme` @ `7ae5c95` |
 | Catalogue size | 350 products: 209 live, 141 draft. 25 products use variants for pack size. |
-| Store status | **LIVE — password removed 2026-09-24.** Theme `spirithaus-theme/main` is published (role MAIN). The store is now crawlable and indexable. |
+| Store status | **LIVE — password removed 2026-09-18** (owner-confirmed 2026-09-25; an earlier note said 24 Sept and was wrong). Theme `spirithaus-theme/main` is published (role MAIN). Crawlable and indexable — but **as of 2026-09-25, 7 days later, Google has indexed zero pages**. A `site:spirithaus.com.au` search returns nothing from the domain. See `reports/not-indexed-2026-09-25.md`. |
 | Ships to | TODO — AU-wide? VIC only? click-and-collect? |
 | Physical presence | TODO — if yes, this also needs a local profile |
 
