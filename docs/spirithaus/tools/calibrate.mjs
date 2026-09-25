@@ -304,6 +304,67 @@ const diagnosisCrossTab = (() => {
   return table;
 })();
 
+// Model divergence, per viewport rather than per asset.
+//
+// The two models are deliberately correlated: Step 2 established parity where they
+// measure the same region, so AGREEMENT IS THE DEFAULT and carries no information.
+// Every bit of evidence about whether the glyph model predicts better than the band
+// model lives in the rows where they part company. A corpus that produces two
+// divergences is not a corpus showing the models are equivalent — it is a corpus that
+// never exercised the difference, and this table is what tells those two apart before
+// anyone spends an evening labelling.
+//
+// Survival is held on the band in both modes by design, so it cannot diverge; when it
+// does, something is wrong with the harness rather than with the image, and saying so
+// is more useful than quietly attributing it to the region change.
+const RANK = { pass: 0, warn: 1, fail: 2 };
+const stateOfMetric = {
+  contrast:  v => v >= 4.5 ? "pass" : v >= 3.0 ? "warn" : "fail",
+  intrusion: v => v < 12 ? "pass" : v < 30 ? "warn" : "fail",
+  survival:  v => v >= 15 ? "pass" : v >= 8 ? "warn" : "fail"
+};
+const divergence = [];
+for (const a of assets) {
+  const bandBy = Object.fromEntries((a.modes.band?.rows || []).map(r => [r.viewport, r]));
+  for (const g of a.modes.glyph?.rows || []) {
+    const b = bandBy[g.viewport];
+    if (!b || b.state === g.state) continue;
+    const moved = [];
+    for (const key of ["contrast", "intrusion", "survival"]) {
+      if (b[key] == null || g[key] == null) continue;
+      const from = stateOfMetric[key](b[key]), to = stateOfMetric[key](g[key]);
+      if (from !== to) moved.push({ metric: key, band: b[key], glyph: g[key], from, to });
+    }
+    const harder = RANK[g.state] > RANK[b.state];
+    const survivalMoved = moved.some(m => m.metric === "survival");
+    divergence.push({
+      file: a.file, viewport: g.viewport, legacy: b.state, current: g.state,
+      direction: harder ? "2.0 stricter" : "2.0 more permissive",
+      moved,
+      reason: survivalMoved
+        ? "Image survival moved between modes. It is held on the band in both by "
+          + "design, so this is a harness fault rather than a property of the frame."
+        : moved.length
+          ? moved.map(m => `${m.metric} ${m.band} \u2192 ${m.glyph} (${m.from} \u2192 ${m.to})`).join("; ")
+            + ". " + (harder
+              ? "The rendered glyph boxes reach content the assumed band excludes."
+              : "The assumed band included content the rendered type never covers.")
+          : "States differ with no metric changing class \u2014 investigate."
+    });
+  }
+}
+const divergenceSummary = {
+  assets: assets.length,
+  viewportRows: assets.reduce((n, a) => n + (a.modes.glyph?.rows.length || 0), 0),
+  diverging: divergence.length,
+  agreeing: assets.reduce((n, a) => n + (a.modes.glyph?.rows.length || 0), 0) - divergence.length,
+  assetsDiverging: new Set(divergence.map(d => d.file)).size,
+  stricter: divergence.filter(d => d.direction === "2.0 stricter").length,
+  permissive: divergence.filter(d => d.direction === "2.0 more permissive").length
+};
+divergenceSummary.rate = divergenceSummary.viewportRows
+  ? +((divergenceSummary.diverging / divergenceSummary.viewportRows) * 100).toFixed(1) : null;
+
 const newlyFailed = perAsset.filter(a => a.legacy === "pass" && a.current !== "pass");
 const newlyPassed = perAsset.filter(a => a.legacy !== "pass" && a.current === "pass");
 
@@ -383,8 +444,8 @@ const report = {
     legacy: tally(perAsset.map(a => a.legacy)),
     current: tally(perAsset.map(a => a.current))
   },
-  perAsset, failureMatrix, diagnosisCrossTab, newlyFailed, newlyPassed, safeZone,
-  sweepVerdict, thresholds,
+  perAsset, failureMatrix, diagnosisCrossTab, divergenceSummary, divergence,
+  newlyFailed, newlyPassed, safeZone, sweepVerdict, thresholds,
   pageErrors,
   assets
 };
@@ -525,6 +586,19 @@ ${rows(r.perAsset, a => [esc(a.file), esc(a.slot), chip(a.legacy), chip(a.curren
   `<span class="n">${a.worstContrast ?? "&mdash;"}</span>`,
   `<span class="n">${a.worstCropVisible ?? "&mdash;"}%</span>`])}
 </table>
+
+<h2>Model divergence</h2>
+<p class="dim">The two models are deliberately correlated &mdash; parity was established where they measure the same region &mdash; so agreement is the default and carries no information. Every bit of evidence about whether 2.0 predicts better than the band model lives in the rows below. <strong>A near-empty table does not mean the models are equivalent; it means this corpus never exercised the difference.</strong></p>
+<div class="tiles">
+  <div class="tile"><b>${r.divergenceSummary.diverging}</b><span>diverging rows</span></div>
+  <div class="tile"><b>${r.divergenceSummary.rate === null ? "&mdash;" : r.divergenceSummary.rate + "%"}</b><span>of ${r.divergenceSummary.viewportRows} rows</span></div>
+  <div class="tile"><b>${r.divergenceSummary.assetsDiverging}/${r.divergenceSummary.assets}</b><span>assets affected</span></div>
+  <div class="tile"><b>${r.divergenceSummary.stricter}</b><span>2.0 stricter</span></div>
+  <div class="tile"><b>${r.divergenceSummary.permissive}</b><span>2.0 more permissive</span></div>
+</div>
+${r.divergence.length ? `<table><tr><th>Asset</th><th>Viewport</th><th>Legacy</th><th>2.0</th><th>What moved, and why</th></tr>
+${rows(r.divergence, d => [esc(d.file), esc(d.viewport), chip(d.legacy), chip(d.current), esc(d.reason)])}
+</table>` : `<p class="dim"><strong>No divergence at any viewport.</strong> The band model and the glyph model reached the same verdict on every row. This corpus cannot answer whether 2.0 predicts publishability better &mdash; not because the answer is no, but because the question was never put. Frames that would put it: bright or busy content near the band boundary (y &asymp; 0.5 for hero), and short headlines whose rendered ink covers far less than the assumed band.</p>`}
 
 <h2>Failure matrix</h2>
 ${r.failureMatrix.length ? `<table><tr><th>Asset</th><th>Viewport</th><th>Type</th><th>Severity</th><th>Reason</th></tr>
