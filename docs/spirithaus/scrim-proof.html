@@ -1844,6 +1844,106 @@ footer b{color:var(--ink);font-weight:500}
       : missing.join(" and ") + " did not load. Results are directional only \u2014 comparable with other runs in this state, but not a basis for setting thresholds.";
   }
 
+  /* ---------- automation surface ---------- */
+  // A narrow, documented hook for the calibration runner. Everything it exposes is
+  // what the UI already does: there is one engine, so a batch report cannot drift
+  // from what this page shows. It reads state and returns plain data; it cannot
+  // publish, save, or reach the network.
+  window.scrimProof = {
+    version: 1,
+    profile: profile,
+    fontsLoaded: function(){ return fontsLoaded; },
+    slots: function(){
+      var out = {};
+      Object.keys(SLOTS).forEach(function(k){
+        out[k] = {
+          scrim: SLOTS[k].scrim,
+          zone: SLOTS[k].zone,
+          safeZone: profile.placements[k] ? safeZone(k) : null,
+          views: SLOTS[k].views.map(function(v){
+            return { id: v.id, label: v.label, ratio: +v.ratio.toFixed(4),
+                     cssW: Math.round(v.cssW), cssH: Math.round(v.cssH) };
+          })
+        };
+      });
+      return out;
+    },
+
+    // src: any URL the page can load (data: is what the runner uses).
+    // opts: { name, slot, modes, focal:{x,y,r}, thresholds:{minCrop,maxType,maxScrim},
+    //         headline, scrim, window, gradient }
+    analyse: function(src, opts){
+      opts = opts || {};
+      return new Promise(function(resolve, reject){
+        var img = new Image();
+        img.onload = function(){
+          try { resolve(runAnalysis(img, opts)); } catch (e) { reject(String(e)); }
+        };
+        img.onerror = function(){ reject("could not decode image"); };
+        img.src = src;
+      });
+    }
+  };
+
+  function runAnalysis(img, opts){
+    var slot = opts.slot || detectSlot(opts.name || "");
+    if (!SLOTS[slot]) throw new Error("unknown slot " + slot);
+
+    // The engine reads its options from the controls, so drive those rather than
+    // introducing a second configuration path that could disagree with the UI.
+    if (opts.headline != null) el.headlineText.value = opts.headline;
+    el.focalOn.checked = !!opts.focal;
+    if (opts.focal && opts.focal.r) el.focalR.value = String(Math.round(opts.focal.r * 100));
+    if (opts.thresholds){
+      if (opts.thresholds.minCrop != null) el.minCrop.value = String(opts.thresholds.minCrop);
+      if (opts.thresholds.maxType != null) el.maxType.value = String(opts.thresholds.maxType);
+      if (opts.thresholds.maxScrim != null) el.maxScrim.value = String(opts.thresholds.maxScrim);
+    }
+
+    var frame = {
+      name: opts.name || "(unnamed)",
+      img: img,
+      slot: slot,
+      window: opts.window == null ? 0.5 : opts.window,
+      gradient: opts.gradient == null ? 0 : opts.gradient,
+      scrim: opts.scrim == null ? SLOTS[slot].scrim : opts.scrim,
+      focal: opts.focal ? { x: opts.focal.x, y: opts.focal.y } : null
+    };
+
+    var ratios = {};
+    SLOTS[slot].views.forEach(function(v){ ratios[v.id] = +v.ratio.toFixed(4); });
+
+    var out = {
+      name: frame.name, slot: slot, scrim: frame.scrim,
+      width: img.naturalWidth, height: img.naturalHeight,
+      sourceRatio: +(img.naturalWidth / img.naturalHeight).toFixed(4),
+      fontsLoaded: fontsLoaded,
+      modes: {}
+    };
+
+    (opts.modes || ["band", "glyph"]).forEach(function(mode){
+      var a = audit(frame, opts.width || ANALYSE_W, mode);
+      if (!a){ out.modes[mode] = null; return; }
+      out.modes[mode] = {
+        worst: a.worst,
+        rows: a.rows.map(function(r){
+          return {
+            viewport: r.key, ratio: ratios[r.key], state: r.state,
+            contrast: r.m ? +r.m.contrast.toFixed(2) : null,
+            intrusion: r.m ? +r.m.intrusion.toFixed(1) : null,
+            survival: r.m ? +r.m.survival.toFixed(1) : null,
+            focal: r.m && r.m.focal ? r.m.focal : null
+          };
+        })
+      };
+      if (mode === "glyph" && opts.focal){
+        var rep = focalReport(frame, a);
+        out.focal = rep ? { status: rep.status, failing: rep.failing, rows: rep.rows } : null;
+      }
+    });
+    return out;
+  }
+
   checkFonts();                      // answer immediately; refine once loading settles
   if (document.fonts && document.fonts.ready){
     document.fonts.ready.then(function(){ checkFonts(); regionCache.key = null; maskCache.key = null; veilCache.key = null; render(); });
