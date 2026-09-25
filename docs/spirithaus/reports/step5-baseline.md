@@ -1,8 +1,9 @@
 # Baseline — fifteen hero frames, native 3:2 geometry
 
-The first run under the canonical `--master source`. Fifteen frames, five viewports,
-both models, focals proposed but **not yet reviewed**. Fonts real, no page errors, all
-fifteen focals supplied.
+The run under the canonical `--master source`, with the focal set **frozen** after
+review. Fifteen frames, five viewports, both models. Fonts real, no page errors.
+Fourteen focals scored; `hero-store-interior.png` is marked `subjectless` and excluded
+from every focal-dependent aggregate.
 
 ```
 safe zone   x 0.252 – 0.748     y 0.179 – 0.821
@@ -16,13 +17,19 @@ Splitting by whether the subject sits inside the horizontal safe band:
 
 | | n | mean crop survival | mean type occlusion |
 |---|---|---|---|
-| subject **inside** x 0.25–0.75 | 6 | **94.7%** | **57.0%** |
-| subject **outside** | 9 | **20.2%** | **0.0%** |
+| subject **inside** x 0.25–0.75 | 5 | **93.7%** | **66.5%** |
+| subject **outside** | 9 | **13.7%** | **0.0%** |
+
+**Nine of fourteen outside the band, and that number never moved** — not across the
+master-geometry change, not across the focal revision, not across the exclusion. It is
+the most stable finding in the project.
 
 The separation is total. Every frame that keeps its subject on a phone puts that subject
 under the headline; every frame that clears the headline does so by having its subject
-cropped away first. Three of the nine — the whisky shelf wall at x 0.82–0.84 — record
-`cropVisible: 0`: the subject is entirely absent at some viewport.
+cropped away first. Three of the nine — the whisky shelf wall at x 0.81–0.83 — record
+`cropVisible: 0`: the subject is entirely absent at some viewport. `hero-cocktails-cans-a`
+shows the mechanism plainly: on a phone its amber bottle is gone completely and what
+renders is a can, a jigger and a spoon — the props, not the product.
 
 **The 0.0% type occlusion in the bottom row is not a success.** It is what "nothing is on
 screen to collide with" looks like in the data. Read alone it would suggest nine frames
@@ -44,6 +51,12 @@ Subject centred, walked down the frame, 15 frames × 5 viewports at each height:
 | 0.40 | 40% | 100 | 31.1 |
 
 `bestY: 0.25, survivalRate: 100, inTargetBand: false`.
+
+**The sweep is unchanged by the focal review** — every row identical bar two that move
+0.1–0.4 points from dropping one frame. It centres the subject programmatically rather
+than using the proposed focals, so it is independent of them by construction. It has now
+survived a master-geometry change, a focal revision and an asset exclusion without
+moving.
 
 This is not the earlier tie. **0.25 is a unique maximum** — the only height where every
 frame survives at every viewport — and it sits below the 0.33–0.40 band the prompt pack
@@ -82,10 +95,14 @@ consistent enough to be worth stating as a property of the model rather than of 
 sample: on this library 2.0 only ever clears frames the band model condemned, never the
 reverse.
 
-The focals are proposals read off the frames by eye. The crop figures depend on them
-directly, so a focal that is wrong by 0.05 moves its row. The y sweep does not — it
-centres the subject itself — which is why the sweep is the more robust of the two
-results here.
+The focals were reviewed against a proof sheet and an independent luminance centroid,
+then frozen. The centroid disagreed in a consistent direction — dy positive in 12 of 15
+— which is why y moved down 0.02–0.07: the first pass read the bright top of each bottle
+rather than the centre of its visual mass. Correcting that made the type clash **worse**,
+from 57.0% to 66.5% mean occlusion on the same five frames, which strengthens the
+left-and-up reading rather than softening it.
+
+Crop figures still depend on the focals directly; the sweep does not.
 
 **Recommendation: do not move the target band yet.** The sweep is geometric, unlabelled,
 and rests on a corpus with no compliant frames in it. It is now the strongest single
