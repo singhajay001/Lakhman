@@ -333,23 +333,26 @@ for (const a of assets) {
     for (const key of ["contrast", "intrusion", "survival"]) {
       if (b[key] == null || g[key] == null) continue;
       const from = stateOfMetric[key](b[key]), to = stateOfMetric[key](g[key]);
-      if (from !== to) moved.push({ metric: key, band: b[key], glyph: g[key], from, to });
+      if (from !== to) moved.push({ metric: key, band: b[key], glyph: g[key], from, to,
+                                    delta: +(g[key] - b[key]).toFixed(2) });
     }
     const harder = RANK[g.state] > RANK[b.state];
     const survivalMoved = moved.some(m => m.metric === "survival");
+    const explanation = survivalMoved
+      ? "Image survival moved between modes. It is held on the band in both by design, "
+        + "so this is a harness fault rather than a property of the frame."
+      : !moved.length
+        ? "States differ with no metric changing class \u2014 investigate."
+        : harder
+          ? "The rendered glyph boxes reach content the assumed band excludes."
+          : "The assumed band included content the rendered type never covers.";
     divergence.push({
       file: a.file, viewport: g.viewport, legacy: b.state, current: g.state,
       direction: harder ? "2.0 stricter" : "2.0 more permissive",
-      moved,
-      reason: survivalMoved
-        ? "Image survival moved between modes. It is held on the band in both by "
-          + "design, so this is a harness fault rather than a property of the frame."
-        : moved.length
-          ? moved.map(m => `${m.metric} ${m.band} \u2192 ${m.glyph} (${m.from} \u2192 ${m.to})`).join("; ")
-            + ". " + (harder
-              ? "The rendered glyph boxes reach content the assumed band excludes."
-              : "The assumed band included content the rendered type never covers.")
-          : "States differ with no metric changing class \u2014 investigate."
+      moved, explanation,
+      reason: (moved.length
+        ? moved.map(m => `${m.metric} ${m.band} \u2192 ${m.glyph} (${m.from} \u2192 ${m.to})`).join("; ") + ". "
+        : "") + explanation
     });
   }
 }
@@ -596,8 +599,11 @@ ${rows(r.perAsset, a => [esc(a.file), esc(a.slot), chip(a.legacy), chip(a.curren
   <div class="tile"><b>${r.divergenceSummary.stricter}</b><span>2.0 stricter</span></div>
   <div class="tile"><b>${r.divergenceSummary.permissive}</b><span>2.0 more permissive</span></div>
 </div>
-${r.divergence.length ? `<table><tr><th>Asset</th><th>Viewport</th><th>Legacy</th><th>2.0</th><th>What moved, and why</th></tr>
-${rows(r.divergence, d => [esc(d.file), esc(d.viewport), chip(d.legacy), chip(d.current), esc(d.reason)])}
+${r.divergence.length ? `<table><tr><th>Asset</th><th>Viewport</th><th>Legacy</th><th>2.0</th><th>Metric</th><th>Delta</th><th>Explanation</th></tr>
+${rows(r.divergence, d => [esc(d.file), esc(d.viewport), chip(d.legacy), chip(d.current),
+  d.moved.map(m => esc(m.metric)).join("<br>") || "<span class='dim'>&mdash;</span>",
+  d.moved.map(m => `<span class="n">${m.band} &rarr; ${m.glyph}</span> <span class="dim">${m.delta > 0 ? "+" : ""}${m.delta} &middot; ${esc(m.from)}&rarr;${esc(m.to)}</span>`).join("<br>") || "<span class='dim'>&mdash;</span>",
+  esc(d.explanation)])}
 </table>` : `<p class="dim"><strong>No divergence at any viewport.</strong> The band model and the glyph model reached the same verdict on every row. This corpus cannot answer whether 2.0 predicts publishability better &mdash; not because the answer is no, but because the question was never put. Frames that would put it: bright or busy content near the band boundary (y &asymp; 0.5 for hero), and short headlines whose rendered ink covers far less than the assumed band.</p>`}
 
 <h2>Failure matrix</h2>
