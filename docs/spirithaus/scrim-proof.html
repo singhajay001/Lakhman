@@ -57,6 +57,23 @@ button:focus-visible,input:focus-visible,select:focus-visible,.rrow:focus-visibl
 #measure-host p,#measure-host span{margin:0;display:block}
 .regions{position:absolute;inset:0;pointer-events:none}
 .regions canvas{width:100%;height:100%;display:block}
+.status{display:flex;gap:9px;align-items:flex-start;padding:9px 11px;margin:0 0 14px;
+  font-size:12px;line-height:1.5;border:1px solid var(--line);background:var(--panel-hi)}
+.status.ok{border-color:rgba(122,143,107,.55)}
+.status.sub{border-color:var(--warn);background:#2a1f0c}
+.status .mark{font:500 12px/1.4 var(--mono)}
+.status.ok .mark{color:var(--pass)} .status.sub .mark{color:var(--warn)}
+.status b{display:block;color:var(--ink);font-weight:500}
+.status span.d{color:var(--dim)}
+.fx{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;
+  border-top:1px solid var(--line);padding:8px 0;font:400 11px/1.3 var(--mono);color:var(--dim)}
+.fx .n{font-variant-numeric:tabular-nums}
+.fx b{color:var(--ink);font-weight:500}
+.thresh{display:grid;grid-template-columns:1fr 64px;gap:8px 10px;align-items:center;
+  font-size:12px;color:var(--dim);margin-bottom:10px}
+.thresh input{font:500 12px var(--mono);color:var(--ink);background:var(--panel-hi);
+  border:1px solid var(--line);border-radius:2px;padding:6px 7px;width:100%;text-align:right}
+.stage{cursor:crosshair}
 .warn{background:#2a1f0c;border:1px solid var(--warn);color:var(--ink);
   padding:9px 11px;font-size:12px;line-height:1.5;margin:0 0 14px}
 .warn b{color:var(--warn);display:block;margin-bottom:3px}
@@ -497,7 +514,8 @@ footer b{color:var(--ink);font-weight:500}
   <div class="rail">
     <div class="card">
       <h2>Every ratio</h2>
-      <p class="warn" id="fontWarn" hidden></p>
+      <div class="status" id="typeStatus"><span class="mark" id="typeMark"></span>
+        <span><b id="typeHead"></b><span class="d" id="typeBody"></span></span></div>
       <div class="verdict">
         <span class="chip" id="chip">—</span>
         <p id="verdictText">Load a frame to check it.</p>
@@ -505,6 +523,28 @@ footer b{color:var(--ink);font-weight:500}
       <div id="rows"></div>
       <p class="note" id="zoneNote"></p>
       <p class="prov" id="prov"></p>
+    </div>
+
+    <div class="card">
+      <h2>Focal point</h2>
+      <label class="check" style="margin-bottom:12px"><input type="checkbox" id="focalOn" checked>
+        Enforce focal retention</label>
+      <p class="hint" style="margin:0 0 12px">Click the preview to place it.</p>
+      <div class="thresh">
+        <label for="focalR">Focal radius (% of master)</label><input type="number" id="focalR" min="2" max="30" step="1" value="9">
+        <label for="minCrop">Min visible after crop (%)</label><input type="number" id="minCrop" min="0" max="100" step="1" value="90">
+        <label for="maxType">Max under type (%)</label><input type="number" id="maxType" min="0" max="100" step="1" value="5">
+        <label for="maxScrim">Max lost to scrim (%)</label><input type="number" id="maxScrim" min="0" max="100" step="1" value="40">
+      </div>
+      <div class="verdict">
+        <span class="chip" id="focalChip">—</span>
+        <p id="focalText">Focal retention not evaluated.</p>
+      </div>
+      <div id="focalRows"></div>
+      <div class="actions" style="margin-top:12px">
+        <button type="button" id="copyJson">Copy report JSON</button>
+      </div>
+      <p class="log" id="copyLog"></p>
     </div>
 
     <div class="card">
@@ -691,6 +731,11 @@ footer b{color:var(--ink);font-weight:500}
   var SURVIVE_THIN = 8, SURVIVE_OK = 15;
   var RANK = { pass: 0, warn: 1, fail: 2 };
 
+  // A focal sample counts as lost to the scrim when it can no longer be told apart
+  // from the flat ink itself. 1.2:1 against the scrim colour is that threshold.
+  var SCRIM_VISIBLE_CONTRAST = 1.2;
+  var FOCAL_DEFAULT = { x: 0.5, y: 0.32 };   // where the composition rule says the subject goes
+
   var MAX_VEIL = 0.55;   // past this the quiet zone is a black bar, not a photograph
   var ANALYSE_W = 420;   // measurement resolution
   var SEARCH_W  = 150;   // resolution used while searching for a fix
@@ -702,9 +747,12 @@ footer b{color:var(--ink);font-weight:500}
    "metaMaster","metaDims","strip","slot","ratio","window","windowVal","gradient","gradientVal",
    "opacity","opacityVal","headlineText","showGuides","chip","verdictText","rows","zoneNote",
    "fixBtn","saveBtn","fixLog","measureMode","compareLegacy","showRegions",
-   "regions","regionCanvas","fontWarn"].forEach(function(id){ el[id] = document.getElementById(id); });
+   "regions","regionCanvas","typeStatus","typeMark","typeHead","typeBody",
+   "focalOn","focalR","minCrop","maxType","maxScrim","focalChip","focalText","focalRows",
+   "copyJson","copyLog"].forEach(function(id){ el[id] = document.getElementById(id); });
 
-  var frames = [], current = -1, tainted = false, lastAudit = null;
+  var frames = [], current = -1, tainted = false, lastAudit = null, lastFocal = null;
+  var fontsLoaded = false;
   var work = document.createElement("canvas");
   var wctx = work.getContext("2d", {willReadFrequently:true});
 
@@ -713,6 +761,7 @@ footer b{color:var(--ink);font-weight:500}
   function relLum(r,g,b){ return 0.2126*chan(r) + 0.7152*chan(g) + 0.0722*chan(b); }
   function contrast(a,b){ var hi = Math.max(a,b), lo = Math.min(a,b); return (hi+0.05)/(lo+0.05); }
   var TEXT_LUM = (function(c){ return relLum(c[0], c[1], c[2]); })(hexRgb(TYPE_COLOUR));
+  var INK_LUM = relLum(INK[0], INK[1], INK[2]);
   function pct(sorted, q){ return sorted[Math.min(sorted.length-1, Math.floor(sorted.length*q))]; }
   function clamp(v){ return v < 0 ? 0 : v > 255 ? 255 : v; }
 
@@ -765,7 +814,7 @@ footer b{color:var(--ink);font-weight:500}
   // survival is a property of the photograph, not of the type. Holding it on the
   // band across every mode is what lets the comparison isolate the typography
   // change to the two metrics that are actually about text.
-  function analyse(master, r, alpha, zone, bandTopFrac, width){
+  function analyse(master, r, alpha, zone, bandTopFrac, width, focal){
     var TW = width, TH = Math.max(1, Math.round(TW / r));
     var M = master.width;
     var sw = r >= 1 ? M : M * r;
@@ -800,11 +849,45 @@ footer b{color:var(--ink);font-weight:500}
     zl.sort(function(p,q){ return p-q; });
     zg.sort(function(p,q){ return p-q; });
     sg.sort(function(p,q){ return p-q; });
-    return {
+    var out = {
       contrast: contrast(TEXT_LUM, pct(zl, 0.95)),
       intrusion: pct(zg, 0.99) - pct(zg, 0.50),
       survival: sg.length ? (pct(sg, 0.90) / 255) * 100 : 0
     };
+
+    // Focal retention, sampled over a disc on the master and classified against the
+    // same crop, type region and composited pixels the rest of the pass used. The
+    // three losses are diagnosed independently because they have different fixes:
+    // re-crop, re-compose, or lighten the subject.
+    if (focal){
+      var M = master.width;
+      var sw = r >= 1 ? M : M * r, sh = r >= 1 ? M / r : M;
+      var sx0 = (M - sw) / 2, sy0 = (M - sh) / 2;
+      var N = 48, total = 0, vis = 0, underType = 0, lost = 0;
+      for (var gy = 0; gy < N; gy++){
+        for (var gx = 0; gx < N; gx++){
+          var ux = ((gx + 0.5) / N) * 2 - 1, uy = ((gy + 0.5) / N) * 2 - 1;
+          if (ux * ux + uy * uy > 1) continue;
+          total++;
+          var cxp = ((focal.x + ux * focal.r) * M - sx0) / sw * TW;
+          var cyp = ((focal.y + uy * focal.r) * M - sy0) / sh * TH;
+          if (cxp < 0 || cyp < 0 || cxp >= TW || cyp >= TH) continue;   // cropped away
+          vis++;
+          var px = Math.floor(cxp), py = Math.floor(cyp);
+          if (zone.kind === "band" ? (py >= zone.top) : !!zone.data[py * TW + px]) underType++;
+          var j = (py * TW + px) * 4;
+          if (contrast(relLum(data[j] * k + INK[0] * a,
+                              data[j+1] * k + INK[1] * a,
+                              data[j+2] * k + INK[2] * a), INK_LUM) < SCRIM_VISIBLE_CONTRAST) lost++;
+        }
+      }
+      out.focal = {
+        cropVisible: total ? +((vis / total) * 100).toFixed(1) : 0,
+        typeOccluded: total ? +((underType / total) * 100).toFixed(1) : 0,
+        scrimCovered: total ? +((lost / total) * 100).toFixed(1) : 0
+      };
+    }
+    return out;
   }
 
   function stateOf(m){
@@ -834,10 +917,11 @@ footer b{color:var(--ink);font-weight:500}
     var master = buildMaster(frame, Math.max(width * 2, 360), mode);
     var alpha = frame.scrim / 100;
     var band = QUIET_ZONE_TOP[frame.slot];
+    var focal = focalSpec(frame);
     var rows = spec.views.map(function(v){
       var TH = Math.max(1, Math.round(width / v.ratio));
       var zone = zoneFor(frame.slot, v, width, TH, mode);
-      var m = analyse(master, v.ratio, alpha, zone, band, width);
+      var m = analyse(master, v.ratio, alpha, zone, band, width, focal);
       return { key: v.id, label: v.label, m: m, state: m ? stateOf(m) : "fail" };
     });
     var worst = rows.map(function(r){ return r.state; })
@@ -1157,6 +1241,129 @@ footer b{color:var(--ink);font-weight:500}
     el.guides.appendChild(tag);
   }
 
+  /* ---------- focal point ---------- */
+  function focalSpec(frame){
+    if (!el.focalOn.checked || !frame) return null;
+    var f = frame.focal || FOCAL_DEFAULT;
+    return { x: f.x, y: f.y, r: Math.max(0.02, Math.min(0.30, (+el.focalR.value || 9) / 100)) };
+  }
+
+  // Three losses, diagnosed independently, each blocking on its own. A subject that
+  // survives the crop but sits under the headline is broken whatever the contrast
+  // reading says, so none of these is folded into the text metrics.
+  function focalStatus(fm){
+    if (!fm) return null;
+    var reasons = [];
+    if (fm.cropVisible < (+el.minCrop.value)) reasons.push("crop loss");
+    if (fm.typeOccluded > (+el.maxType.value)) reasons.push("typography occlusion");
+    if (fm.scrimCovered > (+el.maxScrim.value)) reasons.push("scrim obscuration");
+    return {
+      retention: fm.cropVisible >= 99.5 ? "full" : fm.cropVisible <= 0.5 ? "lost" : "partial",
+      reasons: reasons,
+      status: reasons.length ? "fail" : "pass"
+    };
+  }
+
+  function focalReport(frame, a){
+    if (!a) return null;
+    var rows = a.rows.map(function(row){
+      var fm = row.m && row.m.focal;
+      var st = focalStatus(fm);
+      return {
+        viewport: row.key,
+        retention: st ? st.retention : "unknown",
+        cropVisible: fm ? fm.cropVisible : null,
+        typeOccluded: fm ? fm.typeOccluded : null,
+        scrimCovered: fm ? fm.scrimCovered : null,
+        status: st ? st.status : "unknown",
+        reasons: st ? st.reasons : []
+      };
+    });
+    var failing = rows.filter(function(r){ return r.status === "fail"; });
+    return {
+      rows: rows,
+      worst: failing.length
+        ? failing.slice().sort(function(p, q){ return p.cropVisible - q.cropVisible; })[0]
+        : rows.slice().sort(function(p, q){ return p.cropVisible - q.cropVisible; })[0],
+      status: failing.length ? "fail" : "pass",
+      failing: failing.length
+    };
+  }
+
+  function renderFocal(rep){
+    el.focalRows.textContent = "";
+    if (!el.focalOn.checked || !rep){
+      el.focalChip.className = "chip"; el.focalChip.textContent = "\u2014";
+      el.focalText.textContent = el.focalOn.checked
+        ? "Focal retention not evaluated." : "Focal retention is off.";
+      return;
+    }
+    el.focalChip.className = "chip " + (rep.status === "fail" ? "fail" : "pass");
+    el.focalChip.textContent = rep.status === "fail" ? "Breaks" : "Holds";
+    el.focalText.textContent = rep.status === "fail"
+      ? rep.failing + " of " + rep.rows.length + " viewports lose the focal point \u2014 "
+        + rep.worst.reasons.join(", ") + " at " + rep.worst.viewport + "."
+      : "Focal point retained, clear of type and readable through the scrim, at all "
+        + rep.rows.length + " viewports.";
+
+    var head = document.createElement("div");
+    head.className = "fx";
+    ["viewport", "crop", "type", "scrim"].forEach(function(t, i){
+      var n = document.createElement("span");
+      n.className = i ? "n" : "";
+      n.textContent = t;
+      head.appendChild(n);
+    });
+    el.focalRows.appendChild(head);
+
+    rep.rows.forEach(function(r){
+      var row = document.createElement("div");
+      row.className = "fx";
+      var name = document.createElement("span");
+      if (r.status === "fail"){ var bo = document.createElement("b"); bo.textContent = r.viewport; name.appendChild(bo); }
+      else name.textContent = r.viewport;
+      row.appendChild(name);
+      [[r.cropVisible, r.reasons.indexOf("crop loss") > -1],
+       [r.typeOccluded, r.reasons.indexOf("typography occlusion") > -1],
+       [r.scrimCovered, r.reasons.indexOf("scrim obscuration") > -1]].forEach(function(pair){
+        var n = document.createElement("span");
+        n.className = "n";
+        n.textContent = (pair[0] === null ? "\u2014" : pair[0] + "%");
+        if (pair[1]) n.style.color = "var(--fail)";
+        row.appendChild(n);
+      });
+      el.focalRows.appendChild(row);
+    });
+  }
+
+  // The region of the master that survives EVERY viewport's crop. A subject outside
+  // it is guaranteed to be clipped somewhere, however well the frame reads on the
+  // screen in front of you — the widest ratio takes only a centred band of the
+  // height, and the narrowest takes only a centred band of the width.
+  function safeZone(slotKey){
+    var x0 = 0, x1 = 1, y0 = 0, y1 = 1;
+    SLOTS[slotKey].views.forEach(function(v){
+      var sw = v.ratio >= 1 ? 1 : v.ratio, sh = v.ratio >= 1 ? 1 / v.ratio : 1;
+      x0 = Math.max(x0, (1 - sw) / 2); x1 = Math.min(x1, (1 + sw) / 2);
+      y0 = Math.max(y0, (1 - sh) / 2); y1 = Math.min(y1, (1 + sh) / 2);
+    });
+    return { x0: x0, x1: x1, y0: y0, y1: y1 };
+  }
+
+  // Crop-space position of the focal disc for the view on screen. The disc is a
+  // circle on the square master, so a non-square crop renders it as an ellipse —
+  // which is exactly what the viewer sees.
+  function focalInView(focal, view){
+    var sw = view.ratio >= 1 ? 1 : view.ratio;
+    var sh = view.ratio >= 1 ? 1 / view.ratio : 1;
+    return {
+      x: (focal.x - (1 - sw) / 2) / sw,
+      y: (focal.y - (1 - sh) / 2) / sh,
+      rx: focal.r / sw,
+      ry: focal.r / sh
+    };
+  }
+
   function chipEl(state){
     var c = document.createElement("span");
     c.className = "chip " + state;
@@ -1176,11 +1383,13 @@ footer b{color:var(--ink);font-weight:500}
       var l = document.createElement("span"); l.className = "rl"; l.textContent = row.label;
       b.appendChild(l);
       if (was){
+        var d = document.createElement("span");
+        d.className = "arrow";
+        var delta = (row.m ? row.m.intrusion : 0) - (was.m ? was.m.intrusion : 0);
+        d.textContent = was.m.intrusion.toFixed(0) + " \u2192 " + row.m.intrusion.toFixed(0)
+          + "  (" + (delta >= 0 ? "+" : "") + delta.toFixed(0) + ")";
+        b.appendChild(d);
         b.appendChild(chipEl(was.state));
-        var arrow = document.createElement("span");
-        arrow.className = "arrow";
-        arrow.textContent = was.state === row.state ? "=" : "\u2192";
-        b.appendChild(arrow);
       } else {
         var v = document.createElement("span"); v.className = "rv";
         v.textContent = row.m ? (row.m.intrusion.toFixed(0) + " lv") : "\u2014";
@@ -1194,19 +1403,61 @@ footer b{color:var(--ink);font-weight:500}
 
   // Debug view: raw glyph ink, the 0.25em dilation actually measured, and the
   // full block, so an edge case can be inspected rather than argued about.
-  function drawRegions(slotKey, view){
-    var on = el.showRegions.checked && profile.placements[slotKey];
-    el.regions.hidden = !on;
-    if (!on) return;
+  function drawRegions(slotKey, view, frame, rep){
+    var wantRegions = el.showRegions.checked && profile.placements[slotKey];
+    var focal = focalSpec(frame);
+    el.regions.hidden = !(wantRegions || focal);
+    if (el.regions.hidden) return;
     var box = el.stage.getBoundingClientRect();
     var c = el.regionCanvas, dpr = Math.min(window.devicePixelRatio || 1, 2);
     c.width = Math.max(1, Math.round(box.width * dpr));
     c.height = Math.max(1, Math.round(box.width / view.ratio * dpr));
     var g = c.getContext("2d");
     g.clearRect(0, 0, c.width, c.height);
-    var regions = measureRegions(slotKey, view);
-    if (!regions) return;
     var sx = c.width / view.cssW, sy = c.height / view.cssH;
+    var regions = wantRegions ? measureRegions(slotKey, view) : null;
+
+    if (focal){
+      // where the baked veil begins: the spatially meaningful part of the scrim
+      var vt = veilTopFraction(slotKey, el.measureMode.value);
+      var vy = (view.ratio >= 1 ? (vt - 0.5) * view.ratio + 0.5 : vt) * c.height;
+      if (vy > 0 && vy < c.height){
+        g.strokeStyle = "rgba(201,138,46,.75)"; g.setLineDash([3 * dpr, 3 * dpr]);
+        g.lineWidth = dpr; g.beginPath(); g.moveTo(0, vy); g.lineTo(c.width, vy); g.stroke();
+        g.setLineDash([]);
+      }
+      var sz = safeZone(slotKey);
+      var szv = {
+        a: focalInView({ x: sz.x0, y: sz.y0, r: 0 }, view),
+        b: focalInView({ x: sz.x1, y: sz.y1, r: 0 }, view)
+      };
+      g.strokeStyle = "rgba(122,143,107,.6)"; g.setLineDash([2 * dpr, 4 * dpr]);
+      g.lineWidth = dpr;
+      g.strokeRect(szv.a.x * c.width, szv.a.y * c.height,
+                   (szv.b.x - szv.a.x) * c.width, (szv.b.y - szv.a.y) * c.height);
+      g.setLineDash([]);
+
+      var f = focalInView(focal, view);
+      var row = rep ? rep.rows.filter(function(r){ return r.viewport === view.id; })[0] : null;
+      var bad = row && row.status === "fail";
+      g.strokeStyle = bad ? "rgba(207,28,41,.95)" : "rgba(122,143,107,.95)";
+      g.fillStyle = bad ? "rgba(207,28,41,.16)" : "rgba(122,143,107,.14)";
+      g.lineWidth = 2 * dpr;
+      g.beginPath();
+      g.ellipse(f.x * c.width, f.y * c.height, f.rx * c.width, f.ry * c.height, 0, 0, Math.PI * 2);
+      g.fill(); g.stroke();
+      g.beginPath();
+      g.moveTo(f.x * c.width - 7 * dpr, f.y * c.height); g.lineTo(f.x * c.width + 7 * dpr, f.y * c.height);
+      g.moveTo(f.x * c.width, f.y * c.height - 7 * dpr); g.lineTo(f.x * c.width, f.y * c.height + 7 * dpr);
+      g.stroke();
+      if (row && row.cropVisible < 99.5){
+        g.fillStyle = "rgba(207,28,41,.95)";
+        var ex = Math.min(Math.max(f.x, 0.02), 0.98) * c.width;
+        var ey = Math.min(Math.max(f.y, 0.02), 0.98) * c.height;
+        g.beginPath(); g.arc(ex, ey, 4 * dpr, 0, Math.PI * 2); g.fill();
+      }
+    }
+    if (!regions) return;
 
     regions.block.forEach(function(r){
       g.strokeStyle = r.opaque ? "rgba(140,135,124,.5)" : "rgba(122,143,107,.85)";
@@ -1255,7 +1506,9 @@ footer b{color:var(--ink);font-weight:500}
       ? audit(f, ANALYSE_W, "band") : null;
     lastAudit = a;
     renderRows(a, legacy);
-    drawRegions(spec.placement, view);
+    lastFocal = focalReport(f, a);
+    renderFocal(lastFocal);
+    drawRegions(spec.placement, view, f, lastFocal);
 
     if (!a){
       el.chip.className = "chip"; el.chip.textContent = "—";
@@ -1266,11 +1519,15 @@ footer b{color:var(--ink);font-weight:500}
       return;
     }
 
-    el.chip.className = "chip " + a.worst;
-    el.chip.textContent = a.worst === "pass" ? "Holds" : a.worst === "warn" ? "Marginal" : "Breaks";
+    // Focal loss is blocking: it cannot be outvoted by a good contrast reading.
+    var overall = (lastFocal && lastFocal.status === "fail") ? "fail" : a.worst;
+    el.chip.className = "chip " + overall;
+    el.chip.textContent = overall === "pass" ? "Holds" : overall === "warn" ? "Marginal" : "Breaks";
     var failing = a.rows.filter(function(x){ return x.state !== "pass"; });
     if (!failing.length){
-      el.verdictText.textContent = "Clear at all " + a.rows.length + " ratios.";
+      el.verdictText.textContent = (lastFocal && lastFocal.status === "fail")
+        ? "Text metrics clear at all " + a.rows.length + " ratios, but the focal point is lost \u2014 see below."
+        : "Clear at all " + a.rows.length + " ratios.";
     } else {
       var reasons = [];
       failing.forEach(function(x){ if (x.m) why(x.m).forEach(function(w){
@@ -1443,8 +1700,54 @@ footer b{color:var(--ink);font-weight:500}
     });
   });
   el.headlineText.addEventListener("input", render);
-  ["measureMode","compareLegacy","showRegions"].forEach(function(id){
+  ["measureMode","compareLegacy","showRegions","focalOn"].forEach(function(id){
     el[id].addEventListener("change", render);
+  });
+  ["focalR","minCrop","maxType","maxScrim"].forEach(function(id){
+    el[id].addEventListener("input", render);
+  });
+
+  // Click the preview to place the focal point: crop coordinates back to the master.
+  el.stage.addEventListener("click", function(e){
+    var f = currentFrame();
+    if (!f || !el.focalOn.checked) return;
+    var box = el.stage.getBoundingClientRect();
+    var view = currentView();
+    var cx = (e.clientX - box.left) / box.width, cy = (e.clientY - box.top) / box.height;
+    var sw = view.ratio >= 1 ? 1 : view.ratio, sh = view.ratio >= 1 ? 1 / view.ratio : 1;
+    f.focal = { x: (1 - sw) / 2 + cx * sw, y: (1 - sh) / 2 + cy * sh };
+    render();
+  });
+
+  el.copyJson.addEventListener("click", function(){
+    var f = currentFrame();
+    if (!f || !lastFocal){ el.copyLog.textContent = "Nothing to copy yet."; return; }
+    var payload = {
+      frame: f.name,
+      placement: f.slot,
+      measuredRegion: el.measureMode.value,
+      fonts: fontsLoaded ? "loaded" : "substituted",
+      focal: focalSpec(f),
+      thresholds: { minCropVisible: +el.minCrop.value, maxTypeOccluded: +el.maxType.value,
+                    maxScrimCovered: +el.maxScrim.value },
+      viewports: lastFocal.rows,
+      worst: lastFocal.worst,
+      status: lastFocal.status
+    };
+    var text = JSON.stringify(payload, null, 2);
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.cssText = "position:fixed;left:-9999px";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); el.copyLog.textContent = "Copied."; }
+      catch (err) { el.copyLog.textContent = "Could not copy \u2014 the JSON is in the console."; console.log(text); }
+      ta.remove();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(
+        function(){ el.copyLog.textContent = "Copied " + lastFocal.rows.length + " viewports."; },
+        fallback);
+    } else fallback();
   });
   el.showGuides.addEventListener("change", render);
   window.addEventListener("resize", drawStage);
@@ -1523,21 +1826,21 @@ footer b{color:var(--ink);font-weight:500}
     return false;
   }
 
+  // Font availability is a first-class state, not a footnote: every glyph box, and
+  // therefore every reading on this page, depends on the real faces being present.
   function checkFonts(){
     var missing = [profile.tokens.fontDisplay, profile.tokens.fontMono]
       .filter(function(f){ return !fontPresent(f); });
-    if (!missing.length){ el.fontWarn.hidden = true; return; }
-    el.fontWarn.hidden = false;
-    el.fontWarn.textContent = "";
-    var b = document.createElement("b");
-    b.textContent = "Measuring with substitute fonts.";
-    el.fontWarn.appendChild(b);
-    el.fontWarn.appendChild(document.createTextNode(
-      missing.join(" and ") + " did not load, so every glyph box is approximate. "
-      + "Readings are comparable with other runs in this state, but thresholds must be "
-      + "derived with the real faces present."));
+    fontsLoaded = !missing.length;
+    el.typeStatus.className = "status " + (fontsLoaded ? "ok" : "sub");
+    el.typeMark.textContent = fontsLoaded ? "OK" : "!";
+    el.typeHead.textContent = fontsLoaded ? "Theme fonts loaded" : "Using substitute fonts";
+    el.typeBody.textContent = fontsLoaded
+      ? profile.tokens.fontDisplay + " and " + profile.tokens.fontMono + " are present, so glyph boxes are measured at the theme's real metrics."
+      : missing.join(" and ") + " did not load. Results are directional only \u2014 comparable with other runs in this state, but not a basis for setting thresholds.";
   }
 
+  checkFonts();                      // answer immediately; refine once loading settles
   if (document.fonts && document.fonts.ready){
     document.fonts.ready.then(function(){ checkFonts(); regionCache.key = null; maskCache.key = null; veilCache.key = null; render(); });
   }
