@@ -59,6 +59,6 @@ WRITTEN,Vasse Felix Cabernet Sauvignon,750,9315032001170,pass,00525204,VASSE FEL
 WRITTEN,Vodka O,700,9329982019901,pass,00585136,VODKA O                  700ML,,"y - owner confirmed 2026-09-25, written & verified"
 WRITTEN,Wynns The Siding Cabernet Sauvignon,750,9300620000642,pass,00530212,WYNNS SIDING CAB SAV     750ML,,"y - owner confirmed 2026-09-25, written & verified"
 WRITTEN,Yalumba Signature Cabernet Shiraz,750,9311789000855,pass,00543008,YALUMBA SIGNATURE CAB SHZ750ML,,"y - owner confirmed 2026-09-25, written & verified"
-AMBIGUOUS,Penfolds Koonunga Hill Shiraz Cabernet,,9310297012909 / 9310297010905,,,PENFOLDS K/HILL SHZ CAB  375ML | PENFOLDS K/HILL SHZ CAB  750ML,more than one ALM row fits - pick one,"STILL OPEN - cell holds 2-3 candidates, pick one"
+WRITTEN,Penfolds Koonunga Hill Shiraz Cabernet,,9310297010905,pass,,PENFOLDS K/HILL SHZ CAB  750ML,"750ml confirmed by owner; distinct wine, not a duplicate - store carries Shiraz, Cab Sauv and the Shiraz Cabernet blend as three products","y - owner confirmed 2026-09-25, written & verified"
 WRITTEN,Sierra Tequila Reposado,700,4062400159203,pass,,SIERRA TEQUILA REPOS 38% 700ML,38% chosen - matches the block Sierra Silver already sits in,"y - owner confirmed 38%, written & verified"
-AMBIGUOUS,Tread Softly Rose,750,9344154013969 / 9344154020615 / 9344154018025,,,TREAD SOFTLY ROSE        750ML | TREAD SOFTLY 5% ROSE     750ML | TREAD SOFTLY 0% ROSE     750ML,more than one ALM row fits - pick one,"STILL OPEN - cell holds 2-3 candidates, pick one"
+WRITTEN,Tread Softly Rose,750,9344154013969,pass,,TREAD SOFTLY ROSE        750ML,standard confirmed by owner (not the 5% or 0% line),"y - owner confirmed 2026-09-25, written & verified"
