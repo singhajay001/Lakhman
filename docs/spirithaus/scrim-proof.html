@@ -8,15 +8,9 @@
 <style>
 :root{
   color-scheme: dark;
-  --ground:#0B0B0A;
-  --panel:#141413;
-  --panel-hi:#1C1B19;
-  --line:#26251F;
-  --ink:#F2EFE9;
-  --dim:#8C877C;
-  --pass:#7A8F6B;
-  --warn:#C98A2E;
-  --fail:#CF1C29;
+  --ground:#0B0B0A; --panel:#141413; --panel-hi:#1C1B19; --line:#26251F;
+  --ink:#F2EFE9; --dim:#8C877C;
+  --pass:#7A8F6B; --warn:#C98A2E; --fail:#CF1C29;
   --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
 }
@@ -24,78 +18,60 @@
 [hidden]{display:none!important}
 img{max-width:100%}
 html,body{margin:0}
-body{
-  background:var(--ground);
-  color:var(--ink);
-  font:400 14px/1.5 var(--sans);
-  padding:0 16px;
-  padding-block:0 40px;
-  -webkit-font-smoothing:antialiased;
-}
+body{background:var(--ground);color:var(--ink);font:400 14px/1.5 var(--sans);
+  padding:0 16px;padding-block:0 40px;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1180px;margin:0 auto}
 
-header{
-  display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;
-  padding-block:24px 18px;border-bottom:1px solid var(--line);
-}
-h1{
-  font:600 21px/1.2 var(--sans);margin:0;letter-spacing:-.01em;text-wrap:balance;
-}
-.sub{color:var(--dim);margin:6px 0 0;max-width:62ch}
+header{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;
+  padding-block:24px 18px;border-bottom:1px solid var(--line)}
+h1{font:600 21px/1.2 var(--sans);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--dim);margin:6px 0 0;max-width:64ch}
 .load{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
-button,.btn{
-  font:500 13px/1 var(--sans);color:var(--ink);background:var(--panel-hi);
-  border:1px solid var(--line);border-radius:2px;padding:9px 14px;cursor:pointer;
-}
-button:hover,.btn:hover{background:#242320;border-color:#35342C}
-button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible{
-  outline:2px solid var(--fail);outline-offset:2px
-}
+button{font:500 13px/1 var(--sans);color:var(--ink);background:var(--panel-hi);
+  border:1px solid var(--line);border-radius:2px;padding:9px 14px;cursor:pointer}
+button:hover:not(:disabled){background:#242320;border-color:#35342C}
+button:disabled{opacity:.4;cursor:default}
+button.primary{background:var(--fail);border-color:var(--fail);color:#fff}
+button.primary:hover:not(:disabled){background:#E02231;border-color:#E02231}
+button:focus-visible,input:focus-visible,select:focus-visible,.rrow:focus-visible{
+  outline:2px solid var(--fail);outline-offset:2px}
 .hint{color:var(--dim);font-size:12px}
 
-.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:26px;padding-top:22px;align-items:start}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:26px;padding-top:22px;align-items:start}
 @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
 
 /* ---- stage ---- */
 .stage-wrap{min-width:0}
-.stage{
-  position:relative;width:100%;background:#000;overflow:hidden;
-  container-type:inline-size;border:1px solid var(--line);
-}
-.proof{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.stage{position:relative;width:100%;background:#000;overflow:hidden;
+  container-type:inline-size;border:1px solid var(--line)}
+#proof{position:absolute;inset:0;width:100%;height:100%;display:block}
 .scrim{position:absolute;inset:0;background:#111110;pointer-events:none}
-.typelayer{position:absolute;inset:0;pointer-events:none;display:flex;padding:0 4.5cqw}
-.typelayer.bottom{align-items:flex-end;justify-content:flex-start}
-.typelayer .stack{width:100%;padding-bottom:6cqw;display:flex;flex-direction:column;gap:1.6cqw;align-items:flex-start}
-.typelayer .kicker{color:#fff;font:500 1.5cqw/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;margin:0;opacity:.9}
-.headline{color:#fff;font-weight:600;line-height:1.08;letter-spacing:-.02em;text-wrap:balance;margin:0;max-width:18ch;font-size:5.2cqw}
+.typelayer{position:absolute;inset:0;pointer-events:none;display:flex;padding:0 4.5cqw;
+  align-items:flex-end;justify-content:flex-start}
+.typelayer .stack{width:100%;padding-bottom:6cqw;display:flex;flex-direction:column;
+  gap:1.6cqw;align-items:flex-start}
+.typelayer .kicker{color:#fff;font:500 1.5cqw/1 var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;margin:0;opacity:.9}
+.headline{color:#fff;font-weight:600;line-height:1.08;letter-spacing:-.02em;
+  text-wrap:balance;margin:0;max-width:18ch;font-size:5.2cqw}
 .typelayer .body{color:#fff;margin:0;max-width:46ch;font:400 2cqw/1.5 var(--sans);opacity:.92}
-.typelayer .cta{background:var(--fail);color:#fff;font:500 1.8cqw/1 var(--sans);padding:1.6cqw 2.6cqw;margin-top:1cqw}
+.typelayer .cta{background:var(--fail);color:#fff;font:500 1.8cqw/1 var(--sans);
+  padding:1.6cqw 2.6cqw;margin-top:1cqw}
 .typelayer.tile .stack{padding-bottom:7cqw}
 .typelayer.tile .headline{font-size:8cqw;max-width:none}
 .typelayer.tile .body,.typelayer.tile .cta{display:none}
 .guides{position:absolute;inset:0;pointer-events:none}
-.guides i{position:absolute;background:transparent;border:0;display:block}
-.guides .v{top:0;bottom:0;width:0;border-left:1px dashed rgba(207,28,41,.85)}
-.guides .h{left:0;right:0;height:0;border-top:1px dashed rgba(207,28,41,.85)}
-.guides .tag{
-  position:absolute;font:500 10px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
-  color:#fff;background:rgba(207,28,41,.9);padding:3px 5px;border:0;width:auto;
-}
-.stage-meta{
-  display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:space-between;
-  padding-top:10px;color:var(--dim);font:400 12px/1.4 var(--mono)
-}
-.stage-meta strong{color:var(--ink);font-weight:500}
+.guides .h{position:absolute;left:0;right:0;height:0;border-top:1px dashed rgba(207,28,41,.85)}
+.guides .tag{position:absolute;font:500 10px/1 var(--mono);letter-spacing:.06em;
+  text-transform:uppercase;color:#fff;background:rgba(207,28,41,.9);padding:3px 5px}
+.stage-meta{display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:space-between;
+  padding-top:10px;color:var(--dim);font:400 12px/1.4 var(--mono)}
 
-/* ---- filmstrip ---- */
 .strip{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;min-height:74px}
-.frame{
-  position:relative;flex:0 0 auto;width:96px;padding:0;border:1px solid var(--line);
-  background:var(--panel);cursor:pointer;border-radius:0;overflow:hidden;text-align:left
-}
-.frame img{display:block;width:100%;height:54px;object-fit:cover}
+.frame{position:relative;flex:0 0 auto;width:96px;padding:0;border:1px solid var(--line);
+  background:var(--panel);cursor:pointer;overflow:hidden;text-align:left}
+.frame canvas{display:block;width:100%;height:54px;object-fit:cover}
 .frame span{display:block;padding:4px 5px;font:400 10px/1.25 var(--mono);color:var(--dim);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .frame[aria-current="true"]{border-color:var(--fail)}
@@ -104,53 +80,45 @@ button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible
 /* ---- rail ---- */
 .rail{display:flex;flex-direction:column;gap:18px;min-width:0}
 .card{background:var(--panel);border:1px solid var(--line);padding:16px}
-.card h2{
-  font:500 11px/1 var(--sans);letter-spacing:.11em;text-transform:uppercase;
-  color:var(--dim);margin:0 0 14px
-}
+.card h2{font:500 11px/1 var(--sans);letter-spacing:.11em;text-transform:uppercase;
+  color:var(--dim);margin:0 0 14px}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .field:last-child{margin-bottom:0}
 .field label{font-size:12px;color:var(--dim)}
-select,input[type=text]{
-  font:400 13px/1 var(--sans);color:var(--ink);background:var(--panel-hi);
-  border:1px solid var(--line);border-radius:2px;padding:8px 9px;width:100%
-}
+select,input[type=text]{font:400 13px/1 var(--sans);color:var(--ink);background:var(--panel-hi);
+  border:1px solid var(--line);border-radius:2px;padding:8px 9px;width:100%}
 input[type=range]{width:100%;accent-color:var(--fail);margin:0}
+input[type=range]:disabled{opacity:.35}
 .rowline{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .val{font:500 13px var(--mono)}
-.band{position:relative;height:4px;background:var(--panel-hi);border:1px solid var(--line);border-top:0}
-.band i{position:absolute;top:0;bottom:0;left:0;width:25%;background:rgba(122,143,107,.55)}
-.bandlabels{display:flex;justify-content:space-between;font:400 10px var(--mono);color:var(--dim);padding-top:4px}
 .check{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--dim);cursor:pointer}
 .check input{accent-color:var(--fail);margin:0}
 
-/* ---- readout ---- */
-.verdict{display:flex;align-items:center;gap:9px;margin-bottom:14px}
-.chip{
-  font:500 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
-  padding:5px 7px;color:#0B0B0A;background:var(--dim)
-}
-.chip.pass{background:var(--pass)}
-.chip.warn{background:var(--warn)}
+/* ---- verdict + audit ---- */
+.chip{font:500 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 7px;color:#0B0B0A;background:var(--dim);white-space:nowrap}
+.chip.pass{background:var(--pass)} .chip.warn{background:var(--warn)}
 .chip.fail{background:var(--fail);color:#fff}
+.verdict{display:flex;align-items:center;gap:9px;margin-bottom:12px}
 .verdict p{margin:0;font-size:12px;color:var(--dim)}
-.metric{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
-  padding:9px 0;border-top:1px solid var(--line)}
-.metric:first-of-type{border-top:0}
-.metric dt{font-size:12px;color:var(--dim);margin:0}
-.metric dd{margin:0;font:500 15px var(--mono);font-variant-numeric:tabular-nums;text-align:right}
-.metric dd small{font:400 11px var(--mono);color:var(--dim);display:block;text-align:right}
-dl{margin:0}
-.note{font-size:11px;line-height:1.5;color:var(--dim);margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.rrow{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;
+  width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);
+  padding:9px 0;cursor:pointer;color:var(--ink)}
+.rrow:hover{background:#191817}
+.rrow .rl{font:400 11px/1.3 var(--mono);color:var(--dim)}
+.rrow[aria-current="true"] .rl{color:var(--ink)}
+.rrow .rv{font:500 11px var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
+.note{font-size:11px;line-height:1.5;color:var(--dim);margin:12px 0 0;padding-top:12px;
+  border-top:1px solid var(--line)}
 .note b{color:var(--ink);font-weight:500}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.log{font:400 11px/1.55 var(--mono);color:var(--dim);margin:12px 0 0;white-space:pre-wrap}
+.log b{color:var(--ink);font-weight:500}
 
 footer{border-top:1px solid var(--line);margin-top:30px;padding-top:16px;
   color:var(--dim);font-size:12px;line-height:1.6;max-width:78ch}
 footer b{color:var(--ink);font-weight:500}
 .dragging{outline:2px dashed var(--fail);outline-offset:-10px}
-@media (prefers-reduced-motion:no-preference){
-  .frame,button{transition:border-color .12s ease,background .12s ease}
-}
 </style>
 </head>
 <body>
@@ -159,7 +127,7 @@ footer b{color:var(--ink);font-weight:500}
 <header>
   <div>
     <h1>Scrim proof</h1>
-    <p class="sub">Checks a SPIRITHAUS scene frame the way the storefront will show it: cropped to the ratios the theme actually renders, under the theme’s own ink scrim, with the type stack where the theme puts it — along the bottom.</p>
+    <p class="sub">Checks a SPIRITHAUS frame at every ratio the storefront renders, under the theme's own ink scrim, with the type stack where the theme puts it. Then corrects it and hands back a square master.</p>
   </div>
   <div class="load">
     <input type="file" id="picker" accept="image/*" multiple hidden>
@@ -171,9 +139,9 @@ footer b{color:var(--ink);font-weight:500}
 <div class="grid">
   <div class="stage-wrap">
     <div class="stage" id="stage">
-      <img class="proof" id="proof" alt="Frame under test">
+      <canvas id="proof"></canvas>
       <div class="scrim" id="scrim"></div>
-      <div class="typelayer bottom" id="typelayer">
+      <div class="typelayer" id="typelayer">
         <div class="stack">
           <p class="kicker">Spirits, wines and cocktails</p>
           <p class="headline" id="headline"></p>
@@ -185,7 +153,7 @@ footer b{color:var(--ink);font-weight:500}
     </div>
     <div class="stage-meta">
       <span id="metaName">—</span>
-      <span id="axisNote">—</span>
+      <span id="metaMaster">—</span>
       <span id="metaDims">—</span>
     </div>
     <div class="strip" id="strip"></div>
@@ -193,7 +161,26 @@ footer b{color:var(--ink);font-weight:500}
 
   <div class="rail">
     <div class="card">
-      <h2>Slot</h2>
+      <h2>Every ratio</h2>
+      <div class="verdict">
+        <span class="chip" id="chip">—</span>
+        <p id="verdictText">Load a frame to check it.</p>
+      </div>
+      <div id="rows"></div>
+      <p class="note" id="zoneNote"></p>
+    </div>
+
+    <div class="card">
+      <h2>Correct it</h2>
+      <div class="actions">
+        <button type="button" class="primary" id="fixBtn" disabled>Fix automatically</button>
+        <button type="button" id="saveBtn" disabled>Save master</button>
+      </div>
+      <p class="log" id="fixLog">Finds the square crop that works best, then veils the quiet zone by the least amount that passes. It cannot invent pixels: a frame with no workable crop is reported, not faked.</p>
+    </div>
+
+    <div class="card">
+      <h2>Adjust by hand</h2>
       <div class="field">
         <label for="slot">Treatment</label>
         <select id="slot">
@@ -203,66 +190,35 @@ footer b{color:var(--ink);font-weight:500}
         </select>
       </div>
       <div class="field">
-        <label for="ratio">Crop ratio</label>
+        <label for="ratio">Previewing</label>
         <select id="ratio"></select>
       </div>
       <div class="field">
-        <div class="rowline"><label for="offset">Crop offset</label><span class="val" id="offsetVal">50%</span></div>
-        <input type="range" id="offset" min="0" max="100" value="50">
+        <div class="rowline"><label for="window">Master crop</label><span class="val" id="windowVal">50%</span></div>
+        <input type="range" id="window" min="0" max="100" value="50">
+      </div>
+      <div class="field">
+        <div class="rowline"><label for="gradient">Quiet-zone veil</label><span class="val" id="gradientVal">0%</span></div>
+        <input type="range" id="gradient" min="0" max="55" value="0">
+      </div>
+      <div class="field">
+        <div class="rowline"><label for="opacity">Theme scrim</label><span class="val" id="opacityVal">58%</span></div>
+        <input type="range" id="opacity" min="58" max="90" value="58">
       </div>
       <div class="field">
         <label for="headlineText">Headline</label>
         <input type="text" id="headlineText" value="Small-batch spirits, delivered in Sydney">
       </div>
-    </div>
-
-    <div class="card">
-      <h2>Scrim</h2>
-      <div class="field">
-        <div class="rowline"><label for="opacity">Opacity</label><span class="val" id="opacityVal">60%</span></div>
-        <input type="range" id="opacity" min="58" max="90" value="58">
-        <div class="band"><i></i></div>
-        <div class="bandlabels"><span>58 floor</span><span>58 hero · 66 tiles</span><span>90</span></div>
-      </div>
-      <div class="field">
-        <label for="scrimMode">Coverage</label>
-        <select id="scrimMode">
-          <option value="full">Full frame (as the theme)</option>
-          <option value="none">None</option>
-        </select>
-      </div>
-      <label class="check"><input type="checkbox" id="showGuides" checked> Show quiet-zone guides</label>
-    </div>
-
-    <div class="card">
-      <h2>Quiet zone</h2>
-      <div class="verdict">
-        <span class="chip" id="chip">—</span>
-        <p id="verdictText">Load a frame to measure.</p>
-      </div>
-      <dl>
-        <div class="metric">
-          <dt>Type contrast</dt>
-          <dd id="mContrast">—<small>on brightest patch</small></dd>
-        </div>
-        <div class="metric">
-          <dt>Zone intrusion</dt>
-          <dd id="mVar">—<small>above zone floor</small></dd>
-        </div>
-        <div class="metric">
-          <dt>Image survival</dt>
-          <dd id="mMean">—<small>highlights kept</small></dd>
-        </div>
-      </dl>
-      <p class="note" id="zoneNote"></p>
+      <label class="check"><input type="checkbox" id="showGuides" checked> Show quiet-zone guide</label>
     </div>
   </div>
 </div>
 
 <footer>
-  <p><b>What this proves.</b> Three separate rules, measured on the composited frame. <b>Type contrast</b> is WCAG relative luminance for off-white type against the brightest patch of the quiet zone, not its average — one specular highlight is what breaks a headline, and a mean hides it. <b>Zone intrusion</b> is the peak level above the zone's own floor, which is what catches an object or edge entering the band that must stay empty; at a 58–66% scrim almost any patch clears the contrast bar, so this is the check that does the work in that band. <b>Image survival</b> reads the brightest tenth of the subject side rather than its average, because low-key work is supposed to have a dark mean — what tells you the photograph is still alive under a heavy scrim is whether its highlights survive. Contrast thresholds are the published ones; the other two are house limits calibrated against the sample frames and are best read as relative between frames.</p>
-  <p><b>What it cannot prove.</b> Whether a hand reads as 35 or as 20, and every other line of the ABAC list. Those stay a human pass over each frame before it ships — see part A of the prompt pack.</p>
-  <p><b>Where the numbers come from.</b> Ratios, scrim values and quiet zones are measured from the live theme (<code>sections/spirithaus-hero.liquid</code>, <code>sections/spirithaus-categories.liquid</code>, <code>assets/spirithaus.css</code>) as at 2026-09-24. The hero is 100vw by 76vh, dropping to 62vh on a phone, so it renders anywhere from 2.34:1 to 0.75:1; tiles are a 3-up grid in a 1200px page width at 34rem tall. Both sections bottom-align their type and both clamp the scrim to a 58% floor. If the theme changes, re-read it and update the prompt pack and this page together.</p>
+  <p><b>What the check proves.</b> Three rules, measured on the composited frame at every ratio the theme renders, not just the one on screen. <b>Type contrast</b> is WCAG luminance for white type against the brightest patch of the quiet zone, not its average — one specular highlight breaks a headline and a mean hides it. <b>Zone intrusion</b> is the peak level above the zone's own floor, which catches an object or edge entering the band that must stay empty; at a 58–66% scrim almost any patch clears the contrast bar, so this is the check that does the work. <b>Image survival</b> reads the brightest tenth of the subject side, because low-key work is meant to have a dark mean and what says the photograph is still alive is whether its highlights survive.</p>
+  <p><b>What the fix does, and does not.</b> It slides the square master window across the source to find the crop with the cleanest quiet zone, then veils the lower band of that master in ink at the lowest strength that passes every ratio, capped at 55% so a frame can never be &ldquo;fixed&rdquo; by turning the band into a black bar. Both are real edits to the pixels you export. It cannot add pixels that were never shot: a 3:1 source has nothing above and below to build a square from, so the best it can do is report that and leave the reshoot to you.</p>
+  <p><b>What neither can tell you.</b> Whether a hand reads as 35 or as 20, and every other line of the ABAC list. Those stay a human pass before anything ships.</p>
+  <p><b>Where the numbers come from.</b> Ratios, scrim values and quiet zones are measured from the live theme (<code>sections/spirithaus-hero.liquid</code>, <code>sections/spirithaus-categories.liquid</code>, <code>assets/spirithaus.css</code>) as at 2026-09-24. If the theme changes, re-read it and update the prompt pack and this page together.</p>
 </footer>
 
 </div>
@@ -271,204 +227,253 @@ footer b{color:var(--ink);font-weight:500}
 (function(){
   "use strict";
 
-  // Ratios are the theme's own, measured from spirithaus.css on 2026-09-24:
-  // the hero is 100vw by 76vh (62vh on a phone), tiles are a 3-up grid inside a
-  // 1200px page width at 34rem tall, 1-up at 22rem below 750px.
+  /* ---------- the theme, measured ---------- */
   var SLOTS = {
     hero: {
       ratios: ["2.34:1", "2.11:1", "0.99:1", "0.75:1"],
-      labels: {"2.34:1":"2.34 : 1  desktop 1920", "2.11:1":"2.11 : 1  laptop 1440",
-               "0.99:1":"0.99 : 1  tablet 768", "0.75:1":"0.75 : 1  phone 390"},
-      type: "bottom", zone: "half", scrim: 58
+      labels: {"2.34:1":"2.34:1  desktop 1920", "2.11:1":"2.11:1  laptop 1440",
+               "0.99:1":"0.99:1  tablet 768", "0.75:1":"0.75:1  phone 390"},
+      type: "hero", zone: "half", scrim: 58
     },
     tile: {
       ratios: ["1.05:1", "0.87:1", "0.62:1", "1.64:1"],
-      labels: {"1.05:1":"1.05 : 1  desktop", "0.87:1":"0.87 : 1  1024",
-               "0.62:1":"0.62 : 1  768", "1.64:1":"1.64 : 1  phone"},
+      labels: {"1.05:1":"1.05:1  desktop", "0.87:1":"0.87:1  1024",
+               "0.62:1":"0.62:1  768", "1.64:1":"1.64:1  phone"},
       type: "tile", zone: "third", scrim: 66
     },
     life: { ratios: ["4:5", "3:2"], labels: {}, type: "none", zone: "none", scrim: 58 }
   };
   var ZONE_NOTE = {
-    half: "Bottom half must hold no object, edge, or highlight — the hero type stack sits here, and the subject belongs in the top half, centred.",
+    half: "Bottom half must hold no object, edge, or highlight — the hero type stack sits there, and the subject belongs in the top half, centred.",
     third: "Bottom third must stay clear — the tile title and caption sit bottom-left.",
-    none: "No type is laid over this slot, so there is no quiet zone to hold."
+    none: "No type is laid over this slot, so there is no quiet zone and nothing to correct."
   };
-  var TEXT_LUM = relLum(255, 255, 255);  // --sh-white
-  var INK = [17, 17, 16];                // --sh-ink #111110, the scrim colour
+  var INK = [17, 17, 16];
+  var TEXT_LUM = relLum(255, 255, 255);
+  var INTRUDE_CLEAR = 12, INTRUDE_PRESENT = 30;
+  var SURVIVE_THIN = 8, SURVIVE_OK = 15;
+  var RANK = { pass: 0, warn: 1, fail: 2 };
+
+  var MAX_VEIL = 0.55;   // past this the quiet zone is a black bar, not a photograph
+  var ANALYSE_W = 420;   // measurement resolution
+  var SEARCH_W  = 150;   // resolution used while searching for a fix
+  var PREVIEW_M = 900;   // master size held for on-screen preview
+  var EXPORT_MAX = 2048; // cap on the exported master's side
 
   var el = {};
   ["picker","loadBtn","stage","proof","scrim","typelayer","headline","guides","metaName",
-   "metaDims","strip","slot","ratio","offset","offsetVal","headlineText","opacity","opacityVal",
-   "scrimMode","showGuides","chip","verdictText","mContrast","mMean","mVar","zoneNote","axisNote"]
-   .forEach(function(id){ el[id] = document.getElementById(id); });
+   "metaMaster","metaDims","strip","slot","ratio","window","windowVal","gradient","gradientVal",
+   "opacity","opacityVal","headlineText","showGuides","chip","verdictText","rows","zoneNote",
+   "fixBtn","saveBtn","fixLog"].forEach(function(id){ el[id] = document.getElementById(id); });
 
-  var frames = [], current = -1;
-  var canvas = document.createElement("canvas");
-  var ctx = canvas.getContext("2d", {willReadFrequently:true});
-  var tainted = false;
+  var frames = [], current = -1, tainted = false, lastAudit = null;
+  var work = document.createElement("canvas");
+  var wctx = work.getContext("2d", {willReadFrequently:true});
 
-  /* ---------- colour maths ---------- */
+  /* ---------- colour ---------- */
   function chan(v){ v = v/255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); }
   function relLum(r,g,b){ return 0.2126*chan(r) + 0.7152*chan(g) + 0.0722*chan(b); }
   function contrast(a,b){ var hi = Math.max(a,b), lo = Math.min(a,b); return (hi+0.05)/(lo+0.05); }
-
-  /* ---------- sample frames ---------- */
-  function synth(busyBottom){
-    var W = 1000, H = 1000, c = document.createElement("canvas");
-    c.width = W; c.height = H;
-    var g = c.getContext("2d");
-    g.fillStyle = "#0a0907"; g.fillRect(0, 0, W, H);
-
-    // Bench line kept high, so the bottom half is empty air rather than a lit
-    // surface — the quiet zone the hero type needs.
-    var bench = g.createLinearGradient(0, H * 0.34, 0, H);
-    bench.addColorStop(0, "#2a1e13");
-    bench.addColorStop(0.35, "#140d07");
-    bench.addColorStop(1, "#0a0806");
-    g.fillStyle = bench; g.fillRect(0, H * 0.34, W, H * 0.66);
-
-    var key = g.createRadialGradient(W * 0.5, H * 0.27, 10, W * 0.5, H * 0.27, W * 0.40);
-    key.addColorStop(0, "rgba(255,196,96,0.98)");
-    key.addColorStop(0.35, "rgba(198,126,44,0.55)");
-    key.addColorStop(1, "rgba(0,0,0,0)");
-    g.fillStyle = key; g.fillRect(0, 0, W, H);
-
-    // Bottle, centred and sitting in the top half.
-    g.fillStyle = "rgba(24,16,9,0.94)";
-    g.beginPath(); g.ellipse(W * 0.5, H * 0.26, W * 0.085, H * 0.20, 0, 0, Math.PI * 2); g.fill();
-    var glass = g.createLinearGradient(W * 0.42, 0, W * 0.58, 0);
-    glass.addColorStop(0, "rgba(255,196,110,0.14)");
-    glass.addColorStop(0.5, "rgba(255,219,150,0.88)");
-    glass.addColorStop(1, "rgba(255,196,110,0.10)");
-    g.fillStyle = glass;
-    g.beginPath(); g.ellipse(W * 0.5, H * 0.29, W * 0.068, H * 0.165, 0, 0, Math.PI * 2); g.fill();
-
-    if (busyBottom){
-      // A lit object low in frame: the failure the composition rule prevents.
-      var spill = g.createRadialGradient(W * 0.34, H * 0.74, 6, W * 0.34, H * 0.74, W * 0.22);
-      spill.addColorStop(0, "rgba(255,247,228,0.98)");
-      spill.addColorStop(0.5, "rgba(240,206,150,0.55)");
-      spill.addColorStop(1, "rgba(0,0,0,0)");
-      g.fillStyle = spill; g.fillRect(0, H * 0.5, W, H * 0.5);
-    }
-
-    var d = g.getImageData(0, 0, W, H), p = d.data;
-    for (var i = 0; i < p.length; i += 4){
-      var n = (Math.random() - 0.5) * 9;
-      p[i] = clamp(p[i] + n); p[i + 1] = clamp(p[i + 1] + n); p[i + 2] = clamp(p[i + 2] + n);
-    }
-    g.putImageData(d, 0, 0);
-    return c.toDataURL("image/jpeg", 0.86);
-  }
+  function pct(sorted, q){ return sorted[Math.min(sorted.length-1, Math.floor(sorted.length*q))]; }
   function clamp(v){ return v < 0 ? 0 : v > 255 ? 255 : v; }
 
-  /* ---------- frame handling ---------- */
-  function detectSlot(name){
-    var n = name.toLowerCase();
-    if (/^(sh-)?hero-/.test(n)) return "hero";
-    if (/^(sh-)?tile-/.test(n)) return "tile";
-    if (/^(sh-)?life-/.test(n)) return "life";
-    return "hero";
+  /* ---------- the master ---------- */
+  // The theme centre-crops whatever it is given, so the square master is the
+  // thing under our control: which part of the source becomes the square, and
+  // how dark its lower band is. Everything downstream is a centre crop of it.
+  function cropAxis(img){
+    var a = img.naturalWidth / img.naturalHeight;
+    if (Math.abs(a - 1) < 0.002) return null;
+    return a > 1 ? "x" : "y";
   }
 
-  function addFrame(name, src, slot){
-    var img = new Image();
-    img.onload = function(){
-      frames.push({name:name, img:img, slot:slot || detectSlot(name), offset:50});
-      renderStrip();
-      if (current === -1) select(frames.length-1);
+  // Every rendered crop is vertically centred, so a crop's own midline is the
+  // master's midline: a gradient starting at the master's half line covers the
+  // bottom half of every hero crop. A tile's bottom third starts lower, and the
+  // widest tile crop puts it at 0.5 + (1/1.64)/6 of the master.
+  function gradientTop(zone){ return zone === "third" ? 0.60 : 0.50; }
+
+  function buildMaster(frame, size){
+    var img = frame.img, iw = img.naturalWidth, ih = img.naturalHeight;
+    var S = Math.min(iw, ih), axis = cropAxis(img);
+    var sx = axis === "x" ? (iw - S) * frame.window : 0;
+    var sy = axis === "y" ? (ih - S) * frame.window : 0;
+
+    var c = document.createElement("canvas");
+    c.width = c.height = size;
+    var g = c.getContext("2d");
+    g.drawImage(img, sx, sy, S, S, 0, 0, size, size);
+
+    if (frame.gradient > 0){
+      // A UNIFORM veil over the quiet zone, feathered in above it. A gradient
+      // that deepens towards the bottom edge was the obvious idea and it is
+      // wrong: intrusion is the peak above the zone's own floor, and a gradient
+      // sinks the floor faster than a highlight sitting higher up the band, so
+      // the spread survives and the frame reads worse. A flat veil scales peak
+      // and floor together, which is what actually buries an intrusion.
+      var top = gradientTop(SLOTS[frame.slot].zone) * size;
+      var feather = size * 0.10;
+      var grd = g.createLinearGradient(0, top - feather, 0, top);
+      grd.addColorStop(0, "rgba(17,17,16,0)");
+      grd.addColorStop(1, "rgba(17,17,16," + frame.gradient + ")");
+      g.fillStyle = grd;
+      g.fillRect(0, top - feather, size, feather);
+      g.fillStyle = "rgba(17,17,16," + frame.gradient + ")";
+      g.fillRect(0, top, size, size - top);
+    }
+    return c;
+  }
+
+  /* ---------- measurement ---------- */
+  function ratioOf(str){ var p = str.split(":"); return parseFloat(p[0]) / parseFloat(p[1]); }
+
+  // Centre-crop the master to r, composite the theme's ink scrim, and read the
+  // quiet zone. Mirrors object-fit:cover with the default 50% position.
+  function analyse(master, r, alpha, zone, width){
+    var TW = width, TH = Math.max(1, Math.round(TW / r));
+    var M = master.width;
+    var sw = r >= 1 ? M : M * r;
+    var sh = r >= 1 ? M / r : M;
+
+    work.width = TW; work.height = TH;
+    wctx.clearRect(0, 0, TW, TH);
+    wctx.drawImage(master, (M - sw) / 2, (M - sh) / 2, sw, sh, 0, 0, TW, TH);
+
+    var data;
+    try { data = wctx.getImageData(0, 0, TW, TH).data; }
+    catch (e){ tainted = true; return null; }
+
+    var a = alpha, k = 1 - a;
+    var zoneTop = Math.round(zone === "half" ? TH / 2 : (TH * 2) / 3);
+    var zl = [], zg = [], sg = [];
+    for (var y = 0; y < TH; y++){
+      var inZone = y >= zoneTop;
+      for (var x = 0; x < TW; x++){
+        var i = (y * TW + x) * 4;
+        var R = data[i] * k + INK[0] * a;
+        var G = data[i+1] * k + INK[1] * a;
+        var B = data[i+2] * k + INK[2] * a;
+        var grey = 0.299*R + 0.587*G + 0.114*B;
+        if (inZone){ zg.push(grey); zl.push(relLum(R,G,B)); } else { sg.push(grey); }
+      }
+    }
+    if (!zg.length) return null;
+    zl.sort(function(p,q){ return p-q; });
+    zg.sort(function(p,q){ return p-q; });
+    sg.sort(function(p,q){ return p-q; });
+    return {
+      contrast: contrast(TEXT_LUM, pct(zl, 0.95)),
+      intrusion: pct(zg, 0.99) - pct(zg, 0.50),
+      survival: sg.length ? (pct(sg, 0.90) / 255) * 100 : 0
     };
-    img.onerror = function(){ console.warn("Could not read", name); };
-    img.src = src;
   }
 
-  function takeFiles(list){
-    Array.prototype.forEach.call(list, function(f){
-      if (!/^image\//.test(f.type)) return;
-      addFrame(f.name, URL.createObjectURL(f));
+  function stateOf(m){
+    if (!m) return "fail";
+    var c = m.contrast >= 4.5 ? "pass" : m.contrast >= 3.0 ? "warn" : "fail";
+    var i = m.intrusion < INTRUDE_CLEAR ? "pass" : m.intrusion < INTRUDE_PRESENT ? "warn" : "fail";
+    var s = m.survival >= SURVIVE_OK ? "pass" : m.survival >= SURVIVE_THIN ? "warn" : "fail";
+    return [c,i,s].sort(function(p,q){ return RANK[q]-RANK[p]; })[0];
+  }
+
+  function why(m){
+    var out = [];
+    if (m.intrusion >= INTRUDE_PRESENT) out.push("something bright in the quiet zone");
+    else if (m.intrusion >= INTRUDE_CLEAR) out.push("faint structure in the quiet zone");
+    if (m.contrast < 3.0) out.push("white type fails on the brightest patch");
+    else if (m.contrast < 4.5) out.push("type passes at display size only");
+    if (m.survival < SURVIVE_THIN) out.push("the scrim flattens it to mud");
+    else if (m.survival < SURVIVE_OK) out.push("losing its highlights under the scrim");
+    return out;
+  }
+
+  // The answer: every ratio in the slot, not just the one on screen.
+  function audit(frame, width){
+    var spec = SLOTS[frame.slot];
+    if (spec.zone === "none") return null;
+    var master = buildMaster(frame, Math.max(width * 2, 360));
+    var alpha = frame.scrim / 100;
+    var rows = spec.ratios.map(function(key){
+      var m = analyse(master, ratioOf(key), alpha, spec.zone, width);
+      return { key: key, label: spec.labels[key] || key, m: m, state: m ? stateOf(m) : "fail" };
     });
+    var worst = rows.map(function(r){ return r.state; })
+                    .sort(function(p,q){ return RANK[q]-RANK[p]; })[0];
+    return { rows: rows, worst: worst };
   }
 
-  function renderStrip(){
-    el.strip.textContent = "";
-    frames.forEach(function(f, i){
-      var b = document.createElement("button");
-      b.type = "button"; b.className = "frame";
-      b.setAttribute("aria-current", i === current ? "true" : "false");
-      var im = document.createElement("img"); im.src = f.img.src; im.alt = "";
-      var s = document.createElement("span"); s.textContent = f.name;
-      b.appendChild(im); b.appendChild(s);
-      b.addEventListener("click", function(){ select(i); });
-      el.strip.appendChild(b);
-    });
+  /* ---------- the fix ---------- */
+  // Two honest levers: which square we take, and how much ink we bake into its
+  // lower band. Neither can add pixels that were never shot.
+  function autoFix(frame){
+    var spec = SLOTS[frame.slot];
+    if (spec.zone === "none") return { ok:false, log:"Lifestyle frames carry no type, so there is nothing to correct." };
+
+    var axis = cropAxis(frame.img);
+    var steps = axis ? 21 : 1;
+    var trial = { img:frame.img, slot:frame.slot, scrim:frame.scrim, window:0.5, gradient:0 };
+    var best = null;
+
+    for (var i = 0; i < steps; i++){
+      trial.window = steps === 1 ? 0.5 : i / (steps - 1);
+      var a = audit(trial, SEARCH_W);
+      if (!a) return { ok:false, log:"The browser blocked pixel reads for this file. Serve the folder over http and reload." };
+      // rank by worst state, then by the worst intrusion across ratios
+      var worstIntrusion = Math.max.apply(null, a.rows.map(function(r){ return r.m ? r.m.intrusion : 999; }));
+      var score = RANK[a.worst] * 1000 + worstIntrusion;
+      if (!best || score < best.score) best = { score:score, window:trial.window, worst:a.worst };
+    }
+
+    var chosen = { img:frame.img, slot:frame.slot, scrim:frame.scrim, window:best.window, gradient:0 };
+    var grad = 0;
+    if (audit(chosen, SEARCH_W).worst !== "pass"){
+      for (var g = 0.05; g <= MAX_VEIL + 0.0001; g += 0.05){
+        chosen.gradient = g;
+        if (audit(chosen, SEARCH_W).worst === "pass"){ grad = g; break; }
+      }
+      chosen.gradient = grad || MAX_VEIL;
+    }
+
+    frame.window = chosen.window;
+    frame.gradient = chosen.gradient;
+    var final = audit(frame, ANALYSE_W);
+
+    var lines = [];
+    lines.push(axis ? ("Master crop: " + Math.round(frame.window*100) + "% along the "
+                      + (axis === "x" ? "width" : "height") + ".")
+                    : "Source is already square, so the whole frame is the master.");
+    lines.push(frame.gradient > 0
+      ? ("Quiet-zone veil: " + Math.round(frame.gradient*100) + "% ink over the lower band.")
+      : "No veil needed.");
+    if (final.worst === "pass"){
+      lines.push("Result: passes at all " + final.rows.length + " ratios.");
+    } else {
+      var bad = final.rows.filter(function(r){ return r.state !== "pass"; });
+      lines.push("Result: still " + (final.worst === "fail" ? "failing" : "marginal") + " at "
+                 + bad.map(function(r){ return r.key; }).join(", ") + ".");
+      lines.push(frame.gradient >= MAX_VEIL
+        ? ("A " + Math.round(MAX_VEIL*100) + "% veil is as far as this goes — past it the band stops being a photograph. This one is a reshoot.")
+        : "No crop of this source clears it. This one is a reshoot.");
+    }
+    return { ok: final.worst === "pass", log: lines.join("\n") };
   }
 
-  function select(i){
-    current = i;
-    var f = frames[i];
-    el.slot.value = f.slot;
-    fillRatios(f.slot);
-    el.opacity.value = SLOTS[f.slot].scrim;
-    el.offset.value = f.offset;
-    el.proof.src = f.img.src;
-    el.metaName.textContent = f.name;
-    el.metaDims.textContent = f.img.naturalWidth + " × " + f.img.naturalHeight + " px";
-    renderStrip();
-    draw();
-  }
+  /* ---------- rendering ---------- */
+  function currentFrame(){ return current >= 0 ? frames[current] : null; }
 
-  function fillRatios(slot){
-    var keep = el.ratio.value;
-    el.ratio.textContent = "";
-    SLOTS[slot].ratios.forEach(function(r){
-      var o = document.createElement("option");
-      o.value = r; o.textContent = SLOTS[slot].labels[r] || r.replace(":", " : ");
-      el.ratio.appendChild(o);
-    });
-    if (SLOTS[slot].ratios.indexOf(keep) > -1) el.ratio.value = keep;
-  }
-
-  function ratioValue(){
-    var p = el.ratio.value.split(":");
-    return parseFloat(p[0]) / parseFloat(p[1]);
-  }
-
-  /* ---------- draw ---------- */
-  // The theme centre-crops with object-fit:cover. Which axis actually gets cut
-  // depends on the master: a square master loses top and bottom in a 2.34:1
-  // hero and loses its sides in a 0.75:1 one, so the offset control follows
-  // whichever axis is being cut.
-  function cropAxis(img, r){
-    return (img.naturalWidth / img.naturalHeight) > r ? "x" : "y";
-  }
-
-  function draw(){
-    var slot = el.slot.value, spec = SLOTS[slot], r = ratioValue();
-    var alpha = parseInt(el.opacity.value, 10) / 100;
-    var mode = el.scrimMode.value;
-    var off = parseInt(el.offset.value, 10);
-    var f = frames[current];
-
-    el.stage.style.aspectRatio = String(r);
-    el.offsetVal.textContent = off + "%";
-    el.opacityVal.textContent = Math.round(alpha * 100) + "%";
-
-    var axis = f ? cropAxis(f.img, r) : "y";
-    el.proof.style.objectPosition = axis === "x" ? (off + "% 50%") : ("50% " + off + "%");
-    el.axisNote.textContent = axis === "x" ? "cropping the sides" : "cropping top and bottom";
-
-    el.scrim.hidden = (mode === "none");
-    el.scrim.style.opacity = String(alpha);
-
-    el.typelayer.hidden = (spec.type === "none");
-    el.typelayer.className = "typelayer " + (spec.type === "tile" ? "bottom tile" : "bottom");
-    el.headline.textContent = el.headlineText.value;
-
-    el.zoneNote.textContent = ZONE_NOTE[spec.zone];
-    drawGuides(spec.zone);
-    if (f) f.offset = off;
-    measure(spec.zone, r, alpha, mode, off / 100, axis);
+  function drawStage(){
+    var f = currentFrame(); if (!f) return;
+    var r = ratioOf(el.ratio.value || SLOTS[f.slot].ratios[0]);
+    var box = el.stage.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.max(1, Math.round(box.width)), h = Math.max(1, Math.round(box.width / r));
+    el.proof.width = w * dpr; el.proof.height = h * dpr;
+    el.proof.style.width = "100%"; el.proof.style.height = "100%";
+    var g = el.proof.getContext("2d");
+    var M = f.master.width;
+    var sw = r >= 1 ? M : M * r, sh = r >= 1 ? M / r : M;
+    g.clearRect(0,0,el.proof.width, el.proof.height);
+    g.drawImage(f.master, (M-sw)/2, (M-sh)/2, sw, sh, 0, 0, el.proof.width, el.proof.height);
   }
 
   function drawGuides(zone){
@@ -484,121 +489,236 @@ footer b{color:var(--ink);font-weight:500}
     el.guides.appendChild(tag);
   }
 
-  /* ---------- measure ---------- */
-  // Contrast is WCAG (4.5 comfortable, 3.0 the floor for display type). The
-  // other two are house limits for this brief, calibrated against the sample
-  // frames, and are read as relative between frames.
-  var INTRUDE_CLEAR = 12, INTRUDE_PRESENT = 30;   // peak above floor, 0-255
-  var SURVIVE_THIN = 8, SURVIVE_OK = 15;          // subject highlights, % of white
-
-  function pct(sorted, q){
-    return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * q))];
+  function renderRows(a){
+    el.rows.textContent = "";
+    if (!a) return;
+    a.rows.forEach(function(row){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "rrow";
+      b.setAttribute("aria-current", row.key === el.ratio.value ? "true" : "false");
+      var l = document.createElement("span"); l.className = "rl"; l.textContent = row.label;
+      var v = document.createElement("span"); v.className = "rv";
+      v.textContent = row.m ? (row.m.intrusion.toFixed(0) + " lv") : "—";
+      var c = document.createElement("span");
+      c.className = "chip " + row.state;
+      c.textContent = row.state === "pass" ? "holds" : row.state === "warn" ? "marginal" : "breaks";
+      b.appendChild(l); b.appendChild(v); b.appendChild(c);
+      b.addEventListener("click", function(){ el.ratio.value = row.key; render(); });
+      el.rows.appendChild(b);
+    });
   }
 
-  function measure(zone, r, alpha, mode, pos, axis){
-    if (current < 0 || zone === "none"){ setReadout(null, zone, mode); return; }
+  function render(){
+    var f = currentFrame();
+    var spec = f ? SLOTS[f.slot] : SLOTS.hero;
 
-    var img = frames[current].img;
-    var TW = 480, TH = Math.max(1, Math.round(TW / r));
-    canvas.width = TW; canvas.height = TH;
+    el.windowVal.textContent = Math.round((f ? f.window : 0.5) * 100) + "%";
+    el.gradientVal.textContent = Math.round((f ? f.gradient : 0) * 100) + "%";
+    el.opacityVal.textContent = (f ? f.scrim : spec.scrim) + "%";
+    el.window.disabled = !f || !cropAxis(f.img);
 
-    var iw = img.naturalWidth, ih = img.naturalHeight;
-    var srcW = Math.min(iw, ih * (TW / TH));
-    var srcH = Math.min(ih, iw * (TH / TW));
-    var sx = (iw - srcW) * (axis === "x" ? pos : 0.5);
-    var sy = (ih - srcH) * (axis === "y" ? pos : 0.5);
-    ctx.clearRect(0, 0, TW, TH);
-    ctx.drawImage(img, sx, sy, srcW, srcH, 0, 0, TW, TH);
+    el.scrim.style.opacity = String((f ? f.scrim : spec.scrim) / 100);
+    el.typelayer.hidden = spec.type === "none";
+    el.typelayer.className = "typelayer" + (spec.type === "tile" ? " tile" : "");
+    el.headline.textContent = el.headlineText.value;
+    el.zoneNote.textContent = ZONE_NOTE[spec.zone];
 
-    var data;
-    try { data = ctx.getImageData(0, 0, TW, TH).data; }
-    catch (e){ tainted = true; setReadout(null, zone, mode); return; }
-
-    // The theme's scrim is ink #111110, not black, and the browser composites
-    // it per channel in sRGB before any luminance is taken.
-    var a = mode === "none" ? 0 : alpha, k = 1 - a;
-    var zoneTop = Math.round(zone === "half" ? TH / 2 : (TH * 2) / 3);
-    var zoneLums = [], zoneGreys = [], subjGreys = [];
-
-    for (var y = 0; y < TH; y++){
-      var inZone = y >= zoneTop;
-      for (var x = 0; x < TW; x++){
-        var i = (y * TW + x) * 4;
-        var R = data[i] * k + INK[0] * a;
-        var G = data[i + 1] * k + INK[1] * a;
-        var B = data[i + 2] * k + INK[2] * a;
-        var grey = 0.299 * R + 0.587 * G + 0.114 * B;
-        if (inZone){ zoneGreys.push(grey); zoneLums.push(relLum(R, G, B)); }
-        else { subjGreys.push(grey); }
-      }
-    }
-    if (!zoneGreys.length){ setReadout(null, zone, mode); return; }
-
-    zoneLums.sort(function(p, q){ return p - q; });
-    zoneGreys.sort(function(p, q){ return p - q; });
-    subjGreys.sort(function(p, q){ return p - q; });
-
-    setReadout({
-      contrast: contrast(TEXT_LUM, pct(zoneLums, 0.95)),
-      intrusion: pct(zoneGreys, 0.99) - pct(zoneGreys, 0.50),
-      survival: subjGreys.length ? (pct(subjGreys, 0.90) / 255) * 100 : 0
-    }, zone, mode);
-  }
-
-  var RANK = { pass: 0, warn: 1, fail: 2 };
-
-  function setReadout(m, zone, mode){
-    if (!m){
-      el.chip.className = "chip"; el.chip.textContent = "\u2014";
-      el.mContrast.childNodes[0].nodeValue = "\u2014";
-      el.mMean.childNodes[0].nodeValue = "\u2014";
-      el.mVar.childNodes[0].nodeValue = "\u2014";
-      el.verdictText.textContent =
-        tainted ? "The browser blocked pixel reads for this file. Serve the folder over http (python3 -m http.server) and reload."
-        : zone === "none" ? "Lifestyle frames carry no type, so there is no quiet zone to measure."
-        : "Load a frame to measure.";
+    if (!f){
+      el.chip.className = "chip"; el.chip.textContent = "—";
+      el.verdictText.textContent = "Load a frame to check it.";
+      el.rows.textContent = ""; drawGuides("none");
       return;
     }
 
-    var cState = m.contrast >= 4.5 ? "pass" : m.contrast >= 3.0 ? "warn" : "fail";
-    var iState = m.intrusion < INTRUDE_CLEAR ? "pass" : m.intrusion < INTRUDE_PRESENT ? "warn" : "fail";
-    var sState = m.survival >= SURVIVE_OK ? "pass" : m.survival >= SURVIVE_THIN ? "warn" : "fail";
+    f.master = buildMaster(f, PREVIEW_M);
+    var r = ratioOf(el.ratio.value);
+    el.stage.style.aspectRatio = String(r);
+    drawStage();
+    drawGuides(spec.zone);
 
-    el.mContrast.childNodes[0].nodeValue = m.contrast.toFixed(2) + ":1";
-    el.mVar.childNodes[0].nodeValue = m.intrusion.toFixed(0) + " levels";
-    el.mMean.childNodes[0].nodeValue = m.survival.toFixed(1) + "%";
+    var a = audit(f, ANALYSE_W);
+    lastAudit = a;
+    renderRows(a);
 
-    var worst = [cState, iState, sState].sort(function(p, q){ return RANK[q] - RANK[p]; })[0];
-    el.chip.className = "chip " + worst;
-    el.chip.textContent = worst === "pass" ? "Holds" : worst === "warn" ? "Marginal" : "Breaks";
+    if (!a){
+      el.chip.className = "chip"; el.chip.textContent = "—";
+      el.verdictText.textContent = tainted
+        ? "The browser blocked pixel reads for this file. Serve the folder over http (python3 -m http.server) and reload."
+        : "Lifestyle frames carry no type, so there is no quiet zone to measure.";
+      el.fixBtn.disabled = true; el.saveBtn.disabled = true;
+      return;
+    }
 
-    var say = [];
-    if (iState === "fail") say.push("something bright sits in the quiet zone \u2014 re-shoot or re-crop");
-    else if (iState === "warn") say.push("faint structure in the quiet zone");
-    if (cState === "fail") say.push("white type fails against the brightest patch");
-    else if (cState === "warn") say.push("type passes at display size only");
-    if (sState === "fail") say.push("the scrim flattens the image to mud");
-    else if (sState === "warn") say.push("the image is losing its highlights under this scrim");
+    el.chip.className = "chip " + a.worst;
+    el.chip.textContent = a.worst === "pass" ? "Holds" : a.worst === "warn" ? "Marginal" : "Breaks";
+    var failing = a.rows.filter(function(x){ return x.state !== "pass"; });
+    if (!failing.length){
+      el.verdictText.textContent = "Clear at all " + a.rows.length + " ratios.";
+    } else {
+      var reasons = [];
+      failing.forEach(function(x){ if (x.m) why(x.m).forEach(function(w){
+        if (reasons.indexOf(w) === -1) reasons.push(w); }); });
+      el.verdictText.textContent = failing.length + " of " + a.rows.length + " ratios "
+        + (a.worst === "fail" ? "fail" : "fall short") + " — " + reasons.join("; ") + ".";
+    }
+    el.fixBtn.disabled = false;
+    el.saveBtn.disabled = false;
+    el.metaMaster.textContent = "master " + Math.round(f.window*100) + "%"
+      + (f.gradient > 0 ? " · veil " + Math.round(f.gradient*100) + "%" : "");
+  }
 
-    el.verdictText.textContent = say.length
-      ? say.join("; ").replace(/^./, function(c){ return c.toUpperCase(); }) + "."
-      : "Quiet zone is clear, type holds, and the image survives the scrim.";
+  /* ---------- frames ---------- */
+  function detectSlot(name){
+    var n = name.toLowerCase();
+    if (/^(sh-)?hero-/.test(n)) return "hero";
+    if (/^(sh-)?tile-/.test(n)) return "tile";
+    if (/^(sh-)?life-/.test(n)) return "life";
+    return "hero";
+  }
+
+  function addFrame(name, src, slot){
+    var img = new Image();
+    img.onload = function(){
+      var s = slot || detectSlot(name);
+      var f = { name:name, img:img, slot:s, window:0.5, gradient:0, scrim:SLOTS[s].scrim };
+      f.master = buildMaster(f, PREVIEW_M);
+      frames.push(f);
+      renderStrip();
+      if (current === -1) select(frames.length - 1);
+    };
+    img.src = src;
+  }
+
+  function takeFiles(list){
+    Array.prototype.forEach.call(list, function(f){
+      if (/^image\//.test(f.type)) addFrame(f.name, URL.createObjectURL(f));
+    });
+  }
+
+  function renderStrip(){
+    el.strip.textContent = "";
+    frames.forEach(function(f, i){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "frame";
+      b.setAttribute("aria-current", i === current ? "true" : "false");
+      var c = document.createElement("canvas");
+      c.width = 96; c.height = 54;
+      var g = c.getContext("2d");
+      var M = f.master.width, sh = M * (54/96);
+      g.drawImage(f.master, 0, (M-sh)/2, M, sh, 0, 0, 96, 54);
+      var s = document.createElement("span"); s.textContent = f.name;
+      b.appendChild(c); b.appendChild(s);
+      b.addEventListener("click", function(){ select(i); });
+      el.strip.appendChild(b);
+    });
+  }
+
+  function fillRatios(slot){
+    el.ratio.textContent = "";
+    SLOTS[slot].ratios.forEach(function(r){
+      var o = document.createElement("option");
+      o.value = r; o.textContent = SLOTS[slot].labels[r] || r;
+      el.ratio.appendChild(o);
+    });
+  }
+
+  function select(i){
+    current = i;
+    var f = frames[i];
+    el.slot.value = f.slot;
+    fillRatios(f.slot);
+    el.window.value = Math.round(f.window * 100);
+    el.gradient.value = Math.round(f.gradient * 100);
+    el.opacity.value = f.scrim;
+    el.metaName.textContent = f.name;
+    el.metaDims.textContent = f.img.naturalWidth + " × " + f.img.naturalHeight + " px";
+    el.fixLog.textContent = "Ready.";
+    renderStrip();
+    render();
+  }
+
+  /* ---------- export ---------- */
+  function exportMaster(f){
+    var S = Math.min(f.img.naturalWidth, f.img.naturalHeight, EXPORT_MAX);
+    return buildMaster(f, S);
+  }
+
+  el.saveBtn.addEventListener("click", function(){
+    var f = currentFrame(); if (!f) return;
+    var canvas = exportMaster(f);
+    var base = f.name.replace(/\.[^.]+$/, "");
+    var name = base + "-1x1.jpg";
+    canvas.toBlob(function(blob){
+      if (!blob){ el.fixLog.textContent = "Could not encode the master."; return; }
+      saveBlob(blob, name);
+    }, "image/jpeg", 0.92);
+  });
+
+  function saveBlob(blob, name){
+    var use = window.claude && window.claude.use;
+    if (use){
+      window.claude.use("downloads").then(function(dl){
+        if (!dl) return fallbackSave(blob, name);
+        return dl.save({ filename: name, data: blob }).then(function(){
+          el.fixLog.textContent = "Saved " + name + ".";
+        }, function(err){
+          el.fixLog.textContent = err && err.code === "declined"
+            ? "Save cancelled." : "Could not save here (" + ((err && err.code) || "unavailable") + ").";
+        });
+      }, function(){ fallbackSave(blob, name); });
+    } else {
+      fallbackSave(blob, name);
+    }
+  }
+
+  function fallbackSave(blob, name){
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+    el.fixLog.textContent = "Saved " + name + " to your downloads.";
   }
 
   /* ---------- wiring ---------- */
   el.loadBtn.addEventListener("click", function(){ el.picker.click(); });
   el.picker.addEventListener("change", function(e){ takeFiles(e.target.files); e.target.value = ""; });
 
+  el.fixBtn.addEventListener("click", function(){
+    var f = currentFrame(); if (!f) return;
+    el.fixBtn.disabled = true;
+    el.fixLog.textContent = "Searching…";
+    setTimeout(function(){
+      var out = autoFix(f);
+      el.window.value = Math.round(f.window * 100);
+      el.gradient.value = Math.round(f.gradient * 100);
+      el.fixLog.textContent = out.log;
+      renderStrip();
+      render();
+    }, 20);
+  });
+
   el.slot.addEventListener("change", function(){
-    if (frames[current]) frames[current].slot = el.slot.value;
-    fillRatios(el.slot.value);
-    el.opacity.value = SLOTS[el.slot.value].scrim;
-    draw();
+    var f = currentFrame(); if (!f) return;
+    f.slot = el.slot.value;
+    f.scrim = SLOTS[f.slot].scrim;
+    el.opacity.value = f.scrim;
+    fillRatios(f.slot);
+    render();
   });
-  ["ratio","offset","opacity","scrimMode","showGuides","headlineText"].forEach(function(id){
-    el[id].addEventListener("input", draw);
-    el[id].addEventListener("change", draw);
+  el.ratio.addEventListener("change", render);
+  ["window","gradient","opacity"].forEach(function(id){
+    el[id].addEventListener("input", function(){
+      var f = currentFrame(); if (!f) return;
+      f.window = parseInt(el.window.value,10) / 100;
+      f.gradient = parseInt(el.gradient.value,10) / 100;
+      f.scrim = parseInt(el.opacity.value,10);
+      render();
+    });
   });
+  el.headlineText.addEventListener("input", render);
+  el.showGuides.addEventListener("change", render);
+  window.addEventListener("resize", drawStage);
 
   ["dragenter","dragover"].forEach(function(ev){
     document.addEventListener(ev, function(e){ e.preventDefault(); document.body.classList.add("dragging"); });
@@ -610,10 +730,54 @@ footer b{color:var(--ink);font-weight:500}
     if (e.dataTransfer && e.dataTransfer.files) takeFiles(e.dataTransfer.files);
   });
 
-  /* ---------- open in a working state ---------- */
+  /* ---------- samples ---------- */
+  function synth(busyBottom, wide){
+    var W = wide ? 1500 : 1000, H = 1000, c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    var g = c.getContext("2d");
+    g.fillStyle = "#0a0907"; g.fillRect(0,0,W,H);
+
+    var bench = g.createLinearGradient(0, H*0.34, 0, H);
+    bench.addColorStop(0,"#2a1e13"); bench.addColorStop(0.35,"#140d07"); bench.addColorStop(1,"#0a0806");
+    g.fillStyle = bench; g.fillRect(0, H*0.34, W, H*0.66);
+
+    var cx = wide ? W*0.63 : W*0.5;
+    var key = g.createRadialGradient(cx, H*0.27, 10, cx, H*0.27, W*0.34);
+    key.addColorStop(0,"rgba(255,196,96,0.98)");
+    key.addColorStop(0.35,"rgba(198,126,44,0.55)");
+    key.addColorStop(1,"rgba(0,0,0,0)");
+    g.fillStyle = key; g.fillRect(0,0,W,H);
+
+    g.fillStyle = "rgba(24,16,9,0.94)";
+    g.beginPath(); g.ellipse(cx, H*0.26, H*0.085, H*0.20, 0, 0, Math.PI*2); g.fill();
+    var glass = g.createLinearGradient(cx - H*0.07, 0, cx + H*0.07, 0);
+    glass.addColorStop(0,"rgba(255,196,110,0.14)");
+    glass.addColorStop(0.5,"rgba(255,219,150,0.88)");
+    glass.addColorStop(1,"rgba(255,196,110,0.10)");
+    g.fillStyle = glass;
+    g.beginPath(); g.ellipse(cx, H*0.29, H*0.068, H*0.165, 0, 0, Math.PI*2); g.fill();
+
+    if (busyBottom){
+      var spill = g.createRadialGradient(W*0.34, H*0.74, 6, W*0.34, H*0.74, W*0.20);
+      spill.addColorStop(0,"rgba(255,247,228,0.98)");
+      spill.addColorStop(0.5,"rgba(240,206,150,0.55)");
+      spill.addColorStop(1,"rgba(0,0,0,0)");
+      g.fillStyle = spill; g.fillRect(0, H*0.5, W, H*0.5);
+    }
+
+    var d = g.getImageData(0,0,W,H), p = d.data;
+    for (var i=0; i<p.length; i+=4){
+      var n = (Math.random()-0.5)*9;
+      p[i]=clamp(p[i]+n); p[i+1]=clamp(p[i+1]+n); p[i+2]=clamp(p[i+2]+n);
+    }
+    g.putImageData(d,0,0);
+    return c.toDataURL("image/jpeg", 0.86);
+  }
+
   fillRatios("hero");
-  addFrame("sample-clean-bottom.jpg", synth(false), "hero");
-  addFrame("sample-lit-bottom.jpg",   synth(true),  "hero");
+  addFrame("sample-clean-bottom.jpg", synth(false, false), "hero");
+  addFrame("sample-lit-bottom.jpg",   synth(true,  false), "hero");
+  addFrame("sample-wide-offcentre.jpg", synth(false, true), "hero");
 })();
 </script>
 </body>
