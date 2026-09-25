@@ -142,3 +142,19 @@ it, or the branch has to be reconciled and the connected theme published
 instead. Until then "deploy from git" is not true of this store, and the
 section's own warning about a file two systems both write to now applies to
 the whole theme.
+
+### Resolved
+
+`spirithaus-theme/scrim-floor` was published on 2026-09-25 and is the live
+theme. Verified after the fact: `spirithaus-collection-hero.liquid` is 11824
+bytes, so the source-aware floor is in force, and
+`templates/collection.json` carries `overlay_opacity: 70`. The floor and the
+setting agree, so the change was invisible, which is what a correct no-op
+publish looks like.
+
+The collection-page `spirithaus-hero` block was also raised from 62 to 70 in
+the editor. That section sets its type in pure white and its own floor is 58,
+so 70 is comfortably clear.
+
+Still open: `spirithaus-theme/main` holds the GitHub connection and is
+unpublished, so the branch and the storefront remain disconnected.
