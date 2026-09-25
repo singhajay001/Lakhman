@@ -250,11 +250,22 @@ for (const file of files) {
   // A focals entry that is present but not a usable pair is worse than an absent
   // one: it would suppress the assumed-position banner while still being a guess.
   const entry = focals && focals[file];
-  const usable = entry && typeof entry.x === "number" && typeof entry.y === "number"
+  // Three states, not two. A frame with no canonical subject -- a receding shelf
+  // corridor where two reviewers would honestly pick different bottles -- has no
+  // focal to be right or wrong about, and scoring one against an arbitrary pick
+  // injects noise into crop survival, occlusion and the sweep alike. Marked
+  // { "subjectless": true } it stays in the corpus for the text metrics, which do
+  // not need a subject, and drops out of everything that does. That is different
+  // from a focal that is missing (assumed, and the report says so) and from one
+  // that is malformed (named in a warning).
+  const subjectless = !!(entry && entry.subjectless === true);
+  const usable = !subjectless && entry
+    && typeof entry.x === "number" && typeof entry.y === "number"
     && entry.x >= 0 && entry.x <= 1 && entry.y >= 0 && entry.y <= 1;
-  if (entry && !usable) unusableFocals.push(file);
-  const focal = usable ? { x: entry.x, y: entry.y, r: entry.r ?? FOCAL_R }
-                       : { x: 0.5, y: TARGET_Y, r: FOCAL_R };
+  if (entry && !usable && !subjectless) unusableFocals.push(file);
+  const focal = subjectless ? null
+    : usable ? { x: entry.x, y: entry.y, r: entry.r ?? FOCAL_R }
+             : { x: 0.5, y: TARGET_Y, r: FOCAL_R };
   const focalKnown = !!usable;
 
   const result = await page.evaluate(
@@ -264,8 +275,9 @@ for (const file of files) {
   );
 
   // Safe-zone sweep: walk the focal point down the master and record what survives.
+  // Skipped for a subjectless frame, so it contributes to no sweep statistic.
   const sweep = [];
-  for (let y = SWEEP_STEP; y < 1; y = +(y + SWEEP_STEP).toFixed(4)) {
+  for (let y = subjectless ? 2 : SWEEP_STEP; y < 1; y = +(y + SWEEP_STEP).toFixed(4)) {
     const r = await page.evaluate(
       ([src, opts]) => window.scrimProof.analyse(src, opts),
       [src, { name: file, slot: args.slot === true ? undefined : args.slot,
@@ -280,7 +292,7 @@ for (const file of files) {
   // `result.focal` is the focal REPORT; keep the spec under its own key or one
   // silently overwrites the other and three metrics come back empty.
   srcAspects.add(+(result.width / result.height).toFixed(3));
-  assets.push({ ...result, file, focalSpec: focal, focalKnown,
+  assets.push({ ...result, file, focalSpec: focal, focalKnown, subjectless,
                 label: labels ? (labels[file] || null) : null,
                 labelReason: labelReasons ? (labelReasons[file] || null) : null, sweep });
   process.stderr.write(`${result.modes.band?.worst ?? "-"} -> ${result.modes.glyph?.worst ?? "-"}\n`);
@@ -306,6 +318,7 @@ const perAsset = assets.map(a => {
   const f = a.focal?.rows || [];
   return {
     file: a.file, slot: a.slot, label: a.label, labelReason: a.labelReason,
+    subjectless: a.subjectless,
     legacy: a.modes.band?.worst ?? null,
     current: a.modes.glyph?.worst ?? null,
     focalStatus: a.focal?.status ?? null,
@@ -476,10 +489,11 @@ const newlyFailed = perAsset.filter(a => a.legacy === "pass" && a.current !== "p
 const newlyPassed = perAsset.filter(a => a.legacy !== "pass" && a.current === "pass");
 
 // Safe-zone: at each Y, across every asset and viewport, how often does the focal survive?
-const sweepYs = assets.length ? assets[0].sweep.map(s => s.y) : [];
+const swept = assets.filter(a => a.sweep.length);
+const sweepYs = swept.length ? swept[0].sweep.map(s => s.y) : [];
 const safeZone = sweepYs.map((y, i) => {
   let total = 0, survived = 0, cropSum = 0, typeSum = 0, scrimSum = 0, lossSum = 0;
-  for (const a of assets) {
+  for (const a of swept) {
     for (const v of a.sweep[i].viewports) {
       total++;
       if (v.status === "pass") survived++;
@@ -548,6 +562,7 @@ const report = {
   sourceAspects: [...srcAspects].sort((a, b) => a - b),
   slots: slotsForMaster,
   focalKnown: assets.filter(a => a.focalKnown).length,
+  subjectless: assets.filter(a => a.subjectless).map(a => a.file),
   unusableFocals,
   labelled: labelledCount,
   assetCount: assets.length,
