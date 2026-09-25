@@ -788,11 +788,15 @@ footer b{color:var(--ink);font-weight:500}
     return r >= ma ? { sw: 1, sh: ma / r } : { sw: r / ma, sh: 1 };
   }
 
-  // "square" centre-crops the source to a square first, per the shooting brief, and is
-  // the default. "source" keeps the source's own aspect, which is what the storefront
-  // actually covers with when a non-square file is uploaded. The two produce different
-  // safe zones and different readings, so the choice is explicit rather than assumed.
-  var MASTER_MODE = "square";
+  // "source" keeps the master at the source's own aspect, which is what the storefront
+  // covers with, and is the default. "square" centre-crops to a square first, modelling
+  // a workflow that squares its exports before upload. On a square source the two are
+  // identical, so the default follows the file rather than assuming a shape.
+  //
+  // The difference reaches only the WIDE viewports: cover-cropping to a narrow ratio
+  // reaches the same pixels either way, so tablet and phone are pixel-identical. What
+  // moves is vertical latitude -- 42.7% of a 3:2 source's height squared, 64.1% native.
+  var MASTER_MODE = "source";
 
   function buildMaster(frame, size, mode){
     var img = frame.img, iw = img.naturalWidth, ih = img.naturalHeight;

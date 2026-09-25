@@ -20,11 +20,12 @@
  *                          THESE — see the threshold section of the report.
  *   --slot hero|tile       Override the slot inferred from each filename.
  *   --sweep-step 0.05      Granularity of the safe-zone sweep.
- *   --master square|source Build each master by centre-cropping the source to a
- *                          square (the brief's instruction, default), or by keeping
- *                          the source's own aspect (what the storefront covers with
- *                          when a non-square file is uploaded). The two give
- *                          different safe zones and different readings.
+ *   --master source|square Build each master by keeping the source's own aspect
+ *                          (default), which is what the storefront covers with, or by
+ *                          centre-cropping to a square first. On a square source the
+ *                          two are identical, so "source" simply follows the file;
+ *                          "square" is for modelling a workflow that squares its
+ *                          exports before upload.
  *
  * Requires node 18+ and playwright with Chromium available.
  */
@@ -204,7 +205,10 @@ await page.goto(pathToFileURL(path.resolve(args.page)).href);
 await page.waitForFunction("!!window.scrimProof", null, { timeout: 15000 })
   .catch(() => die(`${args.page} does not expose window.scrimProof — is it the current build?`));
 
-const MASTER = args.master === true ? "square" : (args.master || "square");
+// Default: follow the file. A square source makes the two modes identical, so this is
+// correct for a square-export workflow as well, and stops being correct for nobody when
+// the uploads are 3:2 -- which is what the corpus actually is.
+const MASTER = args.master === true ? "source" : (args.master || "source");
 if (MASTER !== "square" && MASTER !== "source")
   die(`--master must be "square" or "source", got ${JSON.stringify(MASTER)}`);
 
