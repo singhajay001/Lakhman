@@ -74,7 +74,15 @@ the current live theme:
 
 - `spirithaus-theme/desc-clamp`, id 167094059254
 
-Status at the time of writing: the duplicate is still copying, so the patched
-section has not been written into it yet and the byte sizes below are not yet
-verified. This section is updated once it has been. Live is untouched either
-way, and stays so until the draft is published from admin.
+Verified after the write: `spirithaus-collection-hero.liquid` is 15794 bytes
+and byte-identical to the local build, and Shopify raised no Liquid errors on
+upsert. `templates/index.json` (3366) and `templates/collection.json` (805)
+are byte-identical to live, so nothing else moves.
+
+One thing the duplicate caught: live's `templates/collection.json` had grown
+from 777 to 805 bytes between reading it and copying it, because the
+collection-page hero's `cta_link` was set to `shopify://collections/all` in
+the editor. That button renders only when both label and link are filled, so
+it was previously not drawn at all. The duplicate carries the change.
+
+Live is untouched and stays so until the draft is published from admin.
