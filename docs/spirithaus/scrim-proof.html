@@ -538,7 +538,7 @@ footer b{color:var(--ink);font-weight:500}
         <label for="focalR">Focal radius (% of master)</label><input type="number" id="focalR" min="2" max="30" step="1" value="9">
         <label for="minCrop">Min visible after crop (%)</label><input type="number" id="minCrop" min="0" max="100" step="1" value="90">
         <label for="maxType">Max under type (%)</label><input type="number" id="maxType" min="0" max="100" step="1" value="5">
-        <label for="maxScrim">Max lost to scrim (%)</label><input type="number" id="maxScrim" min="0" max="100" step="1" value="40">
+        <label for="maxScrim">Max scrim loss (%)</label><input type="number" id="maxScrim" min="0" max="100" step="1" value="40">
       </div>
       <div class="verdict">
         <span class="chip" id="focalChip">—</span>
@@ -780,8 +780,37 @@ footer b{color:var(--ink);font-weight:500}
   }
 
 
+  // Which rectangle of the master a given target ratio keeps, as fractions of the
+  // master's own width and height. Generalised over the master's aspect so the same
+  // arithmetic serves a square master and a source-shaped one; at ma = 1 it reduces
+  // exactly to the square case it replaced.
+  function coverFrac(r, ma){
+    return r >= ma ? { sw: 1, sh: ma / r } : { sw: r / ma, sh: 1 };
+  }
+
+  // "source" keeps the master at the source's own aspect, which is what the storefront
+  // covers with, and is the default. "square" centre-crops to a square first, modelling
+  // a workflow that squares its exports before upload. On a square source the two are
+  // identical, so the default follows the file rather than assuming a shape.
+  //
+  // The difference reaches only the WIDE viewports: cover-cropping to a narrow ratio
+  // reaches the same pixels either way, so tablet and phone are pixel-identical. What
+  // moves is vertical latitude -- 42.7% of a 3:2 source's height squared, 64.1% native.
+  var MASTER_MODE = "source";
+
   function buildMaster(frame, size, mode){
     var img = frame.img, iw = img.naturalWidth, ih = img.naturalHeight;
+
+    if (MASTER_MODE === "source"){
+      var ma = iw / ih;
+      var cs = document.createElement("canvas");
+      cs.width  = ma >= 1 ? size : Math.max(1, Math.round(size * ma));
+      cs.height = ma >= 1 ? Math.max(1, Math.round(size / ma)) : size;
+      var gs = cs.getContext("2d");
+      gs.drawImage(img, 0, 0, iw, ih, 0, 0, cs.width, cs.height);
+      return paintVeil(cs, gs, frame, mode);
+    }
+
     var S = Math.min(iw, ih), axis = cropAxis(img);
     var sx = axis === "x" ? (iw - S) * frame.window : 0;
     var sy = axis === "y" ? (ih - S) * frame.window : 0;
@@ -790,6 +819,13 @@ footer b{color:var(--ink);font-weight:500}
     c.width = c.height = size;
     var g = c.getContext("2d");
     g.drawImage(img, sx, sy, S, S, 0, 0, size, size);
+    return paintVeil(c, g, frame, mode);
+  }
+
+  // The veil, applied to whatever master shape it was handed. Split out so both master
+  // modes bake it identically rather than each growing its own copy.
+  function paintVeil(c, g, frame, mode){
+    var size = c.height, W = c.width;
 
     if (frame.gradient > 0){
       // A UNIFORM veil over the quiet zone, feathered in above it. A gradient
@@ -804,9 +840,9 @@ footer b{color:var(--ink);font-weight:500}
       grd.addColorStop(0, "rgba(17,17,16,0)");
       grd.addColorStop(1, "rgba(17,17,16," + frame.gradient + ")");
       g.fillStyle = grd;
-      g.fillRect(0, top - feather, size, feather);
+      g.fillRect(0, top - feather, W, feather);
       g.fillStyle = "rgba(17,17,16," + frame.gradient + ")";
-      g.fillRect(0, top, size, size - top);
+      g.fillRect(0, top, W, size - top);
     }
     return c;
   }
@@ -820,13 +856,14 @@ footer b{color:var(--ink);font-weight:500}
   // change to the two metrics that are actually about text.
   function analyse(master, r, alpha, zone, bandTopFrac, width, focal){
     var TW = width, TH = Math.max(1, Math.round(TW / r));
-    var M = master.width;
-    var sw = r >= 1 ? M : M * r;
-    var sh = r >= 1 ? M / r : M;
+    var MW = master.width, MH = master.height;
+    var cf = coverFrac(r, MW / MH);
+    var sw = cf.sw * MW, sh = cf.sh * MH;
+    var sx0 = (MW - sw) / 2, sy0 = (MH - sh) / 2;
 
     work.width = TW; work.height = TH;
     wctx.clearRect(0, 0, TW, TH);
-    wctx.drawImage(master, (M - sw) / 2, (M - sh) / 2, sw, sh, 0, 0, TW, TH);
+    wctx.drawImage(master, sx0, sy0, sw, sh, 0, 0, TW, TH);
 
     var data;
     try { data = wctx.getImageData(0, 0, TW, TH).data; }
@@ -862,33 +899,57 @@ footer b{color:var(--ink);font-weight:500}
     // Focal retention, sampled over a disc on the master and classified against the
     // same crop, type region and composited pixels the rest of the pass used. The
     // three losses are diagnosed independently because they have different fixes:
-    // re-crop, re-compose, or lighten the subject.
+    // re-crop, re-compose, or lift the scrim. Scrim loss is a DELTA — what the veil
+    // took away — not an absolute reading, so a subject the photographer put in deep
+    // shadow is not scored as a rendering defect.
     if (focal){
-      var M = master.width;
-      var sw = r >= 1 ? M : M * r, sh = r >= 1 ? M / r : M;
-      var sx0 = (M - sw) / 2, sy0 = (M - sh) / 2;
-      var N = 48, total = 0, vis = 0, underType = 0, lost = 0;
+      // Radius against the master's shorter side, so the disc stays a circle in master
+      // pixels whatever shape the master is. On a square master this is the same
+      // number it always was.
+      var Rpx = focal.r * Math.min(MW, MH);
+      var fxp = focal.x * MW, fyp = focal.y * MH;
+      var N = 48, total = 0, vis = 0, underType = 0, lost = 0, rawOk = 0, postOk = 0;
       for (var gy = 0; gy < N; gy++){
         for (var gx = 0; gx < N; gx++){
           var ux = ((gx + 0.5) / N) * 2 - 1, uy = ((gy + 0.5) / N) * 2 - 1;
           if (ux * ux + uy * uy > 1) continue;
           total++;
-          var cxp = ((focal.x + ux * focal.r) * M - sx0) / sw * TW;
-          var cyp = ((focal.y + uy * focal.r) * M - sy0) / sh * TH;
+          var cxp = (fxp + ux * Rpx - sx0) / sw * TW;
+          var cyp = (fyp + uy * Rpx - sy0) / sh * TH;
           if (cxp < 0 || cyp < 0 || cxp >= TW || cyp >= TH) continue;   // cropped away
           vis++;
           var px = Math.floor(cxp), py = Math.floor(cyp);
           if (zone.kind === "band" ? (py >= zone.top) : !!zone.data[py * TW + px]) underType++;
           var j = (py * TW + px) * 4;
-          if (contrast(relLum(data[j] * k + INK[0] * a,
-                              data[j+1] * k + INK[1] * a,
-                              data[j+2] * k + INK[2] * a), INK_LUM) < SCRIM_VISIBLE_CONTRAST) lost++;
+          // Sampled twice against the same ink: once from the photograph as shot,
+          // once from the composited pixel. `data` holds the pre-scrim frame — the
+          // veil is applied arithmetically here — so both readings come from one
+          // buffer with no second render.
+          var rawVis = contrast(relLum(data[j], data[j+1], data[j+2]),
+                                INK_LUM) >= SCRIM_VISIBLE_CONTRAST;
+          var postVis = contrast(relLum(data[j] * k + INK[0] * a,
+                                        data[j+1] * k + INK[1] * a,
+                                        data[j+2] * k + INK[2] * a),
+                                 INK_LUM) >= SCRIM_VISIBLE_CONTRAST;
+          if (rawVis) rawOk++;
+          if (postVis) postOk++; else lost++;
         }
       }
+      // Measured over the samples that survive the crop, not over the whole disc, so
+      // crop loss stays in `cropVisible` and cannot leak into the scrim's account.
+      var rawPct = vis ? (rawOk / vis) * 100 : 0;
+      var postPct = vis ? (postOk / vis) * 100 : 0;
       out.focal = {
         cropVisible: total ? +((vis / total) * 100).toFixed(1) : 0,
         typeOccluded: total ? +((underType / total) * 100).toFixed(1) : 0,
-        scrimCovered: total ? +((lost / total) * 100).toFixed(1) : 0
+        // Absolute distinguishability of the composited pixel. Retained as a
+        // diagnostic only: on low-key photography it reports the subject's own
+        // darkness, which is a compositional choice and not a rendering defect.
+        // Never blocking. `scrimLoss` is the quantity the focal check acts on.
+        scrimCovered: total ? +((lost / total) * 100).toFixed(1) : 0,
+        rawDistinguishable: +rawPct.toFixed(1),
+        postScrimDistinguishable: +postPct.toFixed(1),
+        scrimLoss: +Math.max(0, rawPct - postPct).toFixed(1)
       };
     }
     return out;
@@ -1260,7 +1321,7 @@ footer b{color:var(--ink);font-weight:500}
     var reasons = [];
     if (fm.cropVisible < (+el.minCrop.value)) reasons.push("crop loss");
     if (fm.typeOccluded > (+el.maxType.value)) reasons.push("typography occlusion");
-    if (fm.scrimCovered > (+el.maxScrim.value)) reasons.push("scrim obscuration");
+    if (fm.scrimLoss > (+el.maxScrim.value)) reasons.push("scrim obscuration");
     return {
       retention: fm.cropVisible >= 99.5 ? "full" : fm.cropVisible <= 0.5 ? "lost" : "partial",
       reasons: reasons,
@@ -1279,6 +1340,9 @@ footer b{color:var(--ink);font-weight:500}
         cropVisible: fm ? fm.cropVisible : null,
         typeOccluded: fm ? fm.typeOccluded : null,
         scrimCovered: fm ? fm.scrimCovered : null,
+        rawDistinguishable: fm ? fm.rawDistinguishable : null,
+        postScrimDistinguishable: fm ? fm.postScrimDistinguishable : null,
+        scrimLoss: fm ? fm.scrimLoss : null,
         status: st ? st.status : "unknown",
         reasons: st ? st.reasons : []
       };
@@ -1329,7 +1393,7 @@ footer b{color:var(--ink);font-weight:500}
       row.appendChild(name);
       [[r.cropVisible, r.reasons.indexOf("crop loss") > -1],
        [r.typeOccluded, r.reasons.indexOf("typography occlusion") > -1],
-       [r.scrimCovered, r.reasons.indexOf("scrim obscuration") > -1]].forEach(function(pair){
+       [r.scrimLoss, r.reasons.indexOf("scrim obscuration") > -1]].forEach(function(pair){
         var n = document.createElement("span");
         n.className = "n";
         n.textContent = (pair[0] === null ? "\u2014" : pair[0] + "%");
@@ -1344,12 +1408,26 @@ footer b{color:var(--ink);font-weight:500}
   // it is guaranteed to be clipped somewhere, however well the frame reads on the
   // screen in front of you — the widest ratio takes only a centred band of the
   // height, and the narrowest takes only a centred band of the width.
-  function safeZone(slotKey){
+  // The region of the master surviving EVERY view's crop. It is a property of the
+  // slot AND of the master's aspect: a square master gives the hero 0.127-0.873 across
+  // x, while a 3:2 master narrows it to about 0.25-0.75, because the phone crop takes
+  // the same ratio out of a wider frame. Passing the aspect keeps that explicit.
+  // The aspect the master is built at right now. 1 while masters are squared; the
+  // frame's own aspect once they are not. The guides read this rather than assuming,
+  // so what is drawn stays the region that is actually measured.
+  function currentMasterAspect(){
+    if (MASTER_MODE !== "source") return 1;
+    var f = frames[current];
+    return f && f.img && f.img.naturalHeight ? f.img.naturalWidth / f.img.naturalHeight : 1;
+  }
+
+  function safeZone(slotKey, masterAspect){
+    var ma = masterAspect || 1;
     var x0 = 0, x1 = 1, y0 = 0, y1 = 1;
     SLOTS[slotKey].views.forEach(function(v){
-      var sw = v.ratio >= 1 ? 1 : v.ratio, sh = v.ratio >= 1 ? 1 / v.ratio : 1;
-      x0 = Math.max(x0, (1 - sw) / 2); x1 = Math.min(x1, (1 + sw) / 2);
-      y0 = Math.max(y0, (1 - sh) / 2); y1 = Math.min(y1, (1 + sh) / 2);
+      var cf = coverFrac(v.ratio, ma);
+      x0 = Math.max(x0, (1 - cf.sw) / 2); x1 = Math.min(x1, (1 + cf.sw) / 2);
+      y0 = Math.max(y0, (1 - cf.sh) / 2); y1 = Math.min(y1, (1 + cf.sh) / 2);
     });
     return { x0: x0, x1: x1, y0: y0, y1: y1 };
   }
@@ -1357,9 +1435,9 @@ footer b{color:var(--ink);font-weight:500}
   // Crop-space position of the focal disc for the view on screen. The disc is a
   // circle on the square master, so a non-square crop renders it as an ellipse —
   // which is exactly what the viewer sees.
-  function focalInView(focal, view){
-    var sw = view.ratio >= 1 ? 1 : view.ratio;
-    var sh = view.ratio >= 1 ? 1 / view.ratio : 1;
+  function focalInView(focal, view, masterAspect){
+    var cf = coverFrac(view.ratio, masterAspect || 1);
+    var sw = cf.sw, sh = cf.sh;
     return {
       x: (focal.x - (1 - sw) / 2) / sw,
       y: (focal.y - (1 - sh) / 2) / sh,
@@ -1430,10 +1508,11 @@ footer b{color:var(--ink);font-weight:500}
         g.lineWidth = dpr; g.beginPath(); g.moveTo(0, vy); g.lineTo(c.width, vy); g.stroke();
         g.setLineDash([]);
       }
-      var sz = safeZone(slotKey);
+      var ma = currentMasterAspect();
+      var sz = safeZone(slotKey, ma);
       var szv = {
-        a: focalInView({ x: sz.x0, y: sz.y0, r: 0 }, view),
-        b: focalInView({ x: sz.x1, y: sz.y1, r: 0 }, view)
+        a: focalInView({ x: sz.x0, y: sz.y0, r: 0 }, view, ma),
+        b: focalInView({ x: sz.x1, y: sz.y1, r: 0 }, view, ma)
       };
       g.strokeStyle = "rgba(122,143,107,.6)"; g.setLineDash([2 * dpr, 4 * dpr]);
       g.lineWidth = dpr;
@@ -1441,7 +1520,7 @@ footer b{color:var(--ink);font-weight:500}
                    (szv.b.x - szv.a.x) * c.width, (szv.b.y - szv.a.y) * c.height);
       g.setLineDash([]);
 
-      var f = focalInView(focal, view);
+      var f = focalInView(focal, view, ma);
       var row = rep ? rep.rows.filter(function(r){ return r.viewport === view.id; })[0] : null;
       var bad = row && row.status === "fail";
       g.strokeStyle = bad ? "rgba(207,28,41,.95)" : "rgba(122,143,107,.95)";
@@ -1733,7 +1812,7 @@ footer b{color:var(--ink);font-weight:500}
       fonts: fontsLoaded ? "loaded" : "substituted",
       focal: focalSpec(f),
       thresholds: { minCropVisible: +el.minCrop.value, maxTypeOccluded: +el.maxType.value,
-                    maxScrimCovered: +el.maxScrim.value },
+                    maxScrimLoss: +el.maxScrim.value },
       viewports: lastFocal.rows,
       worst: lastFocal.worst,
       status: lastFocal.status
@@ -1842,6 +1921,116 @@ footer b{color:var(--ink);font-weight:500}
     el.typeBody.textContent = fontsLoaded
       ? profile.tokens.fontDisplay + " and " + profile.tokens.fontMono + " are present, so glyph boxes are measured at the theme's real metrics."
       : missing.join(" and ") + " did not load. Results are directional only \u2014 comparable with other runs in this state, but not a basis for setting thresholds.";
+  }
+
+  /* ---------- automation surface ---------- */
+  // A narrow, documented hook for the calibration runner. Everything it exposes is
+  // what the UI already does: there is one engine, so a batch report cannot drift
+  // from what this page shows. It reads state and returns plain data; it cannot
+  // publish, save, or reach the network.
+  window.scrimProof = {
+    version: 1,
+    profile: profile,
+    fontsLoaded: function(){ return fontsLoaded; },
+    slots: function(masterAspect){
+      var ma = masterAspect || 1;
+      var out = {};
+      Object.keys(SLOTS).forEach(function(k){
+        out[k] = {
+          scrim: SLOTS[k].scrim,
+          zone: SLOTS[k].zone,
+          masterAspect: ma,
+          safeZone: profile.placements[k] ? safeZone(k, ma) : null,
+          views: SLOTS[k].views.map(function(v){
+            return { id: v.id, label: v.label, ratio: +v.ratio.toFixed(4),
+                     cssW: Math.round(v.cssW), cssH: Math.round(v.cssH) };
+          })
+        };
+      });
+      return out;
+    },
+
+    // src: any URL the page can load (data: is what the runner uses).
+    // opts: { name, slot, modes, focal:{x,y,r}, thresholds:{minCrop,maxType,maxScrim},
+    //         headline, scrim, window, gradient }
+    analyse: function(src, opts){
+      opts = opts || {};
+      return new Promise(function(resolve, reject){
+        var img = new Image();
+        img.onload = function(){
+          try { resolve(runAnalysis(img, opts)); } catch (e) { reject(String(e)); }
+        };
+        img.onerror = function(){ reject("could not decode image"); };
+        img.src = src;
+      });
+    }
+  };
+
+  function runAnalysis(img, opts){
+    var slot = opts.slot || detectSlot(opts.name || "");
+    if (!SLOTS[slot]) throw new Error("unknown slot " + slot);
+    if (opts.master != null){
+      if (opts.master !== "square" && opts.master !== "source")
+        throw new Error('master must be "square" or "source", got ' + opts.master);
+      MASTER_MODE = opts.master;
+    }
+
+    // The engine reads its options from the controls, so drive those rather than
+    // introducing a second configuration path that could disagree with the UI.
+    if (opts.headline != null) el.headlineText.value = opts.headline;
+    el.focalOn.checked = !!opts.focal;
+    if (opts.focal && opts.focal.r) el.focalR.value = String(Math.round(opts.focal.r * 100));
+    if (opts.thresholds){
+      if (opts.thresholds.minCrop != null) el.minCrop.value = String(opts.thresholds.minCrop);
+      if (opts.thresholds.maxType != null) el.maxType.value = String(opts.thresholds.maxType);
+      if (opts.thresholds.maxScrim != null) el.maxScrim.value = String(opts.thresholds.maxScrim);
+    }
+
+    var frame = {
+      name: opts.name || "(unnamed)",
+      img: img,
+      slot: slot,
+      window: opts.window == null ? 0.5 : opts.window,
+      gradient: opts.gradient == null ? 0 : opts.gradient,
+      scrim: opts.scrim == null ? SLOTS[slot].scrim : opts.scrim,
+      focal: opts.focal ? { x: opts.focal.x, y: opts.focal.y } : null
+    };
+
+    var ratios = {};
+    SLOTS[slot].views.forEach(function(v){ ratios[v.id] = +v.ratio.toFixed(4); });
+
+    var out = {
+      name: frame.name, slot: slot, scrim: frame.scrim,
+      master: MASTER_MODE,
+      masterAspect: MASTER_MODE === "source"
+        ? +(img.naturalWidth / img.naturalHeight).toFixed(4) : 1,
+      width: img.naturalWidth, height: img.naturalHeight,
+      sourceRatio: +(img.naturalWidth / img.naturalHeight).toFixed(4),
+      fontsLoaded: fontsLoaded,
+      modes: {}
+    };
+
+    (opts.modes || ["band", "glyph"]).forEach(function(mode){
+      var a = audit(frame, opts.width || ANALYSE_W, mode);
+      if (!a){ out.modes[mode] = null; return; }
+      out.modes[mode] = {
+        worst: a.worst,
+        rows: a.rows.map(function(r){
+          return {
+            viewport: r.key, ratio: ratios[r.key], state: r.state,
+            contrast: r.m ? +r.m.contrast.toFixed(2) : null,
+            intrusion: r.m ? +r.m.intrusion.toFixed(1) : null,
+            survival: r.m ? +r.m.survival.toFixed(1) : null,
+            focal: r.m && r.m.focal ? r.m.focal : null
+          };
+        })
+      };
+      if (mode === "glyph" && opts.focal){
+        var rep = focalReport(frame, a);
+        out.focal = rep ? { status: rep.status, failing: rep.failing, rows: rep.rows } : null;
+      }
+    });
+    return out;
   }
 
   checkFonts();                      // answer immediately; refine once loading settles

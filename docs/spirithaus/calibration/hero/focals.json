@@ -1,0 +1,17 @@
+{
+  "hero-whisky-shelf-a.png": { "x": 0.82, "y": 0.52 },
+  "hero-whisky-shelf-b.png": { "x": 0.81, "y": 0.52 },
+  "hero-whisky-shelf-c.png": { "x": 0.83, "y": 0.52 },
+  "hero-whisky-shelf-d.png": { "x": 0.79, "y": 0.52 },
+  "hero-whisky-cask.png": { "x": 0.65, "y": 0.63 },
+  "hero-gin-botanicals.png": { "x": 0.62, "y": 0.45 },
+  "hero-tequila-pina.png": { "x": 0.62, "y": 0.57 },
+  "hero-liqueurs-trio.png": { "x": 0.78, "y": 0.50 },
+  "hero-vodka-ice.png": { "x": 0.73, "y": 0.52 },
+  "hero-cocktails-cans-a.png": { "x": 0.77, "y": 0.48 },
+  "hero-cocktails-cans-b.png": { "x": 0.77, "y": 0.47 },
+  "hero-cocktails-cans-c.png": { "x": 0.78, "y": 0.47 },
+  "hero-rum-cane.png": { "x": 0.77, "y": 0.47 },
+  "hero-hand-bottle.png": { "x": 0.63, "y": 0.57 },
+  "hero-store-interior.png": { "subjectless": true }
+}
