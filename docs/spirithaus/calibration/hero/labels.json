@@ -3,5 +3,46 @@
     "desktop-1920": "accept",
     "laptop-1440": "accept",
     "small-1024": "accept"
+  },
+  "hero-cocktails-cans-a.png": {
+    "desktop-1920": "accept",
+    "laptop-1440": "accept",
+    "small-1024": "accept"
+  },
+  "hero-cocktails-cans-b.png": {
+    "desktop-1920": "accept",
+    "laptop-1440": "accept",
+    "small-1024": "accept"
+  },
+  "hero-cocktails-cans-c.png": {
+    "desktop-1920": "accept",
+    "laptop-1440": "accept",
+    "small-1024": "accept"
+  },
+  "hero-gin-botanicals.png": {
+    "desktop-1920": "accept"
+  },
+  "hero-hand-bottle.png": {
+    "laptop-1440": "accept",
+    "small-1024": "accept"
+  },
+  "hero-liqueurs-trio.png": {
+    "desktop-1920": "accept",
+    "laptop-1440": "accept",
+    "small-1024": "accept"
+  },
+  "hero-tequila-pina.png": {
+    "desktop-1920": "accept",
+    "laptop-1440": "accept"
+  },
+  "hero-whisky-cask.png": {
+    "desktop-1920": "accept",
+    "laptop-1440": "accept",
+    "small-1024": "accept"
+  },
+  "hero-whisky-shelf-d.png": {
+    "desktop-1920": "accept",
+    "laptop-1440": "accept",
+    "small-1024": "accept"
   }
 }
