@@ -15,7 +15,7 @@
  *                          Where the subject actually is. Without it the target
  *                          band's centre is assumed, which is a guess, and the
  *                          report says so.
- *   --labels labels.json   { "hero-whisky.jpg": "accept" | "reject" }
+ *   --labels labels.json   { "hero-whisky.jpg": "accept" | "reject" | "reject-layout" }
  *                          Human verdicts. THRESHOLDS CANNOT BE DERIVED WITHOUT
  *                          THESE — see the threshold section of the report.
  *   --slot hero|tile       Override the slot inferred from each filename.
@@ -68,7 +68,19 @@ const rawLabels = args.labels ? readJson(args.labels) : null;
 // read "not derivable" while the file sat there full of verdicts.
 const ACCEPT = new Set(["accept", "pass", "good", "ok", "yes", "keep"]);
 const REJECT = new Set(["reject", "fail", "bad", "no", "reshoot"]);
+
+// Sub-classed rejects carry WHY alongside the verdict. Every one still normalises to
+// "reject" for the verdict, so threshold derivation is untouched — the reason rides
+// alongside and is what lets the report ask whether the tool agreed about the cause
+// and not merely about the outcome. "reshoot" is deliberately absent: it names a
+// remedy rather than a defect, and every reject is arguably a reshoot.
+const REJECT_REASONS = {
+  "reject-layout":   "layout",
+  "reject-subject":  "subject",
+  "reject-contrast": "contrast"
+};
 const labels = rawLabels ? {} : null;
+const labelReasons = rawLabels ? {} : null;
 const unreadableLabels = [];
 if (rawLabels) {
   for (const [k, v] of Object.entries(rawLabels)) {
@@ -76,11 +88,13 @@ if (rawLabels) {
     if (!t) continue;                                  // blank means not yet judged
     if (ACCEPT.has(t)) labels[k] = "accept";
     else if (REJECT.has(t)) labels[k] = "reject";
+    else if (REJECT_REASONS[t]) { labels[k] = "reject"; labelReasons[k] = REJECT_REASONS[t]; }
     else unreadableLabels.push(`${k}: ${JSON.stringify(v)}`);
   }
   if (unreadableLabels.length) {
     die(`these labels were not understood:\n  ${unreadableLabels.join("\n  ")}\n`
-      + `Use one of accept/pass/good/ok/yes/keep or reject/fail/bad/no/reshoot.\n`
+      + `Use one of accept/pass/good/ok/yes/keep, reject/fail/bad/no/reshoot,\n`
+      + `or a sub-classed reject: ${Object.keys(REJECT_REASONS).join(", ")}.\n`
       + `Refusing to run rather than quietly treating them as unlabelled.`);
   }
 }
@@ -203,7 +217,8 @@ for (const file of files) {
   // `result.focal` is the focal REPORT; keep the spec under its own key or one
   // silently overwrites the other and three metrics come back empty.
   assets.push({ ...result, file, focalSpec: focal, focalKnown,
-                label: labels ? (labels[file] || null) : null, sweep });
+                label: labels ? (labels[file] || null) : null,
+                labelReason: labelReasons ? (labelReasons[file] || null) : null, sweep });
   process.stderr.write(`${result.modes.band?.worst ?? "-"} -> ${result.modes.glyph?.worst ?? "-"}\n`);
 }
 await browser.close();
@@ -219,7 +234,7 @@ const perAsset = assets.map(a => {
   const g = a.modes.glyph?.rows || [];
   const f = a.focal?.rows || [];
   return {
-    file: a.file, slot: a.slot, label: a.label,
+    file: a.file, slot: a.slot, label: a.label, labelReason: a.labelReason,
     legacy: a.modes.band?.worst ?? null,
     current: a.modes.glyph?.worst ?? null,
     focalStatus: a.focal?.status ?? null,
@@ -257,6 +272,37 @@ for (const a of assets) {
     }
   }
 }
+
+// Diagnostic agreement. A binary label tests whether the tool reached the same
+// VERDICT; a sub-classed reject tests whether it reached the same CAUSE. The two can
+// come apart — a correct "reject" for the wrong reason sends someone to fix the wrong
+// thing — and only this table can show it.
+//
+// Deliberately a cross-tab and not a score. Mapping "reject-layout" onto the tool's
+// own reason tokens would mean inventing a correspondence nobody has agreed, and a
+// derived accuracy figure would inherit that invention while looking like a
+// measurement. The rows are counts; the reading is yours.
+const diagnosisCrossTab = (() => {
+  const rows = perAsset.filter(a => a.labelReason);
+  if (!rows.length) return null;
+  const byFile = {};
+  for (const m of failureMatrix) {
+    const seen = (byFile[m.file] ||= new Set());
+    // One row can name several causes; Set.add takes one argument, so they go in
+    // individually or all but the first are dropped without a word.
+    for (const reason of m.reason.split("; ")) if (reason) seen.add(reason);
+  }
+  const table = {};
+  for (const a of rows) {
+    const observed = [...(byFile[a.file] || new Set())].sort();
+    const cell = (table[a.labelReason] ||= { assets: 0, toolReasons: {} });
+    cell.assets++;
+    if (!observed.length) cell.toolReasons["(tool found nothing)"] =
+      (cell.toolReasons["(tool found nothing)"] || 0) + 1;
+    for (const o of observed) cell.toolReasons[o] = (cell.toolReasons[o] || 0) + 1;
+  }
+  return table;
+})();
 
 const newlyFailed = perAsset.filter(a => a.legacy === "pass" && a.current !== "pass");
 const newlyPassed = perAsset.filter(a => a.legacy !== "pass" && a.current === "pass");
@@ -337,7 +383,8 @@ const report = {
     legacy: tally(perAsset.map(a => a.legacy)),
     current: tally(perAsset.map(a => a.current))
   },
-  perAsset, failureMatrix, newlyFailed, newlyPassed, safeZone, sweepVerdict, thresholds,
+  perAsset, failureMatrix, diagnosisCrossTab, newlyFailed, newlyPassed, safeZone,
+  sweepVerdict, thresholds,
   pageErrors,
   assets
 };
@@ -483,6 +530,15 @@ ${rows(r.perAsset, a => [esc(a.file), esc(a.slot), chip(a.legacy), chip(a.curren
 ${r.failureMatrix.length ? `<table><tr><th>Asset</th><th>Viewport</th><th>Type</th><th>Severity</th><th>Reason</th></tr>
 ${rows(r.failureMatrix, f => [esc(f.file), esc(f.viewport), esc(f.type), chip(f.severity === "fail" ? "fail" : "warn"), esc(f.reason)])}
 </table>` : "<p class='dim'>No failures.</p>"}
+
+${r.diagnosisCrossTab ? `<h2>Diagnostic agreement</h2>
+<p class="dim">Sub-classed rejects say <em>why</em> a frame was turned down. This crosses your reason against the causes the tool named for the same frame. A correct verdict reached for the wrong reason sends someone to fix the wrong thing, and only this table shows it. It is a cross-tab, not a score &mdash; scoring it would mean inventing a correspondence between your vocabulary and the tool's, and no such correspondence has been agreed.</p>
+<table><tr><th>Your reason</th><th>Assets</th><th>Causes the tool named</th></tr>
+${Object.entries(r.diagnosisCrossTab).map(([reason, cell]) => `<tr><td>${esc(reason)}</td><td class="n">${cell.assets}</td><td>${
+  Object.entries(cell.toolReasons).sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => `${esc(k)} <span class="dim">&times;${v}</span>`).join("<br>")
+}</td></tr>`).join("\n")}
+</table>` : ""}
 
 <h2>Safe-zone analysis</h2>
 <p class="dim">The focal point walked down the master, then asked what survives &mdash; across every frame and every viewport. Survival counts a sample only when it passes all three focal tests at that viewport. The highlighted rows are the current target band, 0.33 to 0.40.</p>

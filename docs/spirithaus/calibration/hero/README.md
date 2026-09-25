@@ -14,7 +14,11 @@ node ../../tools/calibrate.mjs \
 ```
 
 `labels.json` is not committed yet; without it the run produces Reports A, B, C and E
-and correctly derives no thresholds.
+and correctly derives no thresholds. When labelling, prefer the sub-classed rejects
+(`reject-layout`, `reject-subject`, `reject-contrast`) over a bare `reject` — they cost
+nothing, leave threshold derivation untouched, and are the only way the report can check
+whether the tool agreed about the *cause* and not merely the verdict. See
+[../README.md](../README.md).
 
 ## Contents
 

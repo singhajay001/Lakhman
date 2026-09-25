@@ -22,7 +22,7 @@ named in that warning — a half-filled file cannot quietly pass itself off as c
 ## `labels.json` — your verdict on each frame
 
 ```json
-{ "hero-whisky.jpg": "pass", "hero-gin.jpg": "fail" }
+{ "hero-whisky.jpg": "pass", "hero-gin.jpg": "reject-layout" }
 ```
 
 `pass`, `accept`, `good`, `ok`, `yes` and `keep` all mean acceptable; `fail`, `reject`,
@@ -30,6 +30,35 @@ named in that warning — a half-filled file cannot quietly pass itself off as c
 Anything else stops the run with the offending entries named, rather than being dropped
 silently — a label the runner ignores looks exactly like no label at all, and the report
 would read "not derivable" while the file sat there full of verdicts.
+
+### Saying why, not just what
+
+Three sub-classed rejects record the *cause*:
+
+| label | the frame was turned down because of |
+|---|---|
+| `reject-layout` | where things sit — composition, crop, what the type lands on |
+| `reject-subject` | the subject itself — wrong hero, badly lit, unclear |
+| `reject-contrast` | tone — the scrim, the highlights, legibility of the type over it |
+
+All three still count as `reject` for threshold derivation, so using them costs nothing
+and the cut is unaffected. What they add is the **Diagnostic agreement** section: your
+reason crossed against the causes the tool named for the same frame.
+
+That is a different and harder test than the verdict. A frame you rejected for tone,
+which the tool rejected for crop, counts as perfect agreement on a binary label — and
+would send someone to recompose a picture that only needed its scrim adjusted. A wrong
+diagnosis behind a right verdict is invisible without this.
+
+It is reported as a cross-tab rather than an accuracy score. Scoring it would mean
+inventing a correspondence between your vocabulary and the tool's, and then reporting
+that invention as a measurement.
+
+Note there is no `reject-reshoot`. *Reshoot* is a remedy, not a defect, and every reject
+is arguably a reshoot; mixing causes with actions makes the axis unreadable. Record the
+cause here.
+
+These can only be collected while judging. Retrofitting them means labelling twice.
 
 **This file is what makes threshold derivation possible.** A distribution says what
 exists; only labels say what is acceptable. Without them the report shows distributions
