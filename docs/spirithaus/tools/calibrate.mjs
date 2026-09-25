@@ -81,20 +81,50 @@ const REJECT_REASONS = {
 };
 const labels = rawLabels ? {} : null;
 const labelReasons = rawLabels ? {} : null;
+// Per-viewport labels. An asset's verdict is its WORST viewport, so an asset-level
+// label cannot say whether a particular viewport was judged rightly — and the rows
+// where the two models diverge are precisely the rows that an asset verdict averages
+// away. A frame can fail on the phone and be perfectly publishable on the desktop.
+const viewportLabels = rawLabels ? {} : null;
+const ALL_KEYS = new Set(["*", "all", "default"]);
 const unreadableLabels = [];
+const readVerdict = (v) => {
+  const t = String(v == null ? "" : v).trim().toLowerCase();
+  if (!t) return { blank: true };
+  if (ACCEPT.has(t)) return { verdict: "accept" };
+  if (REJECT.has(t)) return { verdict: "reject" };
+  if (REJECT_REASONS[t]) return { verdict: "reject", reason: REJECT_REASONS[t] };
+  return null;
+};
 if (rawLabels) {
   for (const [k, v] of Object.entries(rawLabels)) {
-    const t = String(v == null ? "" : v).trim().toLowerCase();
-    if (!t) continue;                                  // blank means not yet judged
-    if (ACCEPT.has(t)) labels[k] = "accept";
-    else if (REJECT.has(t)) labels[k] = "reject";
-    else if (REJECT_REASONS[t]) { labels[k] = "reject"; labelReasons[k] = REJECT_REASONS[t]; }
-    else unreadableLabels.push(`${k}: ${JSON.stringify(v)}`);
+    // A plain string labels the whole asset. An object labels it per viewport, and
+    // "*" inside it still gives the asset-level verdict.
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      for (const [vp, vv] of Object.entries(v)) {
+        const r = readVerdict(vv);
+        if (!r) { unreadableLabels.push(`${k}[${vp}]: ${JSON.stringify(vv)}`); continue; }
+        if (r.blank) continue;
+        if (ALL_KEYS.has(vp.toLowerCase())) {
+          labels[k] = r.verdict;
+          if (r.reason) labelReasons[k] = r.reason;
+        } else {
+          (viewportLabels[k] ||= {})[vp] = r.verdict;
+        }
+      }
+      continue;
+    }
+    const r = readVerdict(v);
+    if (!r) { unreadableLabels.push(`${k}: ${JSON.stringify(v)}`); continue; }
+    if (r.blank) continue;
+    labels[k] = r.verdict;
+    if (r.reason) labelReasons[k] = r.reason;
   }
   if (unreadableLabels.length) {
     die(`these labels were not understood:\n  ${unreadableLabels.join("\n  ")}\n`
       + `Use one of accept/pass/good/ok/yes/keep, reject/fail/bad/no/reshoot,\n`
       + `or a sub-classed reject: ${Object.keys(REJECT_REASONS).join(", ")}.\n`
+      + `A value may also be an object keyed by viewport, with "*" for the asset.\n`
       + `Refusing to run rather than quietly treating them as unlabelled.`);
   }
 }
@@ -180,6 +210,19 @@ const meta = await page.evaluate(() => ({
 }));
 
 if (!meta.fontsLoaded) console.error("calibrate: WARNING — the page reports substitute fonts. Results are directional only.");
+
+// A mistyped viewport id would otherwise sit in the file looking like a judgement and
+// count for nothing, which is the same failure mode as an unrecognised verdict.
+if (viewportLabels) {
+  const known = new Set(Object.values(meta.slots).flatMap(s => s.views.map(v => v.id)));
+  const bad = [];
+  for (const [file, byVp] of Object.entries(viewportLabels))
+    for (const vp of Object.keys(byVp)) if (!known.has(vp)) bad.push(`${file}[${vp}]`);
+  if (bad.length) {
+    die(`these viewport labels name no viewport this theme renders:\n  ${bad.join("\n  ")}\n`
+      + `Known viewports: ${[...known].sort().join(", ")}.`);
+  }
+}
 
 const assets = [];
 const unusableFocals = [];
@@ -368,6 +411,39 @@ const divergenceSummary = {
 divergenceSummary.rate = divergenceSummary.viewportRows
   ? +((divergenceSummary.diverging / divergenceSummary.viewportRows) * 100).toFixed(1) : null;
 
+// Which model matched the reviewer, on the rows where they disagree. This is the A/B
+// question: agreement rows carry no information, so this is where the evidence is.
+//
+// "Would the model publish this?" has two defensible readings and picking one quietly
+// would decide the result by fiat, so both are reported. STRICT counts only `pass`,
+// matching the run sheet's acceptance criteria. LENIENT also counts `warn`, treating a
+// marginal reading as shippable. A conclusion that holds under both is a real finding;
+// one that flips between them is a statement about where the line was drawn.
+const adjudication = (() => {
+  if (!viewportLabels) return null;
+  const judged = divergence
+    .map(d => ({ ...d, human: viewportLabels[d.file]?.[d.viewport] || null }))
+    .filter(d => d.human);
+  if (!judged.length) return null;
+  const score = (accepts) => {
+    let legacyRight = 0, currentRight = 0, bothRight = 0, neitherRight = 0;
+    for (const d of judged) {
+      const l = (accepts.has(d.legacy) ? "accept" : "reject") === d.human;
+      const c = (accepts.has(d.current) ? "accept" : "reject") === d.human;
+      if (l && c) bothRight++; else if (l) legacyRight++; else if (c) currentRight++;
+      else neitherRight++;
+    }
+    return { legacyOnly: legacyRight, currentOnly: currentRight, both: bothRight,
+             neither: neitherRight, rows: judged.length };
+  };
+  return {
+    rows: judged.map(d => ({ file: d.file, viewport: d.viewport, legacy: d.legacy,
+                             current: d.current, human: d.human })),
+    strict: score(new Set(["pass"])),
+    lenient: score(new Set(["pass", "warn"]))
+  };
+})();
+
 const newlyFailed = perAsset.filter(a => a.legacy === "pass" && a.current !== "pass");
 const newlyPassed = perAsset.filter(a => a.legacy !== "pass" && a.current === "pass");
 
@@ -447,7 +523,7 @@ const report = {
     legacy: tally(perAsset.map(a => a.legacy)),
     current: tally(perAsset.map(a => a.current))
   },
-  perAsset, failureMatrix, diagnosisCrossTab, divergenceSummary, divergence,
+  perAsset, failureMatrix, diagnosisCrossTab, divergenceSummary, divergence, adjudication,
   newlyFailed, newlyPassed, safeZone, sweepVerdict, thresholds,
   pageErrors,
   assets
@@ -605,6 +681,15 @@ ${rows(r.divergence, d => [esc(d.file), esc(d.viewport), chip(d.legacy), chip(d.
   d.moved.map(m => `<span class="n">${m.band} &rarr; ${m.glyph}</span> <span class="dim">${m.delta > 0 ? "+" : ""}${m.delta} &middot; ${esc(m.from)}&rarr;${esc(m.to)}</span>`).join("<br>") || "<span class='dim'>&mdash;</span>",
   esc(d.explanation)])}
 </table>` : `<p class="dim"><strong>No divergence at any viewport.</strong> The band model and the glyph model reached the same verdict on every row. This corpus cannot answer whether 2.0 predicts publishability better &mdash; not because the answer is no, but because the question was never put. Frames that would put it: bright or busy content near the band boundary (y &asymp; 0.5 for hero), and short headlines whose rendered ink covers far less than the assumed band.</p>`}
+
+${r.adjudication ? `<h2>Which model matched you</h2>
+<p class="dim">Scored only on the rows where the models disagree &mdash; agreement rows carry no information. &ldquo;Would the model publish this?&rdquo; has two defensible readings, so both are given. <strong>Strict</strong> counts only <em>pass</em>, matching the run sheet's acceptance criteria. <strong>Lenient</strong> also counts <em>warn</em>. A conclusion holding under both is a finding; one that flips is a statement about where the line was drawn.</p>
+<table><tr><th>Reading</th><th>Rows judged</th><th>Only legacy right</th><th>Only 2.0 right</th><th>Both right</th><th>Neither</th></tr>
+${["strict", "lenient"].map(k => { const a = r.adjudication[k]; return `<tr><td>${k}</td><td class="n">${a.rows}</td><td class="n">${a.legacyOnly}</td><td class="n">${a.currentOnly}</td><td class="n">${a.both}</td><td class="n">${a.neither}</td></tr>`; }).join("\n")}
+</table>
+<table><tr><th>Asset</th><th>Viewport</th><th>Legacy</th><th>2.0</th><th>You</th></tr>
+${rows(r.adjudication.rows, d => [esc(d.file), esc(d.viewport), chip(d.legacy), chip(d.current), chip(d.human === "accept" ? "pass" : "fail")])}
+</table>` : ""}
 
 <h2>Failure matrix</h2>
 ${r.failureMatrix.length ? `<table><tr><th>Asset</th><th>Viewport</th><th>Type</th><th>Severity</th><th>Reason</th></tr>
