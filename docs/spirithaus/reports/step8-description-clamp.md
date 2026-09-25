@@ -86,3 +86,29 @@ the editor. That button renders only when both label and link are filled, so
 it was previously not drawn at all. The duplicate carries the change.
 
 Live is untouched and stays so until the draft is published from admin.
+
+### Resolved
+
+`spirithaus-theme/desc-clamp` was published on 2026-09-25 and is the live
+theme. Verified after the fact: `spirithaus-collection-hero.liquid` is 15794
+bytes, so the clamp and its toggle are in force, and `templates/index.json`
+(3366) and `templates/collection.json` (805) are unchanged, so the heroes,
+the 70% scrim and the collection-page call to action all carried over.
+
+Both publishes in this session failed silently on the first attempt and stuck
+on the second, on two different theme cards. The pattern points at the
+confirmation dialog rather than at anything in the themes.
+
+### Theme library after this
+
+| Theme | State | Keep? |
+| --- | --- | --- |
+| `desc-clamp` | live | yes |
+| `scrim-floor` | unpublished | yes, for now — one-click rollback to before the clamp |
+| `main` | unpublished | yes — it holds the GitHub connection |
+| `calibration-heroes` | unpublished | no — superseded twice over |
+| `chero-contrast-fix` | unpublished | no — stale, and reverts the heroes if published |
+
+The GitHub hazard from step 7 is unchanged and now two publishes further from
+resolution: `main` still holds the connection and is still unpublished, so the
+branch and the storefront remain disconnected in both directions.
