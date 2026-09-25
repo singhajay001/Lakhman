@@ -40,7 +40,7 @@ COMPOSITION RULES THAT ARE LOAD-BEARING
 - These rules are measured from the live theme, not chosen by taste. The numbers are in "Theme geometry" below; do not vary them.
 - THE QUIET ZONE IS THE BOTTOM, NOT THE LEFT. Headline type is bottom-aligned in every slot. On heroes the bottom HALF of the frame must be empty and quiet — no bottle, no hand, no hard edge, no highlight below the midline. On tiles it is the bottom THIRD.
 - COMPOSE CENTRED, NOT RIGHT OF CENTRE. The theme crops to the viewport with a centred cover crop, so on a phone the hero is taller than it is wide and the outer edges are thrown away. Keep everything that matters inside the central three-quarters horizontally and above the midline vertically. Anything placed in a side third will be missing on a phone.
-- THE SUBJECT GOES BETWEEN 29% AND 50% DOWN THE FRAME. Not "the top half" — the top 29% is cropped away on a wide desktop, so a subject placed high is a subject that is missing. Horizontally, keep it inside the middle three-quarters. See "Where the subject goes" below.
+- PLACE THE SUBJECT'S VISUAL MASS ABOUT ONE-THIRD TO TWO-FIFTHS DOWN THE FRAME. Not "the top half" — the top 29% is cropped away on a wide desktop, so a subject placed high is a subject that is missing. Nothing critical goes above that ceiling or below the typography zone. Horizontally, keep it inside the middle three-quarters. See "Where the subject goes" below.
 - Everything below the midline falls away into shadow, because that is where the type lands.
 - The scrim is the theme's ink #111110 at 58% on heroes and 66% on tiles, full frame, and the editor cannot set it below 58%. Shoot dark, but shoot so the image still reads at 66%.
 
@@ -77,14 +77,14 @@ Ratio 1:1 — a square master, at maximum size. The theme crops this to anywhere
 
 ```
 SPIRITHAUS scene image. Homepage hero.
-A dark timber bench at dusk. Centred, its mass between a third and halfway down the frame, a single mature hand — visible knuckles, weathered skin, a plain band — sets down a heavy-based bottle of amber spirit; the bottle is just landing, a millimetre above the wood. One hard tungsten light from upper right rakes across the bottle shoulder and the back of the hand. Below the midline everything falls away into deep, clean shadow — the entire bottom half of the frame is empty bench and black air with no object, no edge, no highlight. Nothing important touches the left or right edge. Shallow depth of field, 85 mm, f/2, the bottle's label turned away and out of focus. Colour: amber, near-black, warm timber. Photographic, cinematic low key, no text.
+A dark timber bench at dusk. Centred, its mass about a third of the way down the frame, a single mature hand — visible knuckles, weathered skin, a plain band — sets down a heavy-based bottle of amber spirit; the bottle is just landing, a millimetre above the wood. One hard tungsten light from upper right rakes across the bottle shoulder and the back of the hand. Below the midline everything falls away into deep, clean shadow — the entire bottom half of the frame is empty bench and black air with no object, no edge, no highlight. Nothing important touches the left or right edge. Shallow depth of field, 85 mm, f/2, the bottle's label turned away and out of focus. Colour: amber, near-black, warm timber. Photographic, cinematic low key, no text.
 ```
 
 **Alternate**, if the hand version reads as too "lifestyle":
 
 ```
 SPIRITHAUS scene image. Homepage hero, alternate.
-The interior shelf of a good bottle shop, shot slightly above bench height and looking down its length. The lit bottles sit centred, their mass between a third and halfway down the frame, sharp under a single raking light that catches glass edges and amber liquid; labels turned away or lost in shadow. The bottom half is the bare shadowed front edge of the shelf — plain timber falling to black, nothing on it. 50 mm, f/2, heavy natural vignette. Warm neutrals and near-black only. Photographic, no text.
+The interior shelf of a good bottle shop, shot slightly above bench height and looking down its length. The lit bottles sit centred, their mass about a third of the way down the frame, sharp under a single raking light that catches glass edges and amber liquid; labels turned away or lost in shadow. The bottom half is the bare shadowed front edge of the shelf — plain timber falling to black, nothing on it. 50 mm, f/2, heavy natural vignette. Warm neutrals and near-black only. Photographic, no text.
 ```
 
 ### 2. Category heroes — `hero-<category>.jpg`
@@ -95,49 +95,49 @@ Ratio 1:1, same as the homepage hero and for the same reason — these run throu
 
 ```
 SPIRITHAUS scene image. Whisky category hero, letterbox.
-The charred end of an oak cask fills the centre of frame, its mass between a third and halfway down, char texture and copper hoop lit by one low warm light from the right. In front of it, still above the midline, a tulip glass holds two fingers of amber whisky, backlit so the liquid glows. The bottom half is bare dark stone bench fading to black, nothing on it. Nothing important within a hand's width of the left or right edge. 85 mm, f/2.2, amber and near-black, photographic, no text.
+The charred end of an oak cask fills the centre of frame, its mass about a third of the way down, char texture and copper hoop lit by one low warm light from the right. In front of it, still above the midline, a tulip glass holds two fingers of amber whisky, backlit so the liquid glows. The bottom half is bare dark stone bench fading to black, nothing on it. Nothing important within a hand's width of the left or right edge. 85 mm, f/2.2, amber and near-black, photographic, no text.
 ```
 
 #### Gin — `hero-gin.jpg`
 
 ```
 SPIRITHAUS scene image. Gin category hero, letterbox.
-A brushed steel bench, top-down at a shallow angle. Centred, between a third and halfway down the frame: loose juniper berries, a strip of freshly cut lemon peel, coriander seed, a sprig of rosemary, scattered as if mid-prep beside a squat clear bottle with a stopper, label in shadow. A mature hand enters from the top of the frame and drops one more berry. One cool-but-not-blue window light from the right, hard shadows. The bottom half is clean empty steel receding into dark. Muted greens only as botanical detail, never as a colour cast. 50 mm, f/2.5, photographic, no text.
+A brushed steel bench, top-down at a shallow angle. Centred, about a third of the way down the frame: loose juniper berries, a strip of freshly cut lemon peel, coriander seed, a sprig of rosemary, scattered as if mid-prep beside a squat clear bottle with a stopper, label in shadow. A mature hand enters from the top of the frame and drops one more berry. One cool-but-not-blue window light from the right, hard shadows. The bottom half is clean empty steel receding into dark. Muted greens only as botanical detail, never as a colour cast. 50 mm, f/2.5, photographic, no text.
 ```
 
 #### Tequila & agave — `hero-tequila.jpg`
 
 ```
 SPIRITHAUS scene image. Tequila and agave category hero, letterbox.
-A roasted agave piña, split, sits centred between a third and halfway down the frame on a dark clay surface, its caramelised fibres lit by a single hard light from the right. A thin curl of wood smoke drifts up through the light. Beside it, a short clear bottle and a small clay copita, both empty of implication — nobody has drunk anything. The bottom half is dark clay and shadow, empty. Palette: terracotta, char, amber, near-black. 85 mm, f/2, photographic, no text.
+A roasted agave piña, split, sits centred about a third of the way down the frame on a dark clay surface, its caramelised fibres lit by a single hard light from the right. A thin curl of wood smoke drifts up through the light. Beside it, a short clear bottle and a small clay copita, both empty of implication — nobody has drunk anything. The bottom half is dark clay and shadow, empty. Palette: terracotta, char, amber, near-black. 85 mm, f/2, photographic, no text.
 ```
 
 #### Rum — `hero-rum.jpg`
 
 ```
 SPIRITHAUS scene image. Rum category hero, letterbox.
-Dark teak bench. Centred, between a third and halfway down the frame: a cut length of raw sugar cane, a small dish of molasses with a spoon resting in it, and a squat dark bottle whose contents glow mahogany where one warm light from the right passes through. No palm fronds, no beach, no cocktail umbrella. The bottom half is bare dark timber fading to black. Deep brown, amber, near-black. 85 mm, f/2.2, photographic, no text.
+Dark teak bench. Centred, about a third of the way down the frame: a cut length of raw sugar cane, a small dish of molasses with a spoon resting in it, and a squat dark bottle whose contents glow mahogany where one warm light from the right passes through. No palm fronds, no beach, no cocktail umbrella. The bottom half is bare dark timber fading to black. Deep brown, amber, near-black. 85 mm, f/2.2, photographic, no text.
 ```
 
 #### Vodka — `hero-vodka.jpg`
 
 ```
 SPIRITHAUS scene image. Vodka category hero, letterbox.
-Black slate surface. Centred, between a third and halfway down the frame: a tall frosted bottle straight from the freezer, beaded with condensation, beside a single small chilled glass rimed with frost. One hard white light from the right, everything else black. Palette strictly neutral — white, silver, near-black — with no blue cast. The bottom half is empty wet slate, no ice shards, no reflections breaking it up. 85 mm, f/2, macro-level detail on the condensation, photographic, no text.
+Black slate surface. Centred, about a third of the way down the frame: a tall frosted bottle straight from the freezer, beaded with condensation, beside a single small chilled glass rimed with frost. One hard white light from the right, everything else black. Palette strictly neutral — white, silver, near-black — with no blue cast. The bottom half is empty wet slate, no ice shards, no reflections breaking it up. 85 mm, f/2, macro-level detail on the condensation, photographic, no text.
 ```
 
 #### Cocktails — `hero-cocktails.jpg`
 
 ```
 SPIRITHAUS scene image. Cocktails category hero, letterbox.
-A dark bar-top. Centred between a third and halfway down the frame, a small gathering — two slim cans and one small bottle of pre-mixed cocktail, labels turned away and in shadow — with a steel jigger, a bar spoon, and a small pile of clear ice in a glass dish. Nothing poured, nothing finished. One warm light from upper right. The bottom half is bare dark bar surface. Warm neutrals, brushed steel, near-black; no bright can colours. 50 mm, f/2.5, photographic, no text.
+A dark bar-top. Centred about a third of the way down the frame, a small gathering — two slim cans and one small bottle of pre-mixed cocktail, labels turned away and in shadow — with a steel jigger, a bar spoon, and a small pile of clear ice in a glass dish. Nothing poured, nothing finished. One warm light from upper right. The bottom half is bare dark bar surface. Warm neutrals, brushed steel, near-black; no bright can colours. 50 mm, f/2.5, photographic, no text.
 ```
 
 #### Liqueurs & aperitifs — `hero-liqueurs.jpg`
 
 ```
 SPIRITHAUS scene image. Liqueurs and aperitifs category hero, letterbox.
-The bitter end of a bottle-shop shelf. Centred between a third and halfway down the frame, three bottles in deep red, burnt orange, and dark amber, backlit by one warm light so the liquids glow like stained glass; labels lost in shadow. A single small stemmed glass, empty, beside them. The bottom half is the bare shadowed front edge of the shelf, empty. The red should sit close to #CF1C29 and the oranges stay burnt, not fluorescent. 85 mm, f/2.2, photographic, no text.
+The bitter end of a bottle-shop shelf. Centred about a third of the way down the frame, three bottles in deep red, burnt orange, and dark amber, backlit by one warm light so the liquids glow like stained glass; labels lost in shadow. A single small stemmed glass, empty, beside them. The bottom half is the bare shadowed front edge of the shelf, empty. The red should sit close to #CF1C29 and the oranges stay burnt, not fluorescent. 85 mm, f/2.2, photographic, no text.
 ```
 
 ### 3. Homepage tiles — `tile-<category>.jpg`
@@ -209,7 +209,8 @@ faces, people, young hands, smooth hands, drinking, glass at lips, empty glasses
 | Band | What happens there |
 | --- | --- |
 | **0.00 – 0.29** | Cropped away on a wide desktop. The 2.34:1 crop keeps only a centred band of the height. |
-| **0.29 – 0.50** | **Safe. Put the subject here.** On screen at every viewport, and above where the headline sits. |
+| **0.29 – 0.50** | Safe: on screen at every viewport, and above where the headline sits. |
+| **0.33 – 0.40** | **Aim here.** The subject's visual mass sits a third to two-fifths down, comfortably inside the safe band at both ends. |
 | **0.50 +** | Visible, but the type stack lands on it. Keep it quiet and empty. |
 | **0.71 – 1.00** | Also cropped on a wide desktop. |
 
@@ -219,10 +220,11 @@ nothing that matters belongs in the outer eighth on either side.
 For **tiles**, the equivalent safe band is **0.19 – 0.60** vertically and the middle 62%
 horizontally. Tiles crop less severely in height and more severely in width.
 
-One caveat on the lower bound. Measurement shows the hero type stack reaching *above* the
-midline at the taller crops, so in practice the safe band may end nearer 0.42 than 0.50.
-That number is being settled with the real typefaces loaded; until then, treat 0.50 as the
-outer limit and aim nearer 0.40.
+**0.50 is an outer limit, not a target.** Measurement shows the hero type stack reaching
+*above* the midline at the taller crops, so the usable band may in practice end nearer 0.42.
+That figure is being settled against the full hero set; until it is, aim for the 0.33–0.40
+target band and treat anything below 0.40 as borrowing against a limit we have not finished
+measuring.
 
 ## Working order for the session
 
@@ -232,7 +234,7 @@ outer limit and aim nearer 0.40.
 2. Paste Part A. Ask the model to confirm the ABAC list back to you in its own
    words before generating anything — if it can't, the persona hasn't taken.
 3. Run `hero-home` first. Iterate until the bottom half is truly empty and the
-   subject sits centred between a third and halfway down the frame; that one
+   subject's mass sits centred about a third of the way down the frame; that one
    frame is worth more than the rest combined.
 4. Whisky hero, then gin, then the others in the brief's order.
 5. Tiles as re-stages of the heroes you liked.
