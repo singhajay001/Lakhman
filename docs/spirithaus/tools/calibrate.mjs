@@ -61,7 +61,29 @@ try {
 
 const readJson = (p) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch (e) { die(`${p}: ${e.message}`); } };
 const focals = args.focals ? readJson(args.focals) : null;
-const labels = args.labels ? readJson(args.labels) : null;
+const rawLabels = args.labels ? readJson(args.labels) : null;
+
+// People write "pass"/"fail" at least as often as "accept"/"reject", and a label
+// the runner silently drops looks exactly like no label at all — the report would
+// read "not derivable" while the file sat there full of verdicts.
+const ACCEPT = new Set(["accept", "pass", "good", "ok", "yes", "keep"]);
+const REJECT = new Set(["reject", "fail", "bad", "no", "reshoot"]);
+const labels = rawLabels ? {} : null;
+const unreadableLabels = [];
+if (rawLabels) {
+  for (const [k, v] of Object.entries(rawLabels)) {
+    const t = String(v == null ? "" : v).trim().toLowerCase();
+    if (!t) continue;                                  // blank means not yet judged
+    if (ACCEPT.has(t)) labels[k] = "accept";
+    else if (REJECT.has(t)) labels[k] = "reject";
+    else unreadableLabels.push(`${k}: ${JSON.stringify(v)}`);
+  }
+  if (unreadableLabels.length) {
+    die(`these labels were not understood:\n  ${unreadableLabels.join("\n  ")}\n`
+      + `Use one of accept/pass/good/ok/yes/keep or reject/fail/bad/no/reshoot.\n`
+      + `Refusing to run rather than quietly treating them as unlabelled.`);
+  }
+}
 
 const IMAGE_RE = /\.(jpe?g|png|webp|avif)$/i;
 const files = fs.readdirSync(args.images).filter(f => IMAGE_RE.test(f)).sort();
@@ -146,11 +168,19 @@ const meta = await page.evaluate(() => ({
 if (!meta.fontsLoaded) console.error("calibrate: WARNING — the page reports substitute fonts. Results are directional only.");
 
 const assets = [];
+const unusableFocals = [];
 for (const file of files) {
   process.stderr.write(`calibrate: ${file} ... `);
   const src = dataUrl(path.join(args.images, file));
-  const focal = (focals && focals[file]) ? { ...focals[file], r: FOCAL_R } : { x: 0.5, y: TARGET_Y, r: FOCAL_R };
-  const focalKnown = !!(focals && focals[file]);
+  // A focals entry that is present but not a usable pair is worse than an absent
+  // one: it would suppress the assumed-position banner while still being a guess.
+  const entry = focals && focals[file];
+  const usable = entry && typeof entry.x === "number" && typeof entry.y === "number"
+    && entry.x >= 0 && entry.x <= 1 && entry.y >= 0 && entry.y <= 1;
+  if (entry && !usable) unusableFocals.push(file);
+  const focal = usable ? { x: entry.x, y: entry.y, r: entry.r ?? FOCAL_R }
+                       : { x: 0.5, y: TARGET_Y, r: FOCAL_R };
+  const focalKnown = !!usable;
 
   const result = await page.evaluate(
     ([src, opts]) => window.scrimProof.analyse(src, opts),
@@ -289,6 +319,7 @@ const report = {
   theme: meta.profile,
   slots: meta.slots,
   focalKnown: assets.filter(a => a.focalKnown).length,
+  unusableFocals,
   labelled: labelledCount,
   assetCount: assets.length,
   summary: {
@@ -415,7 +446,7 @@ code{font-family:"Space Mono",monospace;font-size:12px;color:var(--ink)}
 <p class="sub">${esc(r.assetCount)} frames &middot; theme ${esc(r.theme.themeName)}, profile built ${esc(r.theme.generatedAt.slice(0,10))} &middot; generated ${esc(r.generatedAt.slice(0,16).replace("T"," "))}</p>
 
 ${r.fontsLoaded ? "" : `<div class="banner"><b>Substitute fonts.</b> The page reported that the theme faces did not load, so every glyph-derived number here is directional only and none of it can set a threshold.</div>`}
-${r.focalKnown < r.assetCount ? `<div class="banner"><b>Focal points assumed for ${r.assetCount - r.focalKnown} of ${r.assetCount} frames.</b> Without <code>--focals</code> the subject is taken to sit at the centre of the target band. Crop, occlusion and obscuration figures for those frames describe that assumed position, not the actual subject.</div>` : ""}
+${r.focalKnown < r.assetCount ? `<div class="banner"><b>Focal points assumed for ${r.assetCount - r.focalKnown} of ${r.assetCount} frames.</b> The subject is taken to sit at the centre of the target band. Crop, occlusion and obscuration figures for those frames describe that assumed position, not the actual subject.${r.unusableFocals.length ? ` ${r.unusableFocals.length} entr${r.unusableFocals.length === 1 ? "y was" : "ies were"} present in the focals file but not a usable x/y pair: <code>${r.unusableFocals.map(esc).join(", ")}</code>.` : ""}</div>` : ""}
 
 <h2>Asset summary</h2>
 <div class="tiles">
