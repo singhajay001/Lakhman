@@ -110,3 +110,57 @@ These need a fine-wine merchant or direct allocation, not ALM.
 
 Worksheet updated: `worksheets/fine-wine-pricing-2026-09-24.csv` — costs filled
 for the 12, notes on the rest.
+
+---
+
+## UPDATE — 25% GP floor applied, 12 drafts priced
+
+Owner set the wine floor at **25% GP** (spirits remain at 20%). Applied and
+written to the 12 confirmed drafts. Cost and price both set; rounded up to the
+next `.99` so every one clears 25% rather than landing just under it.
+
+| Wine | Cost | Price | Actual GP | Est. AU shelf |
+|---|---|---|---|---|
+| Dal Zotto Pucino Prosecco | $16.60 | **$22.99** | 27.8% | $18–22 |
+| Chrismont La Zona Pinot Grigio | $17.74 | **$23.99** | 26.1% | $20–24 |
+| Turkey Flat Rosé | $23.07 | **$30.99** | 25.6% | $24–28 |
+| Shaw + Smith Sauvignon Blanc | $25.27 | **$33.99** | 25.7% | $26–30 |
+| Katnook Estate Merlot | $34.91 | **$46.99** | 25.7% | $28–35 |
+| Greywacke Wild Sauvignon | $38.50 | **$51.99** | 25.9% | $42–48 |
+| Shaw + Smith M3 Chardonnay | $41.57 | **$55.99** | 25.8% | $42–48 |
+| Cloudy Bay Sauvignon Blanc | $42.94 | **$57.99** | 26.0% | $38–48 |
+| Cloudy Bay Te Koko | $73.54 | **$98.99** | 25.7% | $70–80 |
+| Penfolds St Henri Shiraz | $101.65 | **$135.99** | 25.3% | $100–135 |
+| House of Arras EJ Carr | $185.89 | **$247.99** | 25.0% | $180–220 |
+| Veuve Clicquot La Grande Dame | $311.14 | **$414.99** | 25.0% | $300–380 |
+
+**All twelve remain DRAFT.** Nothing is on sale. Pricing a draft is reversible
+and invisible to customers.
+
+### The concern, recorded rather than repeated
+
+At 25% GP, **11 of the 12 sit above my estimated Australian shelf range** — at
+20% it was 9. Raising the floor widened the gap.
+
+The estimates are mine and unverified; the owner's read of the market is
+better than a model's. But the structural point stands independent of the exact
+figures: **ALM's warehouse cost on branded wine does not leave room for a 25%
+margin at competitive retail.** Cloudy Bay Sauvignon Blanc at $57.99 against a
+label that is widely discounted to around $40 is the clearest case.
+
+What that implies, for the decision before publishing:
+
+- These twelve are priced correctly **to policy**. Whether they are priced to
+  *sell* is a different question, and the answer probably differs per label.
+- The three cheapest — Dal Zotto, Chrismont, Turkey Flat — are close enough to
+  market to be worth ranging.
+- The branded volume labels — Cloudy Bay ×2, Katnook, Greywacke, Shaw + Smith
+  ×2 — are the ones where ALM is not a competitive source. Either a different
+  supplier, or do not range them.
+- St Henri, Arras and Grande Dame are allocated enough that shoppers
+  price-check them less. They may carry the margin.
+
+### Before any of these publish
+
+None of the twelve has a product image. Publishing a $414.99 Veuve Clicquot
+La Grande Dame with no photograph would be worse than leaving it in draft.
