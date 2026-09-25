@@ -22,23 +22,46 @@ whether the tool agreed about the *cause* and not merely the verdict. See
 
 ## Contents
 
-**This set is incomplete.** Five of roughly sixteen hero frames. Enough to have caught a
-measurement bug, not enough to calibrate a threshold.
+Fifteen hero frames, all 3:2, all delivered together. The five `.webp` files that were
+here first were lower-quality re-encodings of five of these; they are gone, replaced by
+the originals under descriptive names.
 
-| file | subject | focal x, y |
-|---|---|---|
-| `hero-vodka.webp` | frosted vodka bottle, shot glass, ice | 0.860, 0.450 |
-| `hero-cocktails-a.webp` | three bottles on a bar top | 0.845, 0.460 |
-| `hero-cocktails-b.webp` | three bottles, variant | 0.845, 0.470 |
-| `hero-cocktails-c.webp` | three bottles, variant | 0.875, 0.470 |
-| `hero-rum.webp` | rum bottle with cane and molasses | 0.830, 0.470 |
+Coordinates are fractions of the **3:2 master** — which, under the canonical
+`--master source`, is the file as shot. No conversion.
 
-All five are old-rule compositions — subject right, quiet left — from before the pack
-moved to *subject centred, visual mass one-third to two-fifths down*. Their focal x of
-0.830–0.875 sits at or past the 0.873 safe-x edge, and their y of 0.45–0.47 is at or
-below the midline where type begins. **They are a corpus of the failure mode, not of the
-target.** Read any aggregate over this set with that in mind: it cannot tell us what a
-compliant frame scores, because it contains none.
+| file | subject | focal x, y | x inside 0.25–0.75? |
+|---|---|---|---|
+| `hero-whisky-shelf-a.png` | lit bottle on a dark shelf wall | 0.82, 0.50 | no |
+| `hero-whisky-shelf-b.png` | as above, variant | 0.82, 0.48 | no |
+| `hero-whisky-shelf-c.png` | as above, variant | 0.84, 0.50 | no |
+| `hero-whisky-shelf-d.png` | as above, variant | 0.78, 0.48 | no |
+| `hero-whisky-cask.png` | cask end and a Glencairn glass | 0.66, 0.58 | yes |
+| `hero-gin-botanicals.png` | clear bottle, juniper, a hand | 0.62, 0.42 | yes |
+| `hero-tequila-pina.png` | roasted agave piña, smoking | 0.63, 0.55 | yes |
+| `hero-liqueurs-trio.png` | three bottles and a stemmed glass | 0.78, 0.45 | no |
+| `hero-vodka-ice.png` | frosted bottle, shot glass, ice | 0.73, 0.45 | yes |
+| `hero-cocktails-cans-a.png` | cans, jigger, bar spoon | 0.75, 0.45 | borderline |
+| `hero-cocktails-cans-b.png` | as above, variant | 0.77, 0.42 | no |
+| `hero-cocktails-cans-c.png` | as above, variant | 0.76, 0.42 | no |
+| `hero-rum-cane.png` | rum, sugar cane, molasses | 0.76, 0.40 | no |
+| `hero-store-interior.png` | shop shelving, warm lights | 0.65, 0.50 | yes |
+| `hero-hand-bottle.png` | a hand placing a bottle | 0.63, 0.55 | yes |
+
+**Nine of fifteen put the subject outside the horizontal safe band**, which on a 3:2
+master is the middle half, x 0.25–0.75. Those subjects are not on screen at all for a
+phone viewer. It is the single largest pattern in the set, and it is a fact about the
+photography rather than about the focal estimates.
+
+The focal coordinates are **proposals awaiting review** — read off the rendered frames
+by eye, which is the accuracy the tool asks for, but not confirmed by the person who
+shot them.
+
+`hero-store-interior.png` is a wide shop interior with no single subject; a focal point
+on it is close to meaningless, and whether it belongs in a hero slot at all is worth
+deciding before it influences anything.
+
+Three lifestyle frames were delivered alongside these and live in `../life/`, which
+explains why.
 
 ## Adding frames
 
