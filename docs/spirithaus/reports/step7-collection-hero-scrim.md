@@ -101,3 +101,44 @@ Live `spirithaus-theme/main` is untouched.
 - **This band was never in the calibration corpus.** The scrim tool models the
   `hero`, `tile` and `life` slots; `chero` is not among them. Every number
   above is analytic worst-case, not measured against the actual photographs.
+
+## Addendum — what actually went live, and a lineage hazard
+
+The scrim fix reached the storefront as a **setting**, not as code. The live
+theme's `templates/collection.json` now carries `overlay_opacity: 70`, set by
+hand in the theme editor. Every role clears AA at that value, so the failure
+in the screenshots is resolved. The section's own `at_least: 20` is still
+underneath it, so the 70 is unprotected: nothing stops it being dragged back.
+
+The publish also landed a different theme than the one this report describes.
+The live theme is now `spirithaus-theme/calibration-heroes` — the hero swap
+from step 6 — so the calibration frames are live on the homepage and tiles.
+
+That left `spirithaus-theme/chero-contrast-fix` stale and dangerous: it was
+cut from `main` before the swap, so publishing it would revert every hero
+image and the 70% settings while installing the floor. It should not be
+published. Superseded by:
+
+- `spirithaus-theme/scrim-floor`, id 167093666038 — the current live theme
+  plus the floor, and nothing else. Verified: its
+  `spirithaus-collection-hero.liquid` is 11824 bytes (fixed) while
+  `templates/index.json` (3366) and `templates/collection.json` (777) are
+  byte-identical to live. Publishing it is a visual no-op, because the floor
+  and the hand-set value are both 70.
+
+### The GitHub connection no longer reaches the storefront
+
+`spirithaus-theme/main` carries a Shopify GitHub integration badge. It is the
+branch-backed theme. It is also, now, unpublished.
+
+So the live storefront is a duplicate with no GitHub connection, and the two
+have drifted apart in both directions: pushes to the connected branch land in
+an unpublished theme, and the theme-editor changes made today (the 70%, the
+raised homepage overlay) exist only in Shopify and are not in the branch.
+
+Every theme in play except `main` is a duplicate and therefore disconnected.
+Whichever theme ends up live long-term, the integration has to be pointed at
+it, or the branch has to be reconciled and the connected theme published
+instead. Until then "deploy from git" is not true of this store, and the
+section's own warning about a file two systems both write to now applies to
+the whole theme.
