@@ -489,7 +489,7 @@ footer b{color:var(--ink);font-weight:500}
 <header>
   <div>
     <h1>Scrim proof</h1>
-    <p class="sub">Checks a SPIRITHAUS frame at every ratio the storefront renders, under the theme's own ink scrim, with the type stack where the theme puts it. Then corrects it and hands back a square master.</p>
+    <p class="sub">Checks a SPIRITHAUS frame at every ratio the storefront renders, under the theme's own ink scrim, with the type stack where the theme puts it. Then corrects it and hands back a corrected master in the shape you uploaded.</p>
   </div>
   <div class="load">
     <input type="file" id="picker" accept="image/*" multiple hidden>
@@ -607,7 +607,7 @@ footer b{color:var(--ink);font-weight:500}
 
 <footer>
   <p><b>What the check proves.</b> Three rules, measured on the composited frame at every ratio the theme renders, not just the one on screen. <b>Type contrast</b> is WCAG luminance for white type against the brightest patch of the quiet zone, not its average — one specular highlight breaks a headline and a mean hides it. <b>Zone intrusion</b> is the peak level above the zone's own floor, which catches an object or edge entering the band that must stay empty; at a 58–66% scrim almost any patch clears the contrast bar, so this is the check that does the work. <b>Image survival</b> reads the brightest tenth of the subject side, because low-key work is meant to have a dark mean and what says the photograph is still alive is whether its highlights survive.</p>
-  <p><b>What the fix does, and does not.</b> It slides the square master window across the source to find the crop with the cleanest quiet zone, then veils the lower band of that master in ink at the lowest strength that passes every ratio, capped at 55% so a frame can never be &ldquo;fixed&rdquo; by turning the band into a black bar. Both are real edits to the pixels you export. It cannot add pixels that were never shot: a 3:1 source has nothing above and below to build a square from, so the best it can do is report that and leave the reshoot to you.</p>
+  <p><b>What the fix does, and does not.</b> It slides the master window across the source to find the crop with the cleanest quiet zone, then veils the lower band of that master in ink at the lowest strength that passes every ratio, capped at 55% so a frame can never be &ldquo;fixed&rdquo; by turning the band into a black bar. Both are real edits to the pixels you export. The master keeps the shape you uploaded, because that is what the storefront covers with; squaring it first would model a crop the theme never performs, and buys no safe area anyway. It cannot add pixels that were never shot, so a source with nothing spare at the edges is reported rather than faked.</p>
   <p><b>What neither can tell you.</b> Whether a hand reads as 35 or as 20, and every other line of the ABAC list. Those stay a human pass before anything ships.</p>
   <p><b>Where the numbers come from.</b> Ratios, scrim values and quiet zones are measured from the live theme (<code>sections/spirithaus-hero.liquid</code>, <code>sections/spirithaus-categories.liquid</code>, <code>assets/spirithaus.css</code>) as at 2026-09-24. If the theme changes, re-read it and update the prompt pack and this page together.</p>
 </footer>
@@ -1704,16 +1704,30 @@ footer b{color:var(--ink);font-weight:500}
   }
 
   /* ---------- export ---------- */
+  // buildMaster's `size` is the master's LONGER side in source mode and its side
+  // length in square mode, so the two need different arguments. Passing min() for
+  // both -- which this did -- exported a 1536x1024 frame at 1024x683, losing a third
+  // of the resolution without saying so.
   function exportMaster(f){
-    var S = Math.min(f.img.naturalWidth, f.img.naturalHeight, EXPORT_MAX);
+    var iw = f.img.naturalWidth, ih = f.img.naturalHeight;
+    var S = MASTER_MODE === "source"
+      ? Math.min(Math.max(iw, ih), EXPORT_MAX)
+      : Math.min(iw, ih, EXPORT_MAX);
     return buildMaster(f, S);
+  }
+
+  // Name the file after the shape it actually is.
+  function exportSuffix(f){
+    if (MASTER_MODE !== "source") return "-1x1";
+    var r = f.img.naturalWidth / f.img.naturalHeight;
+    return Math.abs(r - 1) < 0.002 ? "-1x1" : "-master";
   }
 
   el.saveBtn.addEventListener("click", function(){
     var f = currentFrame(); if (!f) return;
     var canvas = exportMaster(f);
     var base = f.name.replace(/\.[^.]+$/, "");
-    var name = base + "-1x1.jpg";
+    var name = base + exportSuffix(f) + ".jpg";
     canvas.toBlob(function(blob){
       if (!blob){ el.fixLog.textContent = "Could not encode the master."; return; }
       saveBlob(blob, name);
