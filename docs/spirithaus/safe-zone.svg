@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600" role="img" aria-labelledby="t d">
+  <title id="t">Where the subject goes in a SPIRITHAUS hero master</title>
+  <desc id="d">A 3:2 master. Horizontally, only the middle half survives: everything outside x 0.25 to 0.75 is cropped away on a phone. Vertically the top 18 percent and bottom 18 percent are cropped on a wide desktop, the band from 0.18 to 0.50 is safe for the subject with 0.33 to 0.40 the target, and below 0.50 the headline sits.</desc>
+  <rect width="900" height="600" fill="#111110"/>
+
+  <text x="40" y="44" fill="#F2EFE9" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="21" font-weight="600">Where the subject goes</text>
+  <text x="40" y="68" fill="#8C877C" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="13">3:2 master, as delivered and uploaded. Fractions are of the master&#8217;s own width and height.</text>
+
+  <!-- master 3:2: x 40..640, y 96..496 (600 x 400) -->
+  <rect x="40" y="96" width="600" height="400" fill="#0B0B0A" stroke="#26251F"/>
+
+  <!-- vertical bands -->
+  <rect x="40" y="96"  width="600" height="72"  fill="#CF1C29" fill-opacity="0.22"/>
+  <rect x="40" y="168" width="600" height="128" fill="#7A8F6B" fill-opacity="0.30"/>
+  <rect x="40" y="296" width="600" height="128" fill="#C98A2E" fill-opacity="0.24"/>
+  <rect x="40" y="424" width="600" height="72"  fill="#CF1C29" fill-opacity="0.22"/>
+
+  <!-- the side crop is the binding limit on a 3:2 master: the outer quarter each side -->
+  <rect x="40"  y="96" width="150" height="400" fill="#CF1C29" fill-opacity="0.30"/>
+  <rect x="490" y="96" width="150" height="400" fill="#CF1C29" fill-opacity="0.30"/>
+
+  <g stroke="#F2EFE9" stroke-opacity="0.5" stroke-dasharray="4 4">
+    <line x1="40" y1="168" x2="640" y2="168"/>
+    <line x1="40" y1="296" x2="640" y2="296"/>
+    <line x1="40" y1="424" x2="640" y2="424"/>
+  </g>
+  <g stroke="#F2EFE9" stroke-opacity="0.6" stroke-dasharray="3 4">
+    <line x1="190" y1="96" x2="190" y2="496"/>
+    <line x1="490" y1="96" x2="490" y2="496"/>
+  </g>
+
+  <!-- target band and the subject sitting in it -->
+  <rect x="190" y="228" width="300" height="28" fill="#7A8F6B" fill-opacity="0.45"/>
+  <text x="196" y="188" fill="#7A8F6B" font-family="Space Mono, IBM Plex Mono, monospace" font-size="10">AIM HERE  y 0.33 &#8211; 0.40</text>
+  <circle cx="340" cy="242" r="40" fill="#C88A30" fill-opacity="0.55" stroke="#F2EFE9" stroke-opacity="0.85" stroke-width="2"/>
+  <g stroke="#F2EFE9" stroke-opacity="0.9" stroke-width="2">
+    <line x1="329" y1="242" x2="351" y2="242"/><line x1="340" y1="231" x2="340" y2="253"/>
+  </g>
+
+  <text x="115" y="352" fill="#F2EFE9" fill-opacity="0.8" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">gone on</text>
+  <text x="115" y="368" fill="#F2EFE9" fill-opacity="0.8" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">a phone</text>
+  <text x="565" y="352" fill="#F2EFE9" fill-opacity="0.8" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">gone on</text>
+  <text x="565" y="368" fill="#F2EFE9" fill-opacity="0.8" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">a phone</text>
+  <text x="340" y="520" fill="#F2EFE9" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">x 0.25 &#8211; 0.75 &#8212; the middle half is all that always survives</text>
+
+  <g font-family="Archivo, Helvetica, Arial, sans-serif">
+    <text x="672" y="140" fill="#CF1C29" font-size="15" font-weight="600">CROPPED</text>
+    <text x="672" y="162" fill="#F2EFE9" font-size="13">y 0.00 &#8211; 0.18</text>
+    <text x="672" y="182" fill="#8C877C" font-size="12">Gone at 2.34:1 on a desktop.</text>
+
+    <text x="672" y="232" fill="#7A8F6B" font-size="15" font-weight="600">SAFE &#8212; AIM 0.33 &#8211; 0.40</text>
+    <text x="672" y="254" fill="#F2EFE9" font-size="13">y 0.18 &#8211; 0.50</text>
+    <text x="672" y="274" fill="#8C877C" font-size="12">On screen everywhere, and</text>
+    <text x="672" y="290" fill="#8C877C" font-size="12">above where the headline sits.</text>
+
+    <text x="672" y="340" fill="#C98A2E" font-size="15" font-weight="600">TYPE LANDS HERE</text>
+    <text x="672" y="362" fill="#F2EFE9" font-size="13">y 0.50 +</text>
+    <text x="672" y="382" fill="#8C877C" font-size="12">Visible, but the stack sits on</text>
+    <text x="672" y="398" fill="#8C877C" font-size="12">it. Keep it quiet and empty.</text>
+
+    <text x="672" y="448" fill="#CF1C29" font-size="15" font-weight="600">CROPPED</text>
+    <text x="672" y="470" fill="#F2EFE9" font-size="13">y 0.82 &#8211; 1.00</text>
+  </g>
+
+  <text x="40" y="560" fill="#8C877C" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="12">Squaring the master before upload does not add safe area &#8212; it trades width for height: x 0.13&#8211;0.87, y 0.29&#8211;0.71.</text>
+  <text x="40" y="580" fill="#8C877C" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="12">The area is fixed by the spread of viewport ratios, narrowest over widest, whatever shape the master is.</text>
+</svg>
