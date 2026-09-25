@@ -73,7 +73,7 @@ persona. Aspect ratios are the **shooting** ratio; the theme crops from there.
 
 ### 1. Homepage hero — `hero-home.jpg`
 
-Ratio 1:1 — a square master, at maximum size. The theme crops this to anywhere between 0.75:1 and 2.34:1 depending on the viewer's screen, and a square master is what survives both ends.
+Shoot at maximum size. The theme crops to anywhere between 0.75:1 and 2.34:1 depending on the viewer's screen, so the subject has to survive both ends — see **Where the subject goes** below for the band that does. The safe zone quoted there is measured against a **3:2 master**, matching how the files are delivered and uploaded; squaring a frame before upload does not buy any more safe area, it only trades width for height.
 
 ```
 SPIRITHAUS scene image. Homepage hero.
@@ -142,9 +142,10 @@ The bitter end of a bottle-shop shelf. Centred about a third of the way down the
 
 ### 3. Homepage tiles — `tile-<category>.jpg`
 
-Ratio 1:1. Tiles land near-square on a desktop, portrait on a tablet and landscape
-on a phone, so a square master is again the one that survives. The type sits
-bottom-left, so the bottom third is the quiet zone — not the middle.
+Ratio 1:1 — tiles stay square. They land near-square on a desktop, portrait on a
+tablet and landscape on a phone, and a square master is the one that survives that
+spread; delivered 3:2 they would lose the middle-62% horizontal band down to 42%. The
+type sits bottom-left, so the bottom third is the quiet zone — not the middle.
 
 ```
 SPIRITHAUS scene image. Homepage category tile, square.
@@ -206,19 +207,26 @@ faces, people, young hands, smooth hands, drinking, glass at lips, empty glasses
 
 ![Safe zone for the subject in a hero master](safe-zone.svg)
 
+These bands are fractions of **the frame you shoot**, measured against a 3:2 master —
+the shape the files are actually delivered and uploaded in.
+
 | Band | What happens there |
 | --- | --- |
-| **0.00 – 0.29** | Cropped away on a wide desktop. The 2.34:1 crop keeps only a centred band of the height. |
-| **0.29 – 0.50** | Safe: on screen at every viewport, and above where the headline sits. |
+| **0.00 – 0.18** | Cropped away on a wide desktop. The 2.34:1 crop keeps only a centred band of the height. |
+| **0.18 – 0.50** | Safe: on screen at every viewport, and above where the headline sits. |
 | **0.33 – 0.40** | **Aim here.** The subject's visual mass sits a third to two-fifths down, comfortably inside the safe band at both ends. |
 | **0.50 +** | Visible, but the type stack lands on it. Keep it quiet and empty. |
-| **0.71 – 1.00** | Also cropped on a wide desktop. |
+| **0.82 – 1.00** | Also cropped on a wide desktop. |
 
-Horizontally the same logic applies: a phone crops to the middle 75% of the width, so
-nothing that matters belongs in the outer eighth on either side.
+**Horizontally, the constraint is tighter than the vertical one, and it is the one this
+set keeps failing.** A phone crops a 3:2 frame to its middle **50%**: everything outside
+x 0.25–0.75 is gone on a phone, whatever it looks like on your screen. The outer
+**quarter of each side** is dead space. A bottle at x 0.78 — a natural-looking place to
+put it in a wide frame — is simply not there for a phone viewer.
 
-For **tiles**, the equivalent safe band is **0.19 – 0.60** vertically and the middle 62%
-horizontally. Tiles crop less severely in height and more severely in width.
+For **tiles**, shot square as the brief specifies, the safe band is **0.19 – 0.60**
+vertically and the middle 62% horizontally. If tiles end up delivered 3:2 like the
+heroes, that horizontal figure falls to the middle 42% and wants re-reading first.
 
 **0.50 is an outer limit, not a target.** Measurement shows the hero type stack reaching
 *above* the midline at the taller crops, so the usable band may in practice end nearer 0.42.
@@ -296,8 +304,19 @@ section, the prompts, and `scrim-proof.html` together.
 - Scrim: `rgba(#111110, 0.66)` full frame.
 
 **Safe zone.** Because a subject must survive every viewport, the region of the
-master always on screen is the intersection of all the crops: hero **x 0.127–0.873,
-y 0.286–0.714** — only 43% of the height — and tile **x 0.188–0.812, y 0.194–0.806**.
+master always on screen is the intersection of all the crops. It depends on the
+master's shape, so it is quoted for both:
+
+| master | hero | tile |
+| --- | --- | --- |
+| **3:2** — as delivered and uploaded | **x 0.252–0.748, y 0.179–0.821** | x 0.292–0.708, y 0.042–0.958 |
+| 1:1 — if squared before upload | x 0.127–0.873, y 0.286–0.714 | x 0.188–0.812, y 0.194–0.806 |
+
+Both give the same safe **area**: it works out to the narrowest viewport ratio divided
+by the widest, and the master's own shape cancels out. Squaring cannot buy safe area —
+it only trades width for height. On a 3:2 master the horizontal limit is the binding
+one, and it is stricter than the square figure suggests: the middle 50% of the frame,
+not 75%.
 This is derived from the ratios above, not chosen, and it is why the subject band is
 what it is.
 
@@ -379,7 +398,9 @@ the eleventh and is shot first, because it is worth more than the rest combined.
 | 9 | `tile-cocktails.jpg` | below |
 | 10 | `tile-tequila.jpg` | below |
 
-All ten are square masters at the largest size the tool will produce.
+All ten at the largest size the tool will produce, in the same 3:2 shape the set is
+already delivered in. Uploading them squared is also fine and changes nothing
+horizontally — but it costs vertical latitude, so there is no reason to.
 
 ### `tile-whisky.jpg`
 
