@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spirithaus.com.au/schemas/theme-profile-1.json",
+  "title": "SPIRITHAUS theme profile",
+  "description": "Rendering facts extracted from the live Shopify theme. Everything here is a measurement of the theme, never a preference: measurement thresholds and pass/fail policy belong to Scrim Proof, not to this file. Ratios are deliberately absent — they are derived from viewports and box.heightCss so that a change to the theme's vh moves them automatically.",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "source", "root", "tokens", "viewports", "placements"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generatedAt": { "type": "string", "format": "date-time", "description": "When this profile was built." },
+    "source": {
+      "type": "object",
+      "description": "What it was built from. themeUpdatedAt and the per-file checksums drive the staleness warning: a consumer with store access compares them against a fresh read and warns without blocking.",
+      "required": ["shop", "themeId", "themeName", "themeUpdatedAt", "files"],
+      "properties": {
+        "shop": { "type": "string" },
+        "themeId": { "type": "string" },
+        "themeName": { "type": "string" },
+        "role": { "type": "string" },
+        "themeUpdatedAt": { "type": "string", "format": "date-time" },
+        "files": {
+          "type": "object",
+          "description": "Path -> fingerprint, as reported by the Admin API. JSON theme files are re-serialised by the API, so a local re-hash of those will not match; the API value is authoritative.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["checksumMd5"],
+            "properties": {
+              "checksumMd5": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+              "updatedAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      }
+    },
+    "root": {
+      "type": "object",
+      "required": ["fontPx", "pageWidthPx", "breakpointPx"],
+      "properties": {
+        "fontPx": { "type": "number", "description": "Pixels per rem. Dawn sets html{font-size:62.5%} scaled by body_scale, so this is 10 at default settings and every rem value below depends on it." },
+        "pageWidthPx": { "type": "number", "description": "settings.page_width. Border-box, so container padding is inside this." },
+        "breakpointPx": { "type": "number", "description": "The single breakpoint the theme changes shape at." }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "required": ["ink", "white", "fontDisplay", "fontMono", "weights"],
+      "properties": {
+        "ink": { "$ref": "#/$defs/hex", "description": "The scrim colour. Not black." },
+        "white": { "$ref": "#/$defs/hex", "description": "Type over photography. Not the off-white page background." },
+        "bone": { "$ref": "#/$defs/hex" },
+        "red": { "$ref": "#/$defs/hex" },
+        "fontDisplay": { "type": "string" },
+        "fontMono": { "type": "string" },
+        "weights": {
+          "type": "object",
+          "required": ["light", "regular", "bold", "black"],
+          "additionalProperties": { "type": "integer" }
+        }
+      }
+    },
+    "viewports": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The device matrix held to. This is the one policy choice in the file: it says which screens must pass, not what the theme does.",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "width", "height"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "width": { "type": "integer" },
+          "height": { "type": "integer" }
+        }
+      }
+    },
+    "placements": {
+      "type": "object",
+      "description": "One entry per place an image is rendered under type.",
+      "additionalProperties": { "$ref": "#/$defs/placement" }
+    }
+  },
+  "$defs": {
+    "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+    "responsiveNumber": {
+      "type": "array",
+      "description": "Breakpoint-indexed values, ascending. Resolve by taking the last entry whose minWidth is <= the viewport width.",
+      "items": {
+        "type": "object",
+        "required": ["minWidth", "value"],
+        "properties": { "minWidth": { "type": "integer" }, "value": { "type": "number" } }
+      }
+    },
+    "responsiveString": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["minWidth", "value"],
+        "properties": { "minWidth": { "type": "integer" }, "value": { "type": "string" } }
+      }
+    },
+    "scrim": {
+      "type": "object",
+      "required": ["color", "opacity", "minOpacity", "coverage"],
+      "properties": {
+        "color": { "$ref": "#/$defs/hex" },
+        "opacity": { "type": "number", "description": "The value actually set in templates/index.json." },
+        "minOpacity": { "type": "number", "description": "The section schema's floor. The theme will not let an editor go below this." },
+        "maxOpacity": { "type": "number" },
+        "coverage": { "enum": ["full"] }
+      }
+    },
+    "textBlock": {
+      "type": "object",
+      "required": ["role", "family"],
+      "properties": {
+        "role": { "type": "string" },
+        "kind": { "type": "string" },
+        "family": { "enum": ["display", "mono"] },
+        "sizePx": { "oneOf": [{ "type": "number" }, { "$ref": "#/$defs/responsiveNumber" }] },
+        "weight": { "type": "integer" },
+        "strongWeight": { "type": "integer", "description": "Weight of <strong> spans inside the block. The heading is light with black emphasis, and the difference matters to legibility." },
+        "lineHeight": { "type": "number" },
+        "trackingEm": { "type": "number" },
+        "transform": { "type": "string" },
+        "maxCh": { "type": "number", "description": "Width cap in ch. Resolve against the rendered face at the rendered size; do not assume a ch width." },
+        "marginBottomPx": { "type": "number" },
+        "marginTopPx": { "type": "number" },
+        "minHeightPx": { "type": "number" },
+        "paddingXPx": { "type": "number" },
+        "background": { "$ref": "#/$defs/hex" },
+        "color": { "$ref": "#/$defs/hex" },
+        "text": { "type": "string", "description": "The real copy. Line count drives block height, which drives the measured region, so placeholder text would give the wrong answer." },
+        "label": { "type": "string" }
+      }
+    },
+    "placement": {
+      "type": "object",
+      "required": ["section", "image", "scrim", "text"],
+      "properties": {
+        "section": { "type": "string" },
+        "box": {
+          "type": "object",
+          "properties": {
+            "widthCss": { "type": "string" },
+            "heightCss": { "$ref": "#/$defs/responsiveString", "description": "CSS lengths, usually vh. Ratios come from resolving this against each viewport." }
+          }
+        },
+        "grid": {
+          "type": "object",
+          "description": "For placements laid out in a grid, the geometry needed to compute one cell.",
+          "properties": {
+            "columns": { "$ref": "#/$defs/responsiveNumber" },
+            "gapPx": { "$ref": "#/$defs/responsiveNumber" },
+            "minHeightPx": { "$ref": "#/$defs/responsiveNumber" },
+            "paddingPx": { "$ref": "#/$defs/responsiveNumber" },
+            "container": { "$ref": "#/$defs/container" }
+          }
+        },
+        "image": {
+          "type": "object",
+          "required": ["fit", "positionX", "positionY"],
+          "properties": {
+            "fit": { "enum": ["cover", "contain"] },
+            "positionX": { "type": "number" },
+            "positionY": { "type": "number" }
+          }
+        },
+        "scrim": { "$ref": "#/$defs/scrim" },
+        "text": {
+          "type": "object",
+          "required": ["anchor", "blocks"],
+          "properties": {
+            "anchor": { "enum": ["bottom-left", "bottom-centre", "middle-left", "middle-centre"] },
+            "container": { "$ref": "#/$defs/container" },
+            "blocks": { "type": "array", "items": { "$ref": "#/$defs/textBlock" }, "description": "In DOM order, top to bottom." }
+          }
+        }
+      }
+    },
+    "container": {
+      "type": "object",
+      "properties": {
+        "maxWidthPx": { "type": "number" },
+        "paddingXPx": { "$ref": "#/$defs/responsiveNumber" },
+        "paddingTopPx": { "$ref": "#/$defs/responsiveNumber" },
+        "paddingBottomPx": { "$ref": "#/$defs/responsiveNumber" }
+      }
+    }
+  }
+}
