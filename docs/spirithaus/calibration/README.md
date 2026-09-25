@@ -81,9 +81,12 @@ Plain strings keep working; nothing already written needs changing. A viewport i
 theme does not render stops the run and lists the ones it does, because a mistyped id
 would otherwise sit in the file looking like a judgement and count for nothing.
 
-**You only need these on the divergent rows.** The report's *Model divergence* section
-lists them, and they are where the evidence about the typography change lives — rows
-where the models agree tell you nothing about which is better. An object with no `"*"`
+**You only need these on the divergent rows.** Every run writes
+`labels.template.json` into the output directory with those rows already listed and
+blank, so copy that to `labels.json` and fill it in rather than transcribing them out of
+the report — that transcription is the one step where a row can be quietly missed, and a
+missed row is evidence thrown away. Rows where the models agree tell you nothing about
+which is better. An object with no `"*"`
 leaves the asset unlabelled for threshold derivation, which is correct: you judged
 viewports, not the frame.
 

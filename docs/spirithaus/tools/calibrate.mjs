@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * calibrate — runs a folder of frames through Scrim Proof and writes a
- * calibration package: report.html, report.json, report.csv.
+ * calibration package: report.html, report.json, report.csv, labels.template.json.
  *
  * It drives the page's own engine through window.scrimProof rather than
  * reimplementing the measurement. There is one engine, so a batch report cannot
@@ -563,7 +563,28 @@ fs.writeFileSync(path.join(args.out, "report.csv"), csvRows.map(r => r.map(csvEs
 
 /* ------------------------------------------------------------------ html */
 fs.writeFileSync(path.join(args.out, "report.html"), renderHtml(report));
+
+// A labelling sheet with the divergent rows already in it. Transcribing them out of the
+// report by hand is the one step in the workflow where a row can be quietly missed, and
+// a missed row is a row of evidence thrown away. Blank values mean "not yet judged", so
+// this is safe to copy to labels.json and fill in from the top.
+const divergentByFile = {};
+for (const d of divergence) (divergentByFile[d.file] ||= new Set()).add(d.viewport);
+const template = {};
+for (const a of assets) {
+  const vps = divergentByFile[a.file];
+  if (!vps) { template[a.file] = ""; continue; }
+  const entry = { "*": "" };
+  for (const vp of [...vps].sort()) entry[vp] = "";
+  template[a.file] = entry;
+}
+const templatePath = path.join(args.out, "labels.template.json");
+fs.writeFileSync(templatePath, JSON.stringify(template, null, 2) + "\n");
+
 console.error(`calibrate: wrote report.html, report.json and report.csv to ${args.out}`);
+console.error(`calibrate: wrote labels.template.json \u2014 ${divergence.length} divergent `
+  + `row${divergence.length === 1 ? "" : "s"} across `
+  + `${Object.keys(divergentByFile).length} of ${assets.length} assets, blank and ready to fill.`);
 
 function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
 function chip(state){
