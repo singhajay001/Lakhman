@@ -20,6 +20,11 @@
  *                          THESE — see the threshold section of the report.
  *   --slot hero|tile       Override the slot inferred from each filename.
  *   --sweep-step 0.05      Granularity of the safe-zone sweep.
+ *   --master square|source Build each master by centre-cropping the source to a
+ *                          square (the brief's instruction, default), or by keeping
+ *                          the source's own aspect (what the storefront covers with
+ *                          when a non-square file is uploaded). The two give
+ *                          different safe zones and different readings.
  *
  * Requires node 18+ and playwright with Chromium available.
  */
@@ -199,6 +204,15 @@ await page.goto(pathToFileURL(path.resolve(args.page)).href);
 await page.waitForFunction("!!window.scrimProof", null, { timeout: 15000 })
   .catch(() => die(`${args.page} does not expose window.scrimProof — is it the current build?`));
 
+const MASTER = args.master === true ? "square" : (args.master || "square");
+if (MASTER !== "square" && MASTER !== "source")
+  die(`--master must be "square" or "source", got ${JSON.stringify(MASTER)}`);
+
+// The safe zone depends on the master's aspect, so with --master source it can only be
+// reported once the sources are known. Mixed aspects in one folder make a single safe
+// zone a fiction, and saying so beats printing one of them.
+const srcAspects = new Set();
+
 const meta = await page.evaluate(() => ({
   fontsLoaded: window.scrimProof.fontsLoaded(),
   profile: {
@@ -241,7 +255,8 @@ for (const file of files) {
 
   const result = await page.evaluate(
     ([src, opts]) => window.scrimProof.analyse(src, opts),
-    [src, { name: file, slot: args.slot === true ? undefined : args.slot, focal, modes: ["band", "glyph"] }]
+    [src, { name: file, slot: args.slot === true ? undefined : args.slot, focal,
+            modes: ["band", "glyph"], master: MASTER }]
   );
 
   // Safe-zone sweep: walk the focal point down the master and record what survives.
@@ -250,7 +265,8 @@ for (const file of files) {
     const r = await page.evaluate(
       ([src, opts]) => window.scrimProof.analyse(src, opts),
       [src, { name: file, slot: args.slot === true ? undefined : args.slot,
-              focal: { x: 0.5, y, r: FOCAL_R }, modes: ["glyph"], width: 240 }]
+              focal: { x: 0.5, y, r: FOCAL_R }, modes: ["glyph"], width: 240,
+              master: MASTER }]
     );
     sweep.push({ y, viewports: (r.focal ? r.focal.rows : []).map(v => ({
       viewport: v.viewport, cropVisible: v.cropVisible, typeOccluded: v.typeOccluded,
@@ -259,6 +275,7 @@ for (const file of files) {
 
   // `result.focal` is the focal REPORT; keep the spec under its own key or one
   // silently overwrites the other and three metrics come back empty.
+  srcAspects.add(+(result.width / result.height).toFixed(3));
   assets.push({ ...result, file, focalSpec: focal, focalKnown,
                 label: labels ? (labels[file] || null) : null,
                 labelReason: labelReasons ? (labelReasons[file] || null) : null, sweep });
@@ -514,7 +531,13 @@ const report = {
   images: path.resolve(args.images),
   fontsLoaded: meta.fontsLoaded,
   theme: meta.profile,
-  slots: meta.slots,
+  master: MASTER,
+  masterAspect: MASTER === "source"
+    ? (srcAspects.size === 1 ? [...srcAspects][0] : null) : 1,
+  sourceAspects: [...srcAspects].sort((a, b) => a - b),
+  slots: MASTER === "source" && srcAspects.size === 1
+    ? await page.evaluate(ma => window.scrimProof.slots(ma), [...srcAspects][0])
+    : meta.slots,
   focalKnown: assets.filter(a => a.focalKnown).length,
   unusableFocals,
   labelled: labelledCount,
