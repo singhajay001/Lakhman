@@ -68,9 +68,16 @@ const liquid = `{% comment %}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>{{ page.title | default: 'Scrim Proof' }}</title>
 {%- if customer and customer.tags contains '${STAFF_TAG}' -%}
+<title>{{ page.title | default: 'Scrim Proof' }}</title>
 {% raw %}${head.trim()}{% endraw %}
+{%- else -%}
+{%- comment -%}
+  The title is inside the gate too. Outside it, page.title would put the tool's
+  name in the browser tab of anyone who finds the URL -- not an exposure, but it
+  tells them what they found.
+{%- endcomment -%}
+<title>Not available</title>
 {%- endif -%}
 </head>
 <body>

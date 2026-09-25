@@ -347,11 +347,20 @@ pixels above and below to build a square from.
 | `tile-cocktails.jpg` | 819×1024, 4:5 | 1.64:1 | as above |
 | `tile-tequila.jpg` | 819×1024, 4:5 | 1.64:1 | as above |
 
-**Proof before deciding.** `hero-home.jpg` is 3072×1335 (2.30:1) and survives the
-desktop crop nearly intact, losing about 1% top and bottom at 2.34:1. It still
-drops to the central third of its width on a phone, and it was still composed
-with a quiet left third rather than a quiet bottom half. Run it through
-`scrim-proof.html` at 2.34:1 and 0.75:1 before committing to a reshoot.
+**Measured, and it does not survive.** `hero-home.jpg` is 3072×1335 (2.30:1) and
+holds the desktop crop nearly intact, losing about 1% top and bottom at 2.34:1.
+That is where the good news stops. Run through `scrim-proof.html` on 2026-09-25 it
+breaks at **tablet-768 (21 levels) and phone-390 (24 levels)** — and it breaks
+*after* the automatic fix has already slid the master crop to 0% and taken the
+quiet-zone veil to **55%, its cap**. The cap exists so that a frame can never be
+passed by turning the band into a black bar, so a frame still failing at the cap
+has no processing left to try.
+
+The focal check says why: crop survival is 100% at every viewport, but **67.5% of
+the subject sits under the headline at tablet-768**. It is not being cropped away;
+it is behind the type. That is a composition fault, and no crop or veil fixes it.
+
+**`hero-home.jpg` is therefore a reshoot, and this is an eleven-file job.**
 
 **Lifestyle frames are unaffected** as lifestyle. `life-packing.jpg`,
 `life-sydney.jpg`, `life-craft.jpg`, `life-service.jpg` and `life-shop.jpg` carry
@@ -376,29 +385,32 @@ Shopify admin and drop them onto `scrim-proof.html` to settle it.
 
 ## Reshoot run sheet
 
-Ten files, in the order to shoot them. Each hero prompt is in section 2 above and
-needs no editing; the three tile prompts are resolved below, because the template
-in section 3 carries a placeholder and the store needs these three specifically.
+Eleven files, in the order to shoot them. Each hero prompt is in section 2 above
+and needs no editing; the three tile prompts are resolved below, because the
+template in section 3 carries a placeholder and the store needs these three
+specifically.
 
-**Before anything: settle `hero-home.jpg`.** It is the only existing file that may
-survive. Run it through `scrim-proof.html` at 2.34:1 and again at 0.75:1. If the
-quiet zone holds at both, keep it and shoot ten files. If it does not, it becomes
-the eleventh and is shot first, because it is worth more than the rest combined.
+**`hero-home.jpg` is settled: it is a reshoot, and it is shot first.** It was the
+one existing file that might have survived. It does not — it still breaks at
+tablet and phone with the veil at its 55% cap, and 67.5% of its subject sits under
+the headline at tablet-768. See *Existing assets* above for the readings. It is
+shot first because the homepage hero is worth more than the rest combined.
 
 | # | File | Prompt |
 | --- | --- | --- |
-| 1 | `hero-whisky.jpg` | §2 Whisky |
-| 2 | `hero-gin.jpg` | §2 Gin |
-| 3 | `hero-tequila.jpg` | §2 Tequila & agave |
-| 4 | `hero-rum.jpg` | §2 Rum |
-| 5 | `hero-vodka.jpg` | §2 Vodka |
-| 6 | `hero-cocktails.jpg` | §2 Cocktails |
-| 7 | `hero-liqueurs.jpg` | §2 Liqueurs & aperitifs |
-| 8 | `tile-whisky.jpg` | below |
-| 9 | `tile-cocktails.jpg` | below |
-| 10 | `tile-tequila.jpg` | below |
+| 1 | `hero-home.jpg` | §1 Homepage hero |
+| 2 | `hero-whisky.jpg` | §2 Whisky |
+| 3 | `hero-gin.jpg` | §2 Gin |
+| 4 | `hero-tequila.jpg` | §2 Tequila & agave |
+| 5 | `hero-rum.jpg` | §2 Rum |
+| 6 | `hero-vodka.jpg` | §2 Vodka |
+| 7 | `hero-cocktails.jpg` | §2 Cocktails |
+| 8 | `hero-liqueurs.jpg` | §2 Liqueurs & aperitifs |
+| 9 | `tile-whisky.jpg` | below |
+| 10 | `tile-cocktails.jpg` | below |
+| 11 | `tile-tequila.jpg` | below |
 
-All ten at the largest size the tool will produce, in the same 3:2 shape the set is
+All eleven at the largest size the tool will produce, in the same 3:2 shape the set is
 already delivered in. Uploading them squared is also fine and changes nothing
 horizontally — but it costs vertical latitude, so there is no reason to.
 
@@ -439,7 +451,7 @@ A file is done when all of this is true, not when it looks good:
 
 Fail any of the four and it is a re-roll, not a retouch.
 
-### After the ten
+### After the eleven
 
 Point the three homepage tile slots in `templates/index.json` at the matching
 `tile-<category>.jpg`. Today they point at a hero master, a tile master and a

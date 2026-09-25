@@ -10,7 +10,7 @@
   real 404 status — a page template always answers 200 — so it renders a dead
   end and asks robots not to index.
 
-  Built 2026-09-25T04:49:19.218Z
+  Built 2026-09-25T05:39:01.665Z
 {% endcomment %}
 {% layout none %}<!DOCTYPE html>
 <html lang="{{ request.locale.iso_code }}">
@@ -18,8 +18,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>{{ page.title | default: 'Scrim Proof' }}</title>
 {%- if customer and customer.tags contains 'staff' -%}
+<title>{{ page.title | default: 'Scrim Proof' }}</title>
 {% raw %}<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
@@ -171,6 +171,13 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:16px;
 footer b{color:var(--ink);font-weight:500}
 .dragging{outline:2px dashed var(--fail);outline-offset:-10px}
 </style>{% endraw %}
+{%- else -%}
+{%- comment -%}
+  The title is inside the gate too. Outside it, page.title would put the tool's
+  name in the browser tab of anyone who finds the URL -- not an exposure, but it
+  tells them what they found.
+{%- endcomment -%}
+<title>Not available</title>
 {%- endif -%}
 </head>
 <body>
