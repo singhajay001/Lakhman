@@ -231,3 +231,66 @@ appears the moment a value is set.
 **To use it:** Shopify admin → the product → Metafields →
 *Current vintage (indicative)*. A year, `NV`, or a range. Leave it blank
 rather than guess — blank renders nothing, which is the honest state.
+
+---
+
+# Part 4 — the six HIGH values set
+
+**Owner's instruction:** set the HIGH-confidence ones to the researched year,
+with a caveat that vintage may vary batch to batch.
+
+Done, with **one correction** — see below.
+
+| Product | Value set | Source |
+|---|---|---|
+| Henschke Hill of Grace | **2022** | AU producer, released 6 May 2026 |
+| Cullen Diana Madeline | **2024** | AU producer, released May–June 2026 |
+| Clonakilla Shiraz Viognier | **2024** | AU producer's own release page |
+| Tapanappa Whalebone | **2021** | AU producer's current release |
+| Taittinger Comtes de Champagne | **2008** | Producer, out of cellar Jan 2026 |
+| Krug Vintage | **2006** | ⚠️ **not** the researched 2013 — see below |
+
+## The Krug correction
+
+The research said 2013, from Krug's own July 2026 release list, and it was my
+highest-confidence result. Setting that would have repeated the exact mistake
+this whole exercise exists to correct.
+
+**Dan Murphy's is shipping 2006.** That is direct evidence from the Australian
+retail channel, and it beats the producer's release calendar by seven years.
+Where the two disagree, the channel wins — it is the one describing what
+actually arrives in Australia.
+
+2006 is set instead. If your ALM delivery turns out to be something else,
+change it; the field exists precisely because that can happen.
+
+## An unevenness worth knowing
+
+The four Australian wines are materially safer than the two champagnes.
+Hill of Grace, Diana Madeline, Clonakilla and Tapanappa are Australian
+producers selling into the Australian market with no import lag, so the
+producer's current release and what a Sydney retailer receives are usually the
+same thing.
+
+Krug and Taittinger are imports, which is the exact category where the channel
+lags — as Krug just demonstrated. **Taittinger's 2008 carries the same risk as
+Krug's 2013 did** and has not been cross-checked against an Australian
+retailer. Treat it as the least reliable of the six.
+
+## Caveat wording
+
+Aligned to the supplier's own phrasing, PR #8, merged as `8136abc` and synced
+at 06:53:04 UTC:
+
+> Indicative only — vintage may vary from batch to batch and is not guaranteed.
+
+"Between deliveries" described the symptom; "batch to batch" describes the
+cause, and is the language ALM itself uses.
+
+## Live now
+
+`/products/krug-vintage` and `/products/henschke-hill-of-grace` among the six.
+The row renders under Alcohol in the spec table, with the disclaimer on its own
+line beneath the year. The other 24 `to-confirm` products are unchanged and
+render no vintage row at all, which remains the correct state while the year is
+unknown.
