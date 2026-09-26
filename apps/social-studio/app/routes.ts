@@ -26,6 +26,7 @@ export default [
     route('app/trends', 'routes/app.trends.tsx'),
     route('app/competitors', 'routes/app.competitors.tsx'),
     route('app/campaigns', 'routes/app.campaigns.tsx'),
+    route('app/campaigns/:id', 'routes/app.campaigns.$id.tsx'),
     route('app/create', 'routes/app.create.tsx'),
     route('app/media', 'routes/app.media.tsx'),
     route('app/calendar', 'routes/app.calendar.tsx'),

@@ -7,7 +7,12 @@ const pkg = (name: string) =>
 export default defineConfig({
   resolve: {
     alias: {
+      '@spirithaus/compliance': pkg('compliance'),
+      '@spirithaus/content': pkg('content'),
       '@spirithaus/db': pkg('db'),
+      '@spirithaus/domain/server': fileURLToPath(
+        new URL('./packages/domain/src/server.ts', import.meta.url),
+      ),
       '@spirithaus/domain': pkg('domain'),
       '@spirithaus/providers': pkg('providers'),
       '@spirithaus/jobs': pkg('jobs'),
@@ -40,6 +45,7 @@ export default defineConfig({
           include: [
             'packages/*/src/**/*.integration.test.ts',
             'apps/*/src/**/*.integration.test.ts',
+            'apps/*/app/**/*.integration.test.ts',
           ],
           environment: 'node',
           hookTimeout: 30_000,

@@ -17,7 +17,7 @@
     "format": "prettier --check .",
     "test": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test"
+    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm --filter @spirithaus/social-studio build"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

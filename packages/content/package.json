@@ -1,0 +1,15 @@
+{
+  "name": "@spirithaus/content",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@spirithaus/compliance": "workspace:*",
+    "@spirithaus/domain": "workspace:*",
+    "@spirithaus/observability": "workspace:*",
+    "@spirithaus/providers": "workspace:*"
+  }
+}

@@ -22,6 +22,20 @@ export const AUDIT_ACTIONS = [
   'provider.rate_card_set',
   'provider.budget_changed',
 
+  'research.claim_approved',
+  'research.claim_rejected',
+  'research.submitted',
+  'brand_kit.published',
+  'campaign.created',
+  'campaign.variants_generated',
+  'campaign.variant_edited',
+  'campaign.compliance_run',
+  'campaign.submitted_for_approval',
+  'approval.key_signed',
+  'approval.granted',
+  'approval.rejected',
+  'approval.invalidated',
+
   'prompt.version_created',
   'prompt.version_activated',
 

@@ -25,7 +25,10 @@
       "@spirithaus/jobs": ["packages/jobs/src/index.ts"],
       "@spirithaus/observability": ["packages/observability/src/index.ts"],
       "@spirithaus/shopify": ["packages/shopify/src/index.ts"],
-      "@spirithaus/testing": ["packages/testing/src/index.ts"]
+      "@spirithaus/testing": ["packages/testing/src/index.ts"],
+      "@spirithaus/compliance": ["packages/compliance/src/index.ts"],
+      "@spirithaus/content": ["packages/content/src/index.ts"],
+      "@spirithaus/domain/server": ["packages/domain/src/server.ts"]
     }
   }
 }

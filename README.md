@@ -3,8 +3,12 @@
 An embedded Shopify Admin application: a human-controlled, AI-assisted marketing command
 centre for SPIRITHAUS, a Sydney liquor retailer.
 
-**Phase 1 of seven is built.** The foundation — embedded app, authentication, roles,
-audit, product sync, webhooks, and the sixteen provider contracts with honest mocks.
+**Phases 1 and 2 of seven are built.** The foundation — embedded app, authentication,
+roles, audit, product sync, webhooks, the sixteen provider contracts with honest mocks —
+and on top of it the knowledge and campaign layer: research with per-claim approval, a
+Brand Kit seeded from the live theme, one strategy producing six independently derived
+platform variants, the ABAC compliance engine, explainable content scoring, and approvals
+with content hashing and dual control.
 Every later phase has a plan and an exit gate in
 [`docs/social-studio/10-delivery-plan.md`](docs/social-studio/10-delivery-plan.md), and
 every screen that belongs to one says which phase builds it instead of showing an empty
@@ -41,9 +45,13 @@ runs against mocks.
 ## Verifying it
 
 ```sh
-pnpm verify            # typecheck, lint, 167 unit tests
-pnpm test:integration  # 22 tests against a real Postgres and Redis
+pnpm verify            # typecheck, lint, 326 unit tests, and the app build
+pnpm test:integration  # 57 tests against a real Postgres and Redis
 ```
+
+The app build is part of `verify` deliberately: a shared package accidentally pulling a
+Node built-in into the browser bundle is invisible to `tsc` and to the tests, and only the
+bundler finds it (`docs/adr/0008`).
 
 `pnpm test` needs neither Postgres nor Redis. The integration project needs both, which is
 why they are separate projects rather than one suite that skips.
@@ -77,7 +85,7 @@ worker serve fixture data.
 | `packages/observability` | Structured logs with declared redaction, and the cost meter                                 |
 | `packages/testing`       | A mock Shopify Admin API as a `fetch` implementation, and fixtures                          |
 
-## Four things worth knowing before reading the code
+## Six things worth knowing before reading the code
 
 **Mocks do not imitate success.** `PROVIDER_*=mock` is a supported configuration, not a
 test double. A mocked publisher returns `published: false, state: 'not_published'` on
@@ -97,10 +105,26 @@ than implying otherwise. See
 truth, not output, and section 15's principle is stronger if the app _cannot_ edit it. The
 Settings screen lists every scope with its reason, and the scopes it refuses to request.
 
-**Two rules are enforced by Postgres, not by a service.** The audit trail rejects UPDATE
-and DELETE; webhook events are unique per `(shop, topic, event id)`. A service can be
-bypassed by the next feature; a constraint cannot. Both are tested against the real
-schema.
+**Several rules are enforced by Postgres, not by a service.** The audit trail rejects
+UPDATE and DELETE; webhook events are unique per `(shop, topic, event id)`; a material
+edit to a variant invalidates its approval by trigger and cascades to the approval row; a
+key cannot be added to a closed approval, to one that already has its keys, or with a hash
+the content has moved past; and an approval is granted atomically when its last key
+lands. One person cannot hold both keys of a dual-control action, because a unique index
+says so. All of it is tested against the real schema.
+
+**Only approved facts reach copy, and the guard is honest about its reach.** The generator
+receives a frozen fact sheet built from APPROVED research claims and Shopify data, and
+nothing else. On top of that, the compliance engine blocks an ABV, age statement, award,
+rating, vintage, price or availability claim the sheet does not support. That is a guard
+over the claim types that carry the most risk when invented — it will not catch a
+fabricated tasting note, and the rule documentation and a test both say so.
+
+**Six platforms, one strategy, and the structure is ours.** Platform differences — which
+fields exist, how many hashtags, whether a link is clickable, what a storyboard needs —
+are decisions in code, not something a model is trusted to get right. The prose comes from
+the text provider. That split is why six genuinely different variants come out even with a
+mocked provider, and why a test can assert the difference pairwise.
 
 ## Where the existing SPIRITHAUS work fits
 
@@ -124,7 +148,16 @@ Stated rather than left for someone to discover:
   real token: it was observed failing correctly with "No offline session for this shop",
   which is the honest outcome, and the sync itself is covered against Postgres with a
   mocked Shopify.
-- **No platform capability is verified**, for the reason above.
+- **No platform capability is verified**, for the reason above. Every caption limit,
+  hashtag ceiling and media spec in `packages/domain/src/content/platform-specs.ts` carries
+  `verified: false` and a spec version, for the same reason.
+- **The compliance ruleset cites no clause numbers.** It describes each standard in its own
+  words and links nothing, because a wrong clause reference is worse than none — it looks
+  authoritative. A Compliance Reviewer reads the standard text and decides; the report says
+  so verbatim.
+- **No threshold or score here is calibrated.** The quality dimensions measure the copy in
+  front of them and predict nothing; the near-duplicate distance of 12 bits is a starting
+  candidate, not a derived value.
 
 ## Not done, and deliberately
 
