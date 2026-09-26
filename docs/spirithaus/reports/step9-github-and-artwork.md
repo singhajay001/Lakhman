@@ -210,3 +210,50 @@ Housekeeping left to the owner: five superseded drafts
 `hero-artwork`) and the remote branch
 `claude/collection-hero-artwork-precedence`, whose content is in `main` and
 which still points at its pre-rebase commits.
+
+### The portrait fallback, found on Champagne
+
+The Champagne hero renders as a horizontal slice through the middle of a
+bottle. Not a contrast fault — a shape one. The band is 3:1 from 750px under
+`object-fit: cover`, so an image keeps its own aspect ratio divided by three.
+
+| Collection image shape | Ratio | Height kept in the band |
+| --- | --- | --- |
+| 712x712, 1200x1200, 256x256 (8 collections) | 1.00 | 33% |
+| 1366x1707 (9 collections, incl. Champagne) | 0.80 | 27% |
+| 974x1299, 1400x1980 (3 collections) | 0.71–0.75 | 24–25% |
+| 141x620 (Fortified & Dessert) | 0.23 | 8% |
+
+**Nought of 23 is 1.5 or wider.** The `collection.image` fallback has never
+once produced a usable hero; it was only invisible before because
+`collection.image` also won outright, so every category looked equally wrong.
+
+Gated at 1.5 — 3:2, the shape the safe-zone work was done on, which keeps half
+the height. Explicit Artwork blocks are not gated: choosing a photograph for
+this band is a decision someone made. Below the gate the section falls to
+`sh-chero--plain`, which is ink with the category set large.
+
+On `claude/collection-hero-portrait-fallback`, not merged. See below.
+
+### The workflow now contradicts the repo's own rule
+
+`spirithaus-theme/main` is both the GitHub-connected theme and the published
+one, so a merge to `main` is a deployment with no review step — PR #6 proved
+it, reaching the storefront unannounced.
+
+The theme repo's CLAUDE.md says "Never push to the published Shopify theme.
+The owner reviews on a duplicate or an unpublished GitHub-connected theme and
+publishes." That rule and this setup cannot both hold. Until it is resolved,
+work stops at a branch.
+
+The usual shape is a second GitHub-connected theme on a `staging` branch, left
+unpublished: merge there, look at it, then fast-forward `main`. That restores
+the review step without giving up the connection.
+
+### Still missing: landscape photography for the wine categories
+
+Seventeen collections have no frame in `assets/` and no landscape image
+anywhere — the wine pages especially. The Artwork block is the hook and the
+precedence now honours it, but there is nothing apt to point it at. That is a
+shoot, not a theme change, and it belongs on the run sheet beside the eleven
+hero files.
