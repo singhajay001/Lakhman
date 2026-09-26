@@ -127,17 +127,27 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    `egly-ouriet-brut-tradition-grand-cru` and `jacquesson-cuvee-no-74x`. Draft,
    so not sellable, but they will be the moment anyone publishes them.
 
-7. **No Champagne carries the `rosé` tag**, so `/collections/rose` contains no
-   rosé Champagne at all — while its own description promises "sparkling rosé
-   and rosé Champagne". There are eight rosé Champagnes in the catalogue. Tag
-   them and the page delivers what it says.
+7. **Only 7 of the 30 products in `/collections/rose` are ACTIVE.** The page is
+   now correctly populated, but 23 members are DRAFT, so a shopper sees seven
+   bottles on a page whose description promises Provençal dry, Australian pink,
+   sparkling rosé and rosé Champagne. The Champagne half is entirely draft.
 
-8. **Prices are moving under us.** The two Moët drafts were repriced between two
+8. **`bollinger-rose-nv` and `collet-rose` are Champagnes without the
+   `champagne` tag.** Both are in the Rosé collection and both are real
+   Champagne houses — Collet's other two bottlings are already tagged — so they
+   are missing from `/collections/champagne`. The inverse of the rosé gap, and a
+   sign the tagging needs a sweep rather than another one-off fix.
+
+9. **Possible duplicate**: `champagne-deutz-brut-rose-nv` ($185.99) and
+   `champagne-deutz-brut-rose` ($153.99) look like the same wine at two prices.
+   Both DRAFT and `to-confirm`.
+
+10. **Prices are moving under us.** The two Moët drafts were repriced between two
    reads on the same day (Vintage $156.99 → $172.99, Rosé $115.99 → $126.99).
    Worth knowing before quoting any price in copy — which is why none of the
    notes do.
 
-9. **Nearly everything reads as zero inventory.** If that is real rather than
+11. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
 
 **Done in this pass:** the duplicate Hibiki listing is resolved — the good copy
@@ -228,6 +238,27 @@ above.
 
 This gives `articles/first-single-malt.md` a real destination: its
 `/collections/single-malt` link previously landed on a one-product page.
+
+**Rosé Champagnes tagged, and a fragile rule repaired.** The eight
+`champagne`-tagged rosés carried no `rose` tag, so none appeared in
+`/collections/rose`: Billecart-Salmon Brut Rosé, Dom Pérignon Rosé, Ruinart
+Rosé Second Skin, Veuve Clicquot Rosé Réserve, both Deutz Brut Rosés,
+Lacourte-Godbillon Rosé Premier Cru and Moët & Chandon Rosé. All eight tagged.
+
+Tagging alone did not fix it. The collection rule read `TAG EQUALS "rosé"` —
+**accented** — while every product in the store carries the unaccented `rose`.
+A search for `tag:'rosé'` returns 0, yet the collection held 22, so Shopify's
+rule engine normalises accents even though its search syntax does not. The
+existing 22 matched; the eight newly tagged ones did not appear. The rule now
+reads `TAG EQUALS "rose"`, matching what the products actually carry, and the
+rewrite forced the re-evaluation that brought them in.
+
+Result: `/collections/rose` went from 22 to **30**, matching `tag:'rose'`
+exactly. Verified from the product side too — Moët & Chandon Rosé and Dom
+Pérignon Rosé both now resolve to `rose` alongside `champagne` and `fine-wine`.
+
+An accented condition on an unaccented tag is worth knowing about: it works, but
+only by accident of normalisation, and it is invisible in the admin.
 
 **`why_we_stock_it` written for all three Moëts.** This is the store's own
 voice — every other Champagne has one, built on a real figure rather than
