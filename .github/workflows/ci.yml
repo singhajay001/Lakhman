@@ -234,10 +234,16 @@ jobs:
       - name: The worker refuses to start without a queue
         # Not a smoke test of the worker so much as of its refusal: a worker with no queue
         # would otherwise look healthy while doing nothing.
+        #
+        # The encryption key is supplied so that Redis is the *only* thing missing. The worker
+        # validates its key ring at module load, before the queue check, so without a key it
+        # refuses for that reason instead and this would assert the wrong refusal.
         run: |
           set +e
-          out=$(docker run --rm \
+          out=$(docker run --rm --workdir /app \
             -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
-            spirithaus-social-studio:ci pnpm --filter @spirithaus/worker start 2>&1)
+            -e SESSION_ENCRYPTION_KEYS=ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo= \
+            -e SESSION_ENCRYPTION_CURRENT_KEY_ID=ci \
+            --entrypoint pnpm spirithaus-social-studio:ci --filter @spirithaus/worker start 2>&1)
           echo "$out"
           echo "$out" | grep -qi 'redis' || { echo "Expected the worker to name REDIS_URL."; exit 1; }
