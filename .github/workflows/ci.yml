@@ -82,3 +82,110 @@ jobs:
 
       - name: The app builds
         run: pnpm --filter @spirithaus/social-studio build
+
+      - name: The built server boots
+        # A build that cannot start still builds. tesseract.js was bundled into the ESM server
+        # output for three phases, where its CommonJS __dirname is undefined, and the server
+        # threw on startup while every build here passed. This spawns the artefact and asks it
+        # a question.
+        run: pnpm smoke
+
+  image:
+    name: The image builds and starts
+    runs-on: ubuntu-latest
+    # Independent of `verify`: a broken Dockerfile and a broken test suite are different
+    # failures and each should be visible without waiting on the other.
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          # Never pushed. This job proves the image builds and runs; it publishes nothing.
+          push: false
+          load: true
+          tags: spirithaus-social-studio:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Runtime dependencies resolve inside the image
+        # sharp is native and tesseract.js is CommonJS; both are kept out of the SSR bundle and
+        # must therefore resolve from the app at runtime. Bundling either breaks startup, and
+        # the failure is a module-resolution error rather than a build error.
+        run: |
+          docker run --rm spirithaus-social-studio:ci node -e "
+            const { createRequire } = require('node:module');
+            const r = createRequire('/app/apps/social-studio/package.json');
+            for (const m of ['sharp', 'tesseract.js', '@tesseract.js-data/eng/package.json']) {
+              r.resolve(m);
+              console.log('resolved', m);
+            }
+          "
+
+      - name: The Prisma client was generated during the build
+        # Resolved the way the app resolves it. Under pnpm the generated client lives in the
+        # virtual store, not at node_modules/.prisma/client, and checking the naive path
+        # reports a missing client that is actually there. The export is what matters: an
+        # image whose client was never generated fails on `PrismaClient` (ADR 0006).
+        run: |
+          docker run --rm spirithaus-social-studio:ci node -e "
+            const { createRequire } = require('node:module');
+            const r = createRequire('/app/apps/social-studio/package.json');
+            const { PrismaClient } = r('@prisma/client');
+            if (typeof PrismaClient !== 'function') { throw new Error('PrismaClient was not generated'); }
+            console.log('prisma client generated and exported');
+          "
+
+      - name: No .env or credential files were copied into the image
+        # Anything copied into a layer is recoverable from the image even if a later layer
+        # deletes it, so this checks the layers rather than the final filesystem.
+        run: |
+          if docker run --rm spirithaus-social-studio:ci sh -c 'ls /app/.env /app/.env.* 2>/dev/null' | grep -v '\.env\.example'; then
+            echo "A .env file reached the image."; exit 1
+          fi
+          docker history --no-trunc spirithaus-social-studio:ci > history.txt
+          if grep -Eiq 'shpss_|shpat_|BEGIN [A-Z ]*PRIVATE KEY' history.txt; then
+            echo "Build history contains something that looks like a credential."; exit 1
+          fi
+          echo "no credential files or literals found"
+
+      - name: The image starts and answers
+        run: |
+          docker run -d --name studio \
+            -e NODE_ENV=production \
+            -e PORT=3000 \
+            -e SHOPIFY_API_KEY=ci_api_key \
+            -e SHOPIFY_API_SECRET=ci_api_secret \
+            -e SHOPIFY_APP_URL=https://ci.invalid \
+            -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
+            -p 3000:3000 spirithaus-social-studio:ci
+
+          for i in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/auth/shopify/callback || true)
+            if [ "$code" = "400" ]; then echo "server answered $code"; exit 0; fi
+            if ! docker ps --filter name=studio --filter status=running -q | grep -q .; then
+              echo "The container exited before answering:"; docker logs studio; exit 1
+            fi
+            sleep 2
+          done
+          echo "No answer within 120s:"; docker logs studio; exit 1
+
+      - name: Stop the container
+        # `always()` so a failed probe still tears down and the runner leaves nothing behind.
+        if: always()
+        run: docker rm -f studio 2>/dev/null || true
+
+      - name: The worker refuses to start without a queue
+        # Not a smoke test of the worker so much as of its refusal: a worker with no queue
+        # would otherwise look healthy while doing nothing.
+        run: |
+          set +e
+          out=$(docker run --rm \
+            -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
+            spirithaus-social-studio:ci pnpm --filter @spirithaus/worker start 2>&1)
+          echo "$out"
+          echo "$out" | grep -qi 'redis' || { echo "Expected the worker to name REDIS_URL."; exit 1; }

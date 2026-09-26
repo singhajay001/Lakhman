@@ -2,7 +2,11 @@
 # building them twice would only create a chance for them to drift.
 FROM node:22-bookworm-slim AS base
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH
-RUN corepack enable
+# `corepack enable` installs shims; the package manager itself is downloaded on first use. That
+# is fine during a build and wrong at runtime: the container would reach for the npm registry
+# every time it started, and could not start at all on a host without that egress. Found by
+# running the image — it exited with a corepack fetch failure before serving anything.
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 WORKDIR /app
 
 # Every workspace manifest, and nothing else.
@@ -40,7 +44,11 @@ EXPOSE 3000
 # first use, which needs egress to its CDN; set REMOTION_BROWSER_EXECUTABLE to a shell baked
 # into the image where that egress is not allowed. See docs/deployment/configuration.md.
 
-# Web:     docker run … pnpm --filter @spirithaus/social-studio start
-# Worker:  docker run … pnpm --filter @spirithaus/worker start
-# Migrate: docker run … pnpm --filter @spirithaus/db migrate
-CMD ["pnpm", "--filter", "@spirithaus/social-studio", "start"]
+# The default command runs the server directly rather than through pnpm. Starting a production
+# process should not depend on a package manager resolving a workspace filter, and node is the
+# thing that actually has to work.
+WORKDIR /app/apps/social-studio
+CMD ["node", "node_modules/@react-router/serve/bin.js", "./build/server/index.js"]
+
+# Worker:  docker run … --workdir /app pnpm --filter @spirithaus/worker start
+# Migrate: docker run … --workdir /app pnpm --filter @spirithaus/db migrate

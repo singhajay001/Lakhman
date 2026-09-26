@@ -1,0 +1,37 @@
+# The build context was 313MB without this, almost all of it node_modules that the image
+# discards anyway — `pnpm install` runs inside the build. A large context is slow to transfer
+# and defeats layer caching, because any change anywhere invalidates it.
+node_modules
+**/node_modules
+
+# Build outputs. Regenerated inside the image; copying host artefacts in risks an image built
+# from a stale local build rather than from source.
+build
+dist
+.react-router
+**/build
+**/dist
+**/.react-router
+apps/social-studio/build
+apps/render/out
+
+# History and tooling.
+.git
+.github
+.vscode
+.idea
+
+# Secrets must never enter the build context: anything copied in is recoverable from the image
+# even if a later layer deletes it.
+.env
+.env.*
+!.env.example
+
+# The local build-verification CA. Only the harness Dockerfile copies it, deliberately.
+.ci-ca.crt
+
+# Local state.
+coverage
+*.log
+.DS_Store
+tmp

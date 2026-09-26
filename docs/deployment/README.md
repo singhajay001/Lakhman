@@ -30,7 +30,12 @@ as an experiment with expected findings rather than a rollout.
 
 | | |
 | --- | --- |
-| [`configuration.md`](configuration.md) | Every environment variable, the egress hosts the app needs, and the Shopify Partner Dashboard settings that must match |
+| [`readiness-report.md`](readiness-report.md) | **Start here.** What is verified, what is not, what needs approval, and what it costs |
+| [`platform.md`](platform.md) | The recommended staging platform, its cost, topology, health checks, backups and rollback |
+| [`environment-matrix.md`](environment-matrix.md) | Every variable the code actually reads, and the minimum egress allowlist |
+| [`session-security.md`](session-security.md) | How Shopify access tokens are stored, what protects them, and what to change before production |
+| [`development-store.md`](development-store.md) | Partner Dashboard settings and the install runbook for a development store |
+| [`configuration.md`](configuration.md) | Environment, egress and Partner Dashboard settings in prose |
 | [`staging.md`](staging.md) | The deployment itself, in order, with what to check after each step |
 | [`runbook.md`](runbook.md) | Symptom to cause to fix, for the failure modes this system deliberately produces |
 
