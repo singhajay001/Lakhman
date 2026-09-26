@@ -67,7 +67,15 @@ model Session {
   isOnline      Boolean   @default(false)
   scope         String?
   expires       DateTime?
+  /// Encrypted at the application layer before it is written (ADR 0014). Never a usable
+  /// credential at rest.
   accessToken   String
+  /// Written by PrismaSessionStorage 11. Absent from this model until it was exercised against
+  /// the real library, which failed every storeSession with "Unknown argument `refreshToken`" —
+  /// meaning OAuth could never have persisted a session. Encrypted like the access token,
+  /// because a refresh token mints access tokens and is the more valuable of the two.
+  refreshToken  String?
+  refreshTokenExpires DateTime?
   userId        BigInt?
   firstName     String?
   lastName      String?

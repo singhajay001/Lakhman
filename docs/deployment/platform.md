@@ -92,17 +92,22 @@ themselves.
 
 ### Health checks
 
-There is **no dedicated health endpoint**, and that is worth knowing before configuring one.
-`GET /auth/shopify/callback` with no parameters answers `400` with
-`{"error":"missing_parameters"}` from the route's own preflight — which proves the server is up,
-the route table is wired and a handler ran. It is what `pnpm smoke` and the CI image job use.
+Two endpoints, deliberately separate.
 
-Configure the platform check to accept `400` on that path. Do not point a check at `/`: it
-redirects to the login page, which is a weaker signal and will follow redirects into pages that
-expect a Shopify session.
+`GET /livez` → `200 {"status":"alive"}`. Touches nothing. This is what a **liveness** probe uses:
+a probe that touches a dependency turns a slow database into a restart loop, killing healthy
+processes and making the database slower.
 
-A purpose-built `/healthz` that also checks database and Redis reachability would be better and is
-a small piece of work. Say so and I will add it.
+`GET /readyz` → `200 {"status":"ready"}` or `503 {"status":"not_ready"}`. Runs a `SELECT 1` and a
+Redis `PING`, each bounded at 1.5s with a 2.5s overall budget, on the connections the application
+already holds. This is what a **readiness** probe uses: a failure takes the machine out of
+rotation and puts it back when the dependency returns, without restarting anything.
+
+The readiness response never says *which* dependency failed — that would hand an anonymous caller
+a map of the deployment. The detail is in the log.
+
+Measured locally: `/livez` answers in ~5ms with both dependencies down; `/readyz` returns 503 in
+1.5s (bounded by its own timeout) and recovers to 200 without a restart.
 
 ### Logs
 

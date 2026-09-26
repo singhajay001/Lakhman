@@ -4,17 +4,20 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./encrypt-sessions": "./src/encrypt-sessions.ts"
   },
   "scripts": {
     "generate": "prisma generate",
     "migrate": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
     "seed": "tsx src/seed.ts",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "encrypt-sessions": "tsx src/encrypt-sessions.ts"
   },
   "dependencies": {
-    "@prisma/client": "6.19.3"
+    "@prisma/client": "6.19.3",
+    "@spirithaus/session-crypto": "workspace:*"
   },
   "devDependencies": {
     "prisma": "6.19.3",

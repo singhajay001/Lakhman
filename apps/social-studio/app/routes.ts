@@ -8,6 +8,11 @@ import { type RouteConfig, index, layout, route } from '@react-router/dev/routes
 export default [
   index('routes/_index.tsx'),
 
+  // Health. Outside the app layout and outside auth: a platform health checker has no session,
+  // and neither answer says anything an anonymous caller could use.
+  route('livez', 'routes/livez.tsx'),
+  route('readyz', 'routes/readyz.tsx'),
+
   // OAuth, all under one prefix. `authPathPrefix` in shopify.server.ts derives the callback,
   // login, session-token and exit-iframe paths together, so they move together or not at all.
   // The callback has its own route ahead of the splat because it is the one that has to explain

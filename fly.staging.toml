@@ -1,0 +1,96 @@
+# SPIRITHAUS Social Studio — staging.
+#
+# Named `fly.staging.toml` rather than `fly.toml` so that a bare `fly deploy` in this directory
+# does nothing. Deploying is an explicit act:
+#
+#   fly deploy --config fly.staging.toml
+#
+# NOT APPROVED FOR PRODUCTION. The database this expects is a single-node development-grade Fly
+# Postgres: one machine, no replica, no automatic failover, and backups are whatever snapshot
+# schedule is configured. That is an acceptable shape for a staging environment holding a
+# development store's data and an unacceptable one for a real shop.
+#
+# No secret appears in this file. Everything sensitive is set with `fly secrets set`, which
+# stores it encrypted and injects it at runtime — a value written here would be committed.
+
+app = "spirithaus-social-studio-staging"
+primary_region = "syd"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Non-secret configuration only. Anything here is visible to anyone who can read the repo.
+  NODE_ENV = "production"
+  LOG_LEVEL = "info"
+  PORT = "3000"
+  SHOPIFY_API_VERSION = "2025-07"
+  QUEUE_PREFIX = "spirithaus-staging"
+  # Both processes must agree on these, which is why they are set once here rather than per group.
+  COMPOSITE_CONCURRENCY = "2"
+  RENDER_CONCURRENCY = "1"
+
+# Two processes from one image. The web process serves; the worker consumes queues and is never
+# reachable from outside.
+[processes]
+  web = "node node_modules/@react-router/serve/bin.js ./build/server/index.js"
+  worker = "sh -c 'cd /app && pnpm --filter @spirithaus/worker start'"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  processes = ["web"]
+
+  # The web process may idle down; a request wakes it. The worker may not — see below.
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 40
+    hard_limit = 60
+
+# Liveness: is the process alive? No dependency is touched, so a slow database cannot cause a
+# restart. Generous grace and threshold, because a restart is the most destructive thing a health
+# check can do.
+[[http_service.checks]]
+  method = "GET"
+  path = "/livez"
+  interval = "15s"
+  timeout = "2s"
+  grace_period = "20s"
+
+# Readiness: should this machine receive traffic? Checks Postgres and Redis, and its own timeouts
+# bound it at 2.5s. A transient dependency failure takes the machine out of rotation and puts it
+# back when the dependency returns — it does not restart anything, which is the whole reason
+# these are two endpoints rather than one.
+[[http_service.checks]]
+  method = "GET"
+  path = "/readyz"
+  interval = "10s"
+  timeout = "5s"
+  grace_period = "30s"
+
+# The worker runs one machine that stays up.
+#
+# `auto_stop_machines` is deliberately absent for this group: a suspended worker is a worker that
+# stopped mid-render, and a render holds a ten-minute queue lock. Work would be retried rather
+# than lost, but the cost is a wasted render and a confused operator.
+[[vm]]
+  processes = ["web"]
+  size = "shared-cpu-1x"
+  memory = "1gb"
+
+[[vm]]
+  processes = ["worker"]
+  size = "shared-cpu-1x"
+  # 2GB, not 1: a composite holds a decoded master and its masks in memory, and a render drives
+  # a headless browser. This is a starting point, not a measurement of a real workload.
+  memory = "2gb"
+
+# Migrations run once, before any new machine takes traffic. Forward-only: several add
+# constraints and triggers, and there is no down path. Snapshot first.
+[deploy]
+  release_command = "sh -c 'cd /app && pnpm --filter @spirithaus/db migrate'"
+  strategy = "rolling"

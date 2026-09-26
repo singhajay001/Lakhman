@@ -9,6 +9,9 @@ export default defineConfig({
     alias: {
       '@spirithaus/compliance': pkg('compliance'),
       '@spirithaus/content': pkg('content'),
+      '@spirithaus/db/encrypt-sessions': fileURLToPath(
+        new URL('./packages/db/src/encrypt-sessions.ts', import.meta.url),
+      ),
       '@spirithaus/db': pkg('db'),
       '@spirithaus/media-geometry': pkg('media-geometry'),
       '@spirithaus/media-pipeline': pkg('media-pipeline'),
@@ -20,6 +23,7 @@ export default defineConfig({
       '@spirithaus/jobs': pkg('jobs'),
       '@spirithaus/observability': pkg('observability'),
       '@spirithaus/protected-assets': pkg('protected-assets'),
+      '@spirithaus/session-crypto': pkg('session-crypto'),
       '@spirithaus/shopify/server': fileURLToPath(
         new URL('./packages/shopify/src/server.ts', import.meta.url),
       ),

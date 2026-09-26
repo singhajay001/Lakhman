@@ -1,0 +1,22 @@
+{
+  "name": "@spirithaus/session-crypto",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@spirithaus/observability": "workspace:*"
+  },
+  "peerDependencies": {
+    "@shopify/shopify-api": "*",
+    "@shopify/shopify-app-session-storage": "*"
+  },
+  "devDependencies": {
+    "@spirithaus/db": "workspace:*",
+    "@shopify/shopify-app-session-storage-prisma": "^11.0.0",
+    "@shopify/shopify-api": "^15.0.0",
+    "@shopify/shopify-app-session-storage": "^7.0.0"
+  }
+}

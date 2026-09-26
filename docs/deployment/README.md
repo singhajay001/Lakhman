@@ -30,8 +30,11 @@ as an experiment with expected findings rather than a rollout.
 
 | | |
 | --- | --- |
-| [`readiness-report.md`](readiness-report.md) | **Start here.** What is verified, what is not, what needs approval, and what it costs |
+| [`milestone-report.md`](milestone-report.md) | **Start here.** Staging hardening: encryption, health endpoints, Fly config, and what needs approval |
+| [`readiness-report.md`](readiness-report.md) | The earlier Docker and environment audit | What is verified, what is not, what needs approval, and what it costs |
 | [`platform.md`](platform.md) | The recommended staging platform, its cost, topology, health checks, backups and rollback |
+| [`fly-staging.md`](fly-staging.md) | The Fly.io runbook: secrets, provisioning, deploy, rollback, key rotation and how to destroy it |
+| [`session-encryption.md`](session-encryption.md) | Operating the encryption: generating keys, rotating them, and what losing them costs |
 | [`environment-matrix.md`](environment-matrix.md) | Every variable the code actually reads, and the minimum egress allowlist |
 | [`session-security.md`](session-security.md) | How Shopify access tokens are stored, what protects them, and what to change before production |
 | [`development-store.md`](development-store.md) | Partner Dashboard settings and the install runbook for a development store |

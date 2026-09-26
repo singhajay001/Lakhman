@@ -26,6 +26,9 @@ shaped like the real thing and are not usable.
 | `MEDIA_STORE_DIR` | web, worker | no (`/tmp/spirithaus-media`) | no | Local fallback store. **Warns that it will not survive the machine.** Both processes must see the same storage, which a local directory on separate hosts does not provide. | `/var/lib/spirithaus/media` | You | Never |
 | `REMOTION_BROWSER_EXECUTABLE` | worker | no | no | Chromium headless shell. Unset means Remotion downloads its own on first render, needing egress to its CDN. Must be the **headless shell**, not full Chrome. | `/opt/chromium/headless_shell` | Image | Never |
 | `PROVIDER_*` (16) | web, worker | no (`mock`) | no | One per contract. `mock` is a supported configuration: a mocked publisher returns `published: false`. A named adapter this build does not implement is refused rather than silently mocked. | `mock` | You | Never |
+| `SESSION_ENCRYPTION_KEYS` | web, worker | **yes when deployed** | **yes** | `id:key,id:key`. Every key can decrypt; only the current one encrypts. Each must decode to exactly 32 bytes. **Both processes refuse to start without a valid ring** when `NODE_ENV` is not `development` or `test`. | `k1:<base64 32 bytes>` | `openssl rand -base64 32` | Two-deploy rotation; see `fly-staging.md` |
+| `SESSION_ENCRYPTION_CURRENT_KEY_ID` | web, worker | **yes when deployed** | no | Which listed key encrypts new writes. Must be one of the ids above. | `k1` | You | Changed to promote a new key |
+| `SESSION_ENCRYPTION_ALLOW_PLAINTEXT_READS` | web, worker | no | no | Reads tokens written before encryption existed. **Refused outright** when deployed — the process will not start. Development only; run `pnpm db:encrypt-sessions` instead. | unset | — | Removed once the migration has run |
 | `PRISMA_LOG` | all | no | no | `query` enables SQL logging. Do not enable in staging: queries carry parameter values. | unset | You | Never |
 
 ## Consumed by scripts only
@@ -62,6 +65,11 @@ None of these are read by the running application.
 - **`ANTHROPIC_API_KEY`, `FAL_KEY`, `ELEVENLABS_API_KEY`, `S3_*`** — commented placeholders for
   providers that are not implemented. They read as a checklist for a live deployment, which they
   are not. They return when an adapter reads them.
+
+## Losing every encryption key means every shop reinstalls
+
+There is no recovery path. Store `SESSION_ENCRYPTION_KEYS` somewhere durable before deploying —
+Fly stores secrets encrypted and will not show them to you again.
 
 ## There is no Admin access token variable
 

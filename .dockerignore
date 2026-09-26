@@ -28,6 +28,10 @@ apps/render/out
 !.env.example
 
 # The local build-verification CA. Only the harness Dockerfile copies it, deliberately.
+
+# The local build-verification CA. Only the harness Dockerfile copies it, deliberately.
+
+# The local build-verification CA. Only the harness Dockerfile copies it, deliberately.
 .ci-ca.crt
 
 # Local state.

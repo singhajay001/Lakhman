@@ -18,6 +18,7 @@
     "@spirithaus/protected-assets": "workspace:*",
     "@spirithaus/providers": "workspace:*",
     "@spirithaus/render": "workspace:*",
+    "@spirithaus/session-crypto": "workspace:*",
     "@spirithaus/shopify": "workspace:*",
     "bullmq": "^6.3.0",
     "ioredis": "^6.0.0"

@@ -31,6 +31,7 @@ export default tseslint.config(
     files: [
       '**/*.test.ts',
       '**/seed.ts',
+      'packages/db/src/encrypt-sessions.ts',
       'apps/worker/src/index.ts',
       'apps/worker/src/demo-sync.ts',
       'apps/social-studio/scripts/demo-media.ts',

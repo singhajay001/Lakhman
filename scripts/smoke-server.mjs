@@ -35,6 +35,11 @@ const server = spawn(
       DATABASE_URL:
         process.env.DATABASE_URL ??
         'postgresql://spirithaus:spirithaus@localhost:5432/spirithaus_dev?schema=public',
+      // The app fails closed without a key ring (ADR 0014), so the smoke check supplies one.
+      // Deterministic and obviously not real: 32 bytes of a repeating pattern, used nowhere else.
+      SESSION_ENCRYPTION_KEYS:
+        process.env.SESSION_ENCRYPTION_KEYS ?? `smoke:${Buffer.alloc(32, 0x5a).toString('base64')}`,
+      SESSION_ENCRYPTION_CURRENT_KEY_ID: process.env.SESSION_ENCRYPTION_CURRENT_KEY_ID ?? 'smoke',
       LOG_LEVEL: 'silent',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -71,21 +76,29 @@ while (Date.now() - started < DEADLINE_MS) {
   let response = null;
   try {
     // Loopback: an egress proxy would refuse it, and there is nothing external to reach.
-    response = await fetch(`${BASE}/auth/shopify/callback`);
+    response = await fetch(`${BASE}/livez`);
   } catch {
     // Not listening yet.
   }
 
   if (response) {
     const body = await response.text();
-    // A callback with no parameters is rejected by the route's own preflight, so 400 proves
-    // the server booted, the route table is wired and the handler ran.
+    // /livez touches no dependency, so a 200 means the process is up and the route table is
+    // wired — without needing a database or Redis to be reachable.
+    if (response.status !== 200) {
+      failure = `Expected 200 from /livez, got ${response.status}: ${body}`;
+      break;
+    }
+
+    // The callback's own preflight rejects a request with no parameters, which proves a real
+    // handler ran rather than a catch-all.
+    const callback = await fetch(`${BASE}/auth/shopify/callback`);
     failure =
-      response.status === 400
+      callback.status === 400
         ? null
-        : `Expected 400 from the callback probe, got ${response.status}: ${body}`;
+        : `Expected 400 from the callback probe, got ${callback.status}`;
     if (failure === null) {
-      console.log(`smoke: server booted and answered the callback probe with ${response.status}`);
+      console.log('smoke: server booted, /livez answered 200 and the callback probe answered 400');
     }
     break;
   }

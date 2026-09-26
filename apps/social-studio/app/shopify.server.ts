@@ -3,6 +3,7 @@ import { ApiVersion, AppDistribution, shopifyApp } from '@shopify/shopify-app-re
 import { PrismaSessionStorage } from '@shopify/shopify-app-session-storage-prisma';
 import { prisma } from '@spirithaus/db';
 import { mandatoryScopeList } from '@spirithaus/shopify';
+import { assertSessionCryptoConfigured, EncryptedSessionStorage } from '@spirithaus/session-crypto';
 
 function required(name: string): string {
   const value = process.env[name];
@@ -13,6 +14,12 @@ function required(name: string): string {
   }
   return value;
 }
+
+/**
+ * Validated here, at module load, so a bad key ring stops the process rather than surfacing on
+ * the first OAuth callback — by which point a token would already have been written.
+ */
+const sessionCrypto = assertSessionCryptoConfigured({ component: 'web' });
 
 const shopify = shopifyApp({
   apiKey: required('SHOPIFY_API_KEY'),
@@ -27,7 +34,9 @@ const shopify = shopifyApp({
   // Online tokens, deliberately: section 20 requires a *verified human* for every
   // approval, and an offline session has no user attached to verify.
   useOnlineTokens: true,
-  sessionStorage: new PrismaSessionStorage(prisma),
+  // The Prisma storage keeps owning the schema, the migrations and the retries; the decorator
+  // owns exactly one thing — that the accessToken column never holds a usable credential.
+  sessionStorage: new EncryptedSessionStorage(new PrismaSessionStorage(prisma), sessionCrypto),
   distribution: AppDistribution.AppStore,
 });
 

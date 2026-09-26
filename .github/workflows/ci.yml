@@ -39,6 +39,10 @@ jobs:
       SHOPIFY_API_KEY: ci_api_key
       SHOPIFY_API_SECRET: ci_api_secret
       SHOPIFY_APP_URL: https://ci.invalid
+      # The app fails closed without a key ring (ADR 0014). Deterministic, obviously synthetic,
+      # and used nowhere but CI: 32 bytes of a repeating pattern.
+      SESSION_ENCRYPTION_KEYS: ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=
+      SESSION_ENCRYPTION_CURRENT_KEY_ID: ci
 
     steps:
       - uses: actions/checkout@v4
@@ -153,7 +157,35 @@ jobs:
           fi
           echo "no credential files or literals found"
 
-      - name: The image starts and answers
+      - name: The container needs no registry access to start
+        # corepack installs shims and downloads the package manager on first use. That used to
+        # happen at *runtime*, so every start reached for the npm registry and the container
+        # exited before serving anything on a host without that egress. Proven by starting with
+        # no network at all.
+        run: |
+          docker run --rm --network none \
+            -e NODE_ENV=production \
+            -e SHOPIFY_API_KEY=k -e SHOPIFY_API_SECRET=s -e SHOPIFY_APP_URL=https://ci.invalid \
+            -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
+            -e SESSION_ENCRYPTION_KEYS=ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo= \
+            -e SESSION_ENCRYPTION_CURRENT_KEY_ID=ci \
+            spirithaus-social-studio:ci node -e "console.log('started with no network')"
+
+      - name: The image refuses to start without an encryption key
+        # Fail closed. A key discovered missing on the first OAuth callback is a token already
+        # written in plaintext.
+        run: |
+          set +e
+          out=$(docker run --rm \
+            -e NODE_ENV=production -e PORT=3000 \
+            -e SHOPIFY_API_KEY=k -e SHOPIFY_API_SECRET=s -e SHOPIFY_APP_URL=https://ci.invalid \
+            -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
+            spirithaus-social-studio:ci 2>&1)
+          echo "$out"
+          echo "$out" | grep -qi 'SESSION_ENCRYPTION_KEYS' \
+            || { echo "Expected a refusal naming SESSION_ENCRYPTION_KEYS."; exit 1; }
+
+      - name: The image starts, and livez and readyz behave
         run: |
           docker run -d --name studio \
             -e NODE_ENV=production \
@@ -162,17 +194,37 @@ jobs:
             -e SHOPIFY_API_SECRET=ci_api_secret \
             -e SHOPIFY_APP_URL=https://ci.invalid \
             -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
+            -e SESSION_ENCRYPTION_KEYS=ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo= \
+            -e SESSION_ENCRYPTION_CURRENT_KEY_ID=ci \
             -p 3000:3000 spirithaus-social-studio:ci
 
           for i in $(seq 1 60); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/auth/shopify/callback || true)
-            if [ "$code" = "400" ]; then echo "server answered $code"; exit 0; fi
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/livez || true)
+            if [ "$code" = "200" ]; then break; fi
             if ! docker ps --filter name=studio --filter status=running -q | grep -q .; then
               echo "The container exited before answering:"; docker logs studio; exit 1
             fi
             sleep 2
           done
-          echo "No answer within 120s:"; docker logs studio; exit 1
+
+          # Liveness must not depend on anything. This container has no database and no Redis.
+          curl -sS http://127.0.0.1:3000/livez | grep -q '"status":"alive"' \
+            || { echo "/livez did not report alive"; docker logs studio; exit 1; }
+
+          # Readiness must fail here, because neither dependency exists — and must say nothing
+          # about which one or where it lives.
+          body=$(curl -s -o body.txt -w '%{http_code}' http://127.0.0.1:3000/readyz; cat body.txt)
+          echo "readyz: $body"
+          grep -q '"status":"not_ready"' body.txt \
+            || { echo "/readyz should report not_ready with no dependencies"; exit 1; }
+          if grep -Eiq 'postgres|redis|127\.0\.0\.1|5432|6379|password|stack' body.txt; then
+            echo "/readyz leaked dependency detail into its public response"; exit 1
+          fi
+
+          # And the callback preflight still proves a real handler ran.
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/auth/shopify/callback)
+          [ "$code" = "400" ] || { echo "callback probe returned $code"; exit 1; }
+          echo "livez, readyz and the callback probe all behaved"
 
       - name: Stop the container
         # `always()` so a failed probe still tears down and the runner leaves nothing behind.

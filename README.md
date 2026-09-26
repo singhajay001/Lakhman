@@ -51,8 +51,8 @@ runs against mocks.
 ## Verifying it
 
 ```sh
-pnpm verify            # typecheck, lint, 479 unit tests, the app build, and a server boot
-pnpm test:integration  # 90 tests against a real Postgres and Redis
+pnpm verify            # typecheck, lint, 528 unit tests, the app build, and a server boot
+pnpm test:integration  # 107 tests against a real Postgres and Redis
 ```
 
 The app build is part of `verify` deliberately: a shared package accidentally pulling a
@@ -122,7 +122,7 @@ from a runtime path, so no environment variable can make the worker serve fixtur
 | `packages/protected-assets` | Masks, deterministic compositing, renditions, and the four verification checks              |
 | `apps/render`               | Remotion compositions, rendered headlessly. Imports nothing from the app                    |
 
-## Nine things worth knowing before reading the code
+## Ten things worth knowing before reading the code
 
 **Mocks do not imitate success.** `PROVIDER_*=mock` is a supported configuration, not a
 test double. A mocked publisher returns `published: false, state: 'not_published'` on
@@ -156,6 +156,14 @@ nothing else. On top of that, the compliance engine blocks an ABV, age statement
 rating, vintage, price or availability claim the sheet does not support. That is a guard
 over the claim types that carry the most risk when invented — it will not catch a
 fabricated tasting note, and the rule documentation and a test both say so.
+
+**Shopify tokens are encrypted before they are stored, and the app refuses to start
+without a key.** `PrismaSessionStorage` stores them in plaintext; a decorator wraps it with
+AES-256-GCM in a versioned envelope carrying its own key id, so rotation is two deploys
+rather than a cutover. Both the access token and the refresh token are covered — the
+refresh token mints access tokens, so encrypting one and leaving the other beside it would
+protect nothing. What it defends against is a dump that escapes, not an attacker who
+already controls the process, and `docs/adr/0014` says so in those words.
 
 **A blocked host is not a rejected token, and a bypassed write is not a write.** Two
 things stop an Admin call here — OAuth was never completed, and `*.myshopify.com` is
