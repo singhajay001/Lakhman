@@ -1,0 +1,31 @@
+Product,Price,Cost,Vintage applies?,Vintage from ALM,ALM source row,Actual vintage (FILL),Cost ex GST (FILL if blank),Shopify handle
+Penfolds Grange,1209.99,824.59,YES,2017,ALM: PENFOLDS GRANGE SHZ 17GB 750ML,,,penfolds-grange
+Krug Vintage,982.99,670.07,YES,,ALM: KRUG VINTAGE GB 750ML,,,krug-vintage
+Dom Perignon Rose,971.99,662.31,YES,,ALM: DOM PERIGNON ROSE GB 750ML,,,dom-perignon-rose
+Henschke Hill of Grace,949.99,,YES,,not in ALM,,,henschke-hill-of-grace
+Krug Grande Cuvée,590.99,402.46,no - solera/NV,NV,ALM: KRUG GRANDE CUVEE NV GIFT750ML,,,krug-grande-cuvee
+Moët & Chandon Dom Pérignon,590.99,402.66,YES,2015,ALM: DOM PERIGNON 2015 GB EOY LIMITED EDITION 750ML,,,moet-chandon-dom-perignon
+Louis Roederer Cristal,529.99,,YES,,not in ALM,,,louis-roederer-cristal
+Veuve Clicquot La Grande Dame,456.99,311.14,YES,,ALM: VEUVE CLICQUOT LA GRANDE DAME GB 750ML,,,veuve-clicquot-la-grande-dame
+Taittinger Comtes de Champagne Blanc de Blancs,450.00,,YES,,not in ALM,,,taittinger-comtes-de-champagne-blanc-de-blancs
+Jim Barry The Armagh,419.29,,YES,,not in ALM,,,jim-barry-the-armagh
+Bollinger La Grande Année,395.99,269.61,YES,2015,ALM: BOLLINGER LA GRANDE ANNEE 2015 750ML,,,bollinger-la-grande-annee
+Penfolds Great Grandfather Rare Tawny,350.00,260.87,no - solera/NV,,ALM: PENFOLDS GRT G/FATH 30YO 750ML,,,penfolds-great-grandfather-rare-tawny
+Torbreck RunRig,330.00,,YES,,not in ALM,,,torbreck-runrig
+Best's Thomson Family Shiraz,249.99,,YES,,not in ALM,,,best-s-thomson-family-shiraz
+Yalumba The Octavius,159.99,,YES,,not in ALM,,,yalumba-the-octavius
+Cullen Diana Madeline,159.99,,YES,,not in ALM,,,cullen-diana-madeline
+Clonakilla Shiraz Viognier,139.99,,YES,,not in ALM,,,clonakilla-shiraz-viognier
+Howard Park Abercrombie Cabernet Sauvignon,129.99,,YES,,not in ALM,,,howard-park-abercrombie-cabernet-sauvignon
+Morris of Rutherglen Old Premium Rare Muscat,122.99,98.00,no - solera/NV,,not in ALM,,,morris-of-rutherglen-old-premium-rare-muscat
+Irvine Grand Merlot,119.99,,YES,,not in ALM,,,irvine-grand-merlot
+Penfolds Grandfather Rare Tawny,110.99,75.49,no - solera/NV,,ALM: PENFOLDS GRANDFATHER 20YO750ML,,,penfolds-grandfather-rare-tawny
+Duckhorn Napa Valley Merlot,99.99,,YES,,not in ALM,,,duckhorn-napa-valley-merlot
+Tapanappa Whalebone Vineyard Merlot Cabernet Franc,95.00,,YES,,not in ALM,,,tapanappa-whalebone-vineyard-merlot-cabernet-franc
+Petaluma Coonawarra,84.99,,YES,,not in ALM,,,petaluma-coonawarra
+d'Arenberg The Dead Arm Shiraz,74.99,,YES,,not in ALM,,,d-arenberg-the-dead-arm-shiraz
+Yalumba The Menzies,56.99,,YES,,not in ALM,,,yalumba-the-menzies
+Chandon Vintage Brut,49.99,,YES,,not in ALM,,,chandon-vintage-brut
+Jansz Tasmania Vintage Cuvée,48.99,,YES,,not in ALM,,,jansz-tasmania-vintage-cuvee
+Woodlands Cabernet Merlot,41.99,,YES,,not in ALM,,,woodlands-cabernet-merlot
+Yalumba Antique Tawny 375ml,26.99,,no - solera/NV,,not in ALM,,,yalumba-antique-tawny
