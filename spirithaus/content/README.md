@@ -115,10 +115,11 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    strong commercial query and the product title is a ranking signal, so both
    titles are leaving something on the table.
 
-5. **No collection has an SEO title or meta description set** — all 28 return
-   null, and most have an empty description too. Category pages are the
-   strongest commercial landings on the store and they are shipping with
-   whatever the theme generates.
+5. **"Spirithaus" vs "SPIRITHAUS" in SEO titles.** All 28 collection titles end
+   `| Spirithaus`, while the articles, the wordmark and the Shopify shop name
+   all use SPIRITHAUS. The collection casing is applied consistently, so I read
+   it as a deliberate choice and left it alone — but the two sets of pages
+   currently disagree. Worth settling one way or the other.
 
 6. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
@@ -211,6 +212,54 @@ above.
 
 This gives `articles/first-single-malt.md` a real destination: its
 `/collections/single-malt` link previously landed on a one-product page.
+
+**Collection SEO — audited and corrected, not written from scratch.** By the
+time I came to this, SEO titles and meta descriptions already existed on 28 of
+28 category collections, along with body descriptions, and they were good —
+close to the article voice. The store had clearly had substantial work done: a
+lot of new product, and the `under-50` and `specials` rules rebuilt from tag
+matches to `VARIANT_PRICE < 50` and `IS_PRICE_REDUCED`, which is why both pages
+went from empty to 185 and 1.
+
+So this pass was an audit against SERP limits rather than authoring. What was
+actually wrong:
+
+**Five titles ran past ~60 characters and would truncate mid-phrase.** Trimmed,
+keeping each author's wording and the strongest query terms:
+
+| Collection | Was | Now |
+|---|---|---|
+| `white` | 63 | 58 — "Sauvignon Blanc" → "Sauv Blanc" |
+| `cocktails` | 62 | 53 — dropped Curatif, which the canned page owns |
+| `canned-cocktails` | 64 | 54 — Curatif & Four Pillars, dropped Brookie's |
+| `single-malt` | 62 | 56 — region terms in place of "Scotch, Japanese, Australian" |
+| `champagne` | 65 | 57 — dropped Cristal, which stays in the description |
+
+**Seven descriptions sat at 99–117 characters**, wasting roughly a third of the
+available SERP space: `liqueurs-aperitifs`, `white`, `under-50`,
+`new-this-month`, `staff-picks`, `moscato`, `specials`. Extended to 144–155
+using facts already in each collection's own body copy — nothing invented.
+
+The `champagne` fix also corrected **Moet → Moët**. The same typo remains in the
+`sparkling` description, which is under length and so was not otherwise touched.
+
+**One compliance change, in body copy rather than meta.** The
+`canned-cocktails` description read "Cans travel where bottles are not welcome
+— picnics, the beach, anywhere glass is a problem." Most NSW and Victorian
+beaches, parks and foreshores are alcohol-free zones, and ABAC requires
+marketing not to encourage consumption contrary to law. Rewritten to keep the
+author's point — lighter, quicker to chill, no glass — and a short note added
+pointing to local alcohol-free zone rules, matching the age-restriction note
+the `low-no` page already carries.
+
+**`frontpage` (Home page) left null deliberately.** It is Shopify's system
+collection, not a category page; the storefront homepage takes its SEO from
+Online Store preferences, so a title here would be inert.
+
+Verified after the changes, reading back from the live store rather than from
+what I sent: 28 of 28 populated, titles 33–59 characters, descriptions 121–155,
+no duplicate titles, every one carrying the brand suffix. The full set is
+recorded in `collection-seo.json` beside this file.
 
 **Maker's Mark duplicate resolved — deleted by the client, 301 added here.**
 `makers-mark` (product type Whisky) was the duplicate of `makers-mark-bourbon`
