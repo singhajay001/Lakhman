@@ -5,9 +5,17 @@ shown. Voice follows the storefront: plain, specific, no hype — the hero says 
 cannot beat the chains on price or breadth, so we do not try. Every bottle here
 earned its place, and we tell you why."* Keep that register.
 
-**Before you paste anything:** replace `<LICENCE NUMBER>` with the real NSW liquor
-licence number, in the wording your licence conditions require. See the compliance
-section of `README.md`. Do not publish a bio with the placeholder still in it.
+**Licence details are real and already in place below.** SPIRITHAUS holds **NSW
+Packaged Liquor Licence No. LIQP700301260**, held by Trafalgar Cellars of Marsfield;
+the seller of record is SPIRITHAUS PTY LTD, ABN 97 701 853 483. These were taken
+from the storefront's own policy pages, which all carry the same number — not
+transcribed from anywhere else. The long and short forms are in `profiles.json`
+under `brand.licence`.
+
+Run `node ../tools/check-copy-pack.mjs` after any edit here: it re-measures every
+field against its platform limit and fails if a bio has grown past one. A bio that
+overruns gets truncated by the platform, and the licence number is last in the
+line — so it is the first thing to disappear.
 
 Handle on every platform: **`spirithausau`** (fallback ladder in `profiles.json`).
 
@@ -21,13 +29,13 @@ Handle on every platform: **`spirithausau`** (fallback ladder in `profiles.json`
 SPIRITHAUS | Spirits, Sydney
 ```
 
-**Bio** (136 / 150):
+**Bio** (137 / 150):
 
 ```
 Online spirits shop, Sydney.
 Every bottle chosen. Every one explained.
 Tasting notes, not marketing. 18+
-Liquor Licence <LICENCE NUMBER>
+NSW Liquor Licence LIQP700301260
 ```
 
 **Link:** `https://www.spirithaus.com.au`
@@ -43,7 +51,7 @@ Liquor Licence <LICENCE NUMBER>
 SPIRITHAUS — Spirits, Wine & Cocktails
 ```
 
-**About** (344 / 500):
+**About** (354 / 500):
 
 ```
 An online spirits shop in Sydney for people who want to know what they are
@@ -51,7 +59,8 @@ buying. We cannot beat the chains on price or breadth, so we do not try —
 every bottle we stock earned its place, and we tell you why.
 
 Tasting notes, cocktail method, and what a bottle is actually for.
-Australia-wide delivery. 18+ only. Liquor Licence <LICENCE NUMBER>
+Australia-wide delivery. 18+ only.
+NSW Packaged Liquor Licence LIQP700301260
 ```
 
 **Website:** `https://www.spirithaus.com.au` — then **claim the domain** under
@@ -73,7 +82,7 @@ Settings → Claimed accounts. Rich Pins do not work until you do.
 
 **Channel name:** `SPIRITHAUS` · **Handle:** `@spirithausau`
 
-**Description** (449 / 1000):
+**Description** (623 / 1000):
 
 ```
 SPIRITHAUS is an online spirits shop based in Sydney, delivering Australia-wide.
@@ -86,7 +95,8 @@ No sponsored reviews. No bottles we do not sell.
 
 Shop: https://www.spirithaus.com.au
 18+ only. Please drink responsibly.
-Liquor Licence <LICENCE NUMBER>
+NSW Packaged Liquor Licence LIQP700301260, held by Trafalgar Cellars of Marsfield.
+It is against the law to sell or supply alcohol to, or to obtain alcohol on behalf of, a person under the age of 18 years.
 ```
 
 Set **per-video age restriction** on anything showing a pour.
@@ -97,10 +107,11 @@ Set **per-video age restriction** on anything showing a pour.
 
 **Name** (10 / 30): `SPIRITHAUS`
 
-**Bio** (48 / 80):
+**Bio** (70 / 80):
 
 ```
-Sydney spirits shop. Every bottle explained. 18+
+Sydney spirits shop. Every bottle explained.
+18+ NSW Lic LIQP700301260
 ```
 
 **Link:** `https://www.spirithaus.com.au`
@@ -114,10 +125,10 @@ organic only, age-gated.
 
 **Name** (10 / 50): `SPIRITHAUS`
 
-**Bio** (152 / 160):
+**Bio** (142 / 160):
 
 ```
-Spirits, wine and cocktails, online from Sydney. We can't beat the chains on price or breadth, so we don't try — every bottle here earned its place. 18+
+Spirits, wine and cocktails, online from Sydney. Every bottle here earned its place, and we tell you why. 18+ NSW Liquor Licence LIQP700301260
 ```
 
 **Location:** Sydney, Australia · **Link:** `https://www.spirithaus.com.au`
@@ -131,10 +142,10 @@ Mark the account as containing alcohol-related content under Privacy and safety.
 **Page name:** `SPIRITHAUS` · **Username:** `@spirithausau`
 **Category:** Wine, Beer & Spirits Store
 
-**Short description** (131 / 255):
+**Short description** (182 / 255):
 
 ```
-Online spirits, wine and cocktails from Sydney. Every bottle chosen, every one explained. 18+ only. Liquor Licence <LICENCE NUMBER>
+Online spirits, wine and cocktails from Sydney. Every bottle chosen, every one explained. 18+ only. NSW Packaged Liquor Licence LIQP700301260, held by Trafalgar Cellars of Marsfield.
 ```
 
 Page settings → Age restrictions → **18+, Australia**. Create this before the
@@ -144,10 +155,11 @@ Instagram account so Instagram can attach to it.
 
 ## Snapchat — Tier 3, name claim only
 
-**Display name:** `SPIRITHAUS` · **Bio** (45 / 80):
+**Display name:** `SPIRITHAUS` · **Bio** (67 / 80):
 
 ```
-SPIRITHAUS — online spirits shop, Sydney. 18+
+SPIRITHAUS — online spirits shop, Sydney.
+18+ NSW Lic LIQP700301260
 ```
 
 Public Profile, age gate 18+. Then leave it alone.
@@ -163,6 +175,7 @@ Public Profile, age gate 18+. Then leave it alone.
 ```
 Online spirits shop, Sydney. Every bottle chosen. Every one explained.
 spirithaus.com.au — 18+ only.
+NSW Packaged Liquor Licence LIQP700301260.
 ```
 
 ---
@@ -176,6 +189,7 @@ spirithaus.com.au — 18+ only.
 ```
 Online spirits shop, Sydney. Every bottle chosen. Every one explained.
 spirithaus.com.au — 18+ only.
+NSW Packaged Liquor Licence LIQP700301260.
 ```
 
 Free tier. Do not build a video library here; that is YouTube's job.

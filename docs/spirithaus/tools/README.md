@@ -173,3 +173,24 @@ The snippet is included once in the `<head>` of `layout/theme.liquid`:
 
 Theme writes are blocked over the Admin API on this store, so that include is a
 manual edit in the theme editor — the same constraint as the Scrim Proof page.
+
+---
+
+# Checking the copy pack
+
+`../social/copy-pack.md` states a character count beside each field — `(137 / 150)` —
+so whoever is pasting can see it fits. `check-copy-pack.mjs` keeps those honest.
+
+```sh
+node check-copy-pack.mjs          # verify
+node check-copy-pack.mjs --fix    # rewrite the stated counts to the measured ones
+```
+
+It fails on three things: a field over its platform limit, a stated count that has
+drifted from the text, and a `<LICENCE NUMBER>` placeholder left unreplaced. `--fix`
+corrects drifted counts only — a field genuinely over its limit is a writing problem,
+so it is reported and the copy is left alone.
+
+This matters more than it looks. The liquor licence number is the last thing in most
+of these bios, so it is the first thing a platform truncates when a bio overruns —
+which turns a routine edit into a compliance problem in a field nobody re-reads.

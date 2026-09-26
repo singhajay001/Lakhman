@@ -147,13 +147,29 @@ ABAC applies to social media, so the same rules bind every account here:
   implying alcohol delivers success, courage or social acceptance.
 - The negative-prompt rules in the image pack apply to social creative unchanged.
 
-**Liquor licence number.** NSW liquor licensees are generally required to display
-licence details in advertising, and the bios in `copy-pack.md` carry a
-`<LICENCE NUMBER>` placeholder for it. I do not have the number and cannot look it
-up. **Fill it in before publishing any bio, and confirm the exact wording your
-licence conditions require** — this is the one item here where getting it wrong has
-a regulatory consequence rather than a marketing one. `profiles.json` has
-`brand.licenceNumber` set to `null` for the same reason.
+**Liquor licence.** NSW liquor licensees are required to display licence details in
+advertising, and every bio in `copy-pack.md` now carries them:
+
+| | |
+| --- | --- |
+| Licence | **NSW Packaged Liquor Licence No. LIQP700301260** |
+| Held by | Trafalgar Cellars of Marsfield |
+| Seller of record | SPIRITHAUS PTY LTD, ABN 97 701 853 483 (ACN 701 853 483) |
+
+These were not supplied by hand or guessed. They were read off the storefront's own
+policy pages — `/pages/terms`, `/pages/privacy`, `/pages/returns`, `/pages/delivery`
+and `/pages/responsible-service-of-alcohol` — which all state the same number, so
+the bios now match what the site already publishes rather than introducing a second
+version of it. The exact strings are in `profiles.json` under `brand.licence`.
+
+The standard warning the site uses, where a bio has room for it, is: *"It is against
+the law to sell or supply alcohol to, or to obtain alcohol on behalf of, a person
+under the age of 18 years."*
+
+Because the licence number is the **last thing** in most of these bios, it is the
+first thing a platform truncates if a bio grows past its limit. That is what
+`../tools/check-copy-pack.mjs` exists to prevent — run it after any edit to the copy
+pack.
 
 ---
 
@@ -162,20 +178,19 @@ a regulatory consequence rather than a marketing one. `profiles.json` has
 Do it in this order. The order matters — Facebook before Instagram, because the
 Instagram business account wants a Page to attach to.
 
-1. **Decide the licence-number wording.** Everything downstream pastes it.
-2. **Set up a shared brand inbox** if `sales@spirithaus.com.au` is a person's inbox.
+1. **Set up a shared brand inbox** if `sales@spirithaus.com.au` is a person's inbox.
    Nine accounts tied to one employee's mailbox is a real continuity risk. A
    dedicated `social@` alias with recovery access for two people is the fix.
-3. **Facebook Page** → then **Instagram business account**, linked to it.
-4. **Pinterest business account.** Then Settings → Claimed accounts → claim
+2. **Facebook Page** → then **Instagram business account**, linked to it.
+3. **Pinterest business account.** Then Settings → Claimed accounts → claim
    `www.spirithaus.com.au`. This is the step that turns on Rich Pins; do not skip it.
-5. **YouTube channel**, handle `@spirithausau`.
-6. **TikTok business account**, then **X**.
-7. **Snapchat**, **Tumblr**, **Vimeo** — name claims, five minutes total.
-8. For each one, as you create it: paste from `copy-pack.md`, set the age gate, and
+4. **YouTube channel**, handle `@spirithausau`.
+5. **TikTok business account**, then **X**.
+6. **Snapchat**, **Tumblr**, **Vimeo** — name claims, five minutes total.
+7. For each one, as you create it: paste from `copy-pack.md`, set the age gate, and
    **update that account's `status` to `"live"` in `profiles.json`**. Record the real
    handle if you had to take a fallback.
-9. Enable two-factor on all nine. Nine accounts is nine attack surfaces.
+8. Enable two-factor on all nine. Nine accounts is nine attack surfaces.
 
 ### Then wire it into the storefront
 
@@ -215,7 +230,7 @@ confirm the Organization block parses and every `sameAs` URL resolves.
 
 | Item | Why it is blocked |
 | --- | --- |
-| Liquor licence number and required wording | Not in the repo; regulatory, so it must not be guessed |
 | Confirm `spirithausau` is free on each platform | No network route to the platforms from here; search data is stale |
+| **Marsfield or Box Hill?** | The policy pages say the licensed premises are at Marsfield and the licensee is *Trafalgar Cellars of Marsfield*, but the shop address on the Shopify account is 61 Tablelands Street, Box Hill NSW 2765. Both cannot be the trading address. Worth reconciling before it goes in a profile's location field — a licensee's stated premises is not a detail to leave contradictory across public pages. Nothing in this folder uses it, so nothing is blocked on it. |
 | Whether a `social@` alias exists | Account ownership decision |
 | Who owns posting, and at what cadence | Tier 1 is three accounts; unstaffed, it should be one |

@@ -75,6 +75,21 @@ if (!live.length) {
 
 const sameAs = live.map((a) => `    ${JSON.stringify(a.url)}`).join(",\n");
 
+// The legal entity and the ABN are the strongest disambiguators available. "Spirit
+// Haus" is also a US liquor retailer, so a name and a country alone leave the two
+// entities looking alike; a registered company number belongs to exactly one of them.
+const legalNameLine = brand.legalName
+  ? `  "legalName": ${JSON.stringify(brand.legalName)},\n`
+  : "";
+
+const identifierBlock = brand.abn
+  ? `\n  "identifier": {\n` +
+    `    "@type": "PropertyValue",\n` +
+    `    "propertyID": "ABN",\n` +
+    `    "value": ${JSON.stringify(brand.abn)}\n` +
+    `  },`
+  : "";
+
 const liquid = `{% comment %}
   Organization JSON-LD with sameAs — tells search engines that these profiles and
   this shop are one entity.
@@ -94,10 +109,10 @@ const liquid = `{% comment %}
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": ${JSON.stringify(brand.displayName)},
-  "url": ${JSON.stringify(brand.url)},
+${legalNameLine}  "url": ${JSON.stringify(brand.url)},
   "email": ${JSON.stringify(brand.email)},
   "areaServed": ${JSON.stringify(brand.areaServed || "AU")},
-  "slogan": ${JSON.stringify(brand.tagline || "")},
+  "slogan": ${JSON.stringify(brand.tagline || "")},${identifierBlock}
 {%- if settings.logo %}
   "logo": {{ settings.logo | image_url: width: 500 | prepend: 'https:' | json }},
 {%- endif %}

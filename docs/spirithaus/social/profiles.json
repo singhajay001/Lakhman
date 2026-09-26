@@ -1,18 +1,32 @@
 {
   "schemaVersion": 1,
   "brand": {
-    "legalName": "SPIRITHAUS",
+    "legalName": "SPIRITHAUS PTY LTD",
     "displayName": "SPIRITHAUS",
     "url": "https://www.spirithaus.com.au",
     "email": "sales@spirithaus.com.au",
     "country": "AU",
     "areaServed": "AU",
     "tagline": "Every bottle chosen. Every one explained.",
-    "licenceNumber": null
+    "abn": "97 701 853 483",
+    "acn": "701 853 483",
+    "licence": {
+      "number": "LIQP700301260",
+      "type": "NSW Packaged Liquor Licence",
+      "licensee": "Trafalgar Cellars of Marsfield",
+      "shortForm": "NSW Liquor Licence LIQP700301260",
+      "longForm": "SPIRITHAUS PTY LTD — NSW Packaged Liquor Licence No. LIQP700301260, held by Trafalgar Cellars of Marsfield.",
+      "warning": "It is against the law to sell or supply alcohol to, or to obtain alcohol on behalf of, a person under the age of 18 years.",
+      "source": "Taken from the storefront's own policy pages (/pages/terms, /pages/privacy, /pages/returns, /pages/delivery, /pages/responsible-service-of-alcohol), which all carry the same number. Not transcribed from anywhere else."
+    }
   },
   "handle": {
     "preferred": "spirithausau",
-    "fallbacks": ["spirithaus.au", "spirithausdrinks", "shopspirithaus"],
+    "fallbacks": [
+      "spirithaus.au",
+      "spirithausdrinks",
+      "shopspirithaus"
+    ],
     "note": "One string on every platform. Mixed handles fragment the entity and weaken sameAs. Bare 'spirithaus' is taken on TikTok, X, Pinterest, Instagram and Facebook by unrelated US businesses — see README."
   },
   "accounts": [
