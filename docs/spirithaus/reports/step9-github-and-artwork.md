@@ -125,3 +125,41 @@ drift, which is the thing this step exists to close.
 - **`spirithaus-theme/hero-artwork`** (167109624054) was duplicated to carry
   this change before the branch route proved better. It is unpublished and
   unused; delete it.
+
+### Merged
+
+`main` had moved while the branch was in flight — `9e14833 robots.txt: give
+the AI crawler groups the wildcard rules (#5)`, touching
+`templates/robots.txt.liquid` and `patches/robots-txt.py`, neither of which
+this branch goes near. Rebased onto it rather than taking a merge commit,
+re-ran both linters, and fast-forwarded: `main` is now `d281006`.
+
+Shopify picked it up without prompting. The connected theme
+`spirithaus-theme/main` (161468449014) now holds
+`spirithaus-collection-hero.liquid` at 16921 bytes, and its
+`templates/index.json` and `templates/collection.json` are byte-identical
+both to the live storefront and to the repo. `assets/spirithaus.css` likewise.
+The GitHub integration is healthy; it only ever needed pointing at a theme
+that was live.
+
+**Publishing `spirithaus-theme/main` is the remaining step, and it carries two
+changes, not one.** The artwork precedence and the measured floor are the
+intended one. The other is the robots.txt commit: it was merged to `main` by
+somebody before today and has never reached the storefront, because the
+storefront stopped being the connected theme. Live is on the old 2175-byte
+robots template and the connected theme is on the new 4424-byte one. That is
+almost certainly wanted — it was merged deliberately — but it ships as part of
+this publish rather than on its own.
+
+A note on the `size` field, which caused a wrong statement earlier in this
+session and is now explained: it is not raw byte length, it is the size of
+what Shopify stores. The same `templates/collection.json` content reports 970
+on a theme where the editor wrote it and 1725 on a theme where GitHub synced
+it, because the editor stores a compacted form. For `.liquid` the two agree,
+which is why every byte check in steps 7 and 8 was sound. Compare content, not
+`size`, across themes of different provenance.
+
+The remote branch `claude/collection-hero-artwork-precedence` still points at
+the pre-rebase commits: `--force-with-lease` refused on stale tracking info
+and was not forced past. Its content is in `main`, so it is redundant and can
+be deleted.
