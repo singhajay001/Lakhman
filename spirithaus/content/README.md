@@ -115,13 +115,12 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    strong commercial query and the product title is a ranking signal, so both
    titles are leaving something on the table.
 
-5. **`moet-chandon-vintage` has no vintage year, and both draft Moëts need
-   confirming.** "Moët & Chandon Vintage" does not say which year, and Grand
-   Vintage is released by year. Both it and `moet-chandon-rose` are DRAFT,
-   tagged `to-confirm`, and still have **empty body descriptions**. Their SEO is
-   written but deliberately general — see below. Confirm the actual bottling
-   (and for the rosé, whether it is Rosé Impérial NV or a Grand Vintage Rosé)
-   and both want a rewrite with the real detail.
+5. **The two draft Moëts still need their bottling confirmed.** Both are DRAFT
+   and tagged `to-confirm`. `moet-chandon-vintage` does not say which year, and
+   Grand Vintage is released by year; `moet-chandon-rose` could be Rosé
+   Impérial NV or a Grand Vintage Rosé. Both now have SEO and body copy, but
+   written at house and category level — see below. Still empty on both:
+   `why_we_stock_it`, `abv`, `standard_drinks` and `style`.
 
 6. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
@@ -214,6 +213,34 @@ above.
 
 This gives `articles/first-single-malt.md` a real destination: its
 `/collections/single-malt` link previously landed on a one-product page.
+
+**Body copy written for the two draft Moëts.** Both had empty
+`descriptionHtml`. Each now carries two paragraphs, matching the house pattern
+where `descriptionHtml` is producer-style copy about the wine and the store's
+own voice is reserved for `why_we_stock_it`.
+
+The angle for each is what is actually verifiable:
+
+- **Vintage** — what declaring a vintage means (single year's fruit, no reserve
+  wines), and the ageing rule that follows from it: three years minimum on lees
+  under the appellation against fifteen months for non-vintage. It says the
+  vintage year is shown on the bottle, which is true and avoids the page
+  claiming a year nobody has confirmed.
+- **Rosé** — that Champagne is the one French appellation permitting rosé by
+  blending still red wine into white, and that the colour and structure come
+  from pinot noir and meunier handled that way rather than from skin contact.
+
+Every claim is about the house or the category, so both read correctly whichever
+cuvée these turn out to be. Neither asserts a year, an ABV or a tasting note
+specific to one bottling; the red-fruit note is framed as what rosé Champagne
+does as a style. Both drafts are also recorded in `drafts/moet-drafts.md`.
+
+**Three fields left empty on purpose.** `why_we_stock_it` is built on real
+numbers on every other Champagne — Moët's cites 27.41% of the NSW champagne
+segment — and I have no equivalent figure for these two. `abv`,
+`standard_drinks` and `style` are also blank: Moët's cuvées are not uniformly
+12%, and standard drinks is a legally significant figure in Australia that must
+match the label, so it is not a number to estimate.
 
 **Three Moët & Chandon products corrected.** The house name was wrong in every
 field that carried it, and in two different ways:
