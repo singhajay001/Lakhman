@@ -163,3 +163,28 @@ The remote branch `claude/collection-hero-artwork-precedence` still points at
 the pre-rebase commits: `--force-with-lease` refused on stale tracking info
 and was not forced past. Its content is in `main`, so it is redundant and can
 be deleted.
+
+### The Whisky artwork block, and why it does nothing yet
+
+An Artwork block was wired in the theme editor on the live theme: block
+`artwork_TCDBbw`, `collection: whisky`, image `hero-whisky-cask.png`. It
+replaced the inert one that named no collection.
+
+It has no effect on the live theme, because live still runs the old section
+where `collection.image` wins — so the Whisky page still shows the Hibiki
+bottle. Under the order now on `main`, a block naming the collection outranks
+both the shipped frame and `collection.image`, so there it does exactly what
+was intended.
+
+Committed to `main` (`5445927`) and synced, so the connected theme now carries
+the block as well as the fix. Publishing it is lossless in both directions;
+before this commit it would have reverted the block to the inert one.
+
+Measured for the band it now fills: `hero-whisky-cask.png` needs 69% against
+its brightest pixel under the type, and the section is set to 70%. The other
+frames in use measure the same way — store-interior 69%, whisky-shelf-d 69%,
+cocktails-cans-b 69%.
+
+Three publish attempts have now failed on the first try and two of the three
+succeeded on a second. Nothing in the themes explains it; it looks like the
+confirmation step.
