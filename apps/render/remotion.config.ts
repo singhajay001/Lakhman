@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { Config } from '@remotion/cli/config';
 
 /**
@@ -8,9 +9,10 @@ Config.setVideoImageFormat('jpeg');
 Config.setJpegQuality(92);
 Config.setCodec('h264');
 Config.setOverwriteOutput(true);
-// The environment's pre-installed headless shell. Remotion launches with the old headless
-// flags, which the full Chrome binary no longer accepts.
+// The environment's pre-installed headless shell, when there is one; Remotion launches with the
+// old headless flags, which the full Chrome binary no longer accepts. Without it (CI runners),
+// null lets Remotion download its own headless shell.
+const preinstalled = '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell';
 Config.setBrowserExecutable(
-  process.env.REMOTION_BROWSER_EXECUTABLE ??
-    '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell',
+  process.env.REMOTION_BROWSER_EXECUTABLE ?? (existsSync(preinstalled) ? preinstalled : null),
 );
