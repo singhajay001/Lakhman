@@ -49,13 +49,20 @@ runs against mocks.
 ## Verifying it
 
 ```sh
-pnpm verify            # typecheck, lint, 445 unit tests, and the app build
+pnpm verify            # typecheck, lint, 479 unit tests, the app build, and a server boot
 pnpm test:integration  # 85 tests against a real Postgres and Redis
 ```
 
 The app build is part of `verify` deliberately: a shared package accidentally pulling a
 Node built-in into the browser bundle is invisible to `tsc` and to the tests, and only the
 bundler finds it (`docs/adr/0008`).
+
+So is booting the built server. A build that cannot start still builds — `tesseract.js`
+was bundled into the ESM server output, where its CommonJS `__dirname` is undefined, and
+the production server threw on startup for three phases while `verify` passed every time.
+`pnpm smoke` now spawns the artefact and probes the OAuth callback, which answers a
+parameterless request with its own 400: proof the server is up, the routes are wired and
+the handler runs, with no Shopify and no credentials (`docs/adr/0012`).
 
 `pnpm test` needs neither Postgres nor Redis. The integration project needs both, which is
 why they are separate projects rather than one suite that skips.
@@ -113,7 +120,7 @@ from a runtime path, so no environment variable can make the worker serve fixtur
 | `packages/protected-assets` | Masks, deterministic compositing, renditions, and the four verification checks              |
 | `apps/render`               | Remotion compositions, rendered headlessly. Imports nothing from the app                    |
 
-## Eight things worth knowing before reading the code
+## Nine things worth knowing before reading the code
 
 **Mocks do not imitate success.** `PROVIDER_*=mock` is a supported configuration, not a
 test double. A mocked publisher returns `published: false, state: 'not_published'` on
@@ -147,6 +154,17 @@ nothing else. On top of that, the compliance engine blocks an ABV, age statement
 rating, vintage, price or availability claim the sheet does not support. That is a guard
 over the claim types that carry the most risk when invented — it will not catch a
 fabricated tasting note, and the rule documentation and a test both say so.
+
+**A blocked host is not a rejected token, and a bypassed write is not a write.** Two
+things stop an Admin call here — OAuth was never completed, and `*.myshopify.com` is
+refused by the container's egress policy — and both used to report as something else. A
+refused proxy tunnel arrives as a `TypeError` wrapping an `AbortError`, so it was retried
+three times as `transient`; without the proxy the egress gateway's own 403 read as
+"Shopify rejected the access token". Both are now `network_blocked`, non-retryable, with a
+diagnostic naming the host and the setting. And a mutation that cannot go out returns
+`outcome: 'sandboxed'` — never `applied`, with no field called `success` anywhere in the
+union — because a write that reports success without happening is the one failure
+operations would act on. `docs/adr/0012`.
 
 **Real packshots broke four things the synthetic bottle had made look true.** Its subject
 is 0.643 wide for its height; real single-product packshots run 0.219 to 0.55. A packshot
@@ -199,6 +217,11 @@ Stated rather than left for someone to discover:
   CONNECT, so the Admin catalogue source is covered by tests against a mocked client and has
   never run against a live Admin endpoint. Every asset ingested here came through the public
   storefront reader, and each one records which source it came from.
+- **OAuth has still not been completed, so no session has ever been stored.** The callback
+  route's failure paths were exercised against the running server — a direct browser hit, a
+  tampered signature, a shop parameter pointing elsewhere, and a correctly signed callback
+  that passes the preflight and hands over to the library. The success path, where a real
+  token comes back, has never run.
 - **No platform capability is verified**, for the reason above. Every caption limit,
   hashtag ceiling and media spec in `packages/domain/src/content/platform-specs.ts` carries
   `verified: false` and a spec version, for the same reason.

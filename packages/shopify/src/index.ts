@@ -46,7 +46,8 @@ export {
   type SyncDeps,
   type ProductStore,
 } from './sync.js';
-export { PrismaProductStore } from './prisma-store.js';
+// PrismaProductStore is deliberately not re-exported here: it imports Prisma, which reads
+// DATABASE_URL at module load. Import it from '@spirithaus/shopify/server'. ADR 0008.
 export {
   WEBHOOK_TOPICS,
   MANDATORY_PRIVACY_TOPICS,
@@ -70,3 +71,20 @@ export {
   type MediaProductNode,
 } from './product-images.js';
 export { AdminCatalogueSource, StorefrontCatalogueSource } from './catalogue-sources.js';
+export {
+  describeProxyEnvironment,
+  classifyThrownOutbound,
+  classifyDeniedResponse,
+  outboundDiagnostic,
+  type OutboundBlock,
+  type ProxyEnvironment,
+} from './network.js';
+export {
+  ShopifyGateway,
+  SANDBOX_MUTATION_LOG,
+  type AdminSessionContainer,
+  type GatewayOptions,
+  type MutationOutcome,
+  type OfflineSessionLookup,
+  type ReadOutcome,
+} from './gateway.js';

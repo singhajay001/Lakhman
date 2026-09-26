@@ -15,6 +15,7 @@ export const AUDIT_ACTIONS = [
   'product.synced',
   'product.sync_started',
   'product.sync_failed',
+  'product.sync_unreachable',
   'product.reconciled',
 
   'provider.enabled',

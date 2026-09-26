@@ -8,9 +8,13 @@ import { type RouteConfig, index, layout, route } from '@react-router/dev/routes
 export default [
   index('routes/_index.tsx'),
 
-  // OAuth. Handled by the Shopify library, which owns the callback shape.
-  route('auth/*', 'routes/auth.$.tsx'),
-  route('auth/login', 'routes/auth.login.tsx'),
+  // OAuth, all under one prefix. `authPathPrefix` in shopify.server.ts derives the callback,
+  // login, session-token and exit-iframe paths together, so they move together or not at all.
+  // The callback has its own route ahead of the splat because it is the one that has to explain
+  // itself when it fails.
+  route('auth/shopify/callback', 'routes/auth.shopify.callback.tsx'),
+  route('auth/shopify/login', 'routes/auth.shopify.login.tsx'),
+  route('auth/shopify/*', 'routes/auth.shopify.$.tsx'),
 
   // Webhooks are outside the app layout: no session, no UI, HMAC verified first.
   route('webhooks/app', 'routes/webhooks.app.tsx'),

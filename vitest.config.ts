@@ -19,6 +19,9 @@ export default defineConfig({
       '@spirithaus/jobs': pkg('jobs'),
       '@spirithaus/observability': pkg('observability'),
       '@spirithaus/protected-assets': pkg('protected-assets'),
+      '@spirithaus/shopify/server': fileURLToPath(
+        new URL('./packages/shopify/src/server.ts', import.meta.url),
+      ),
       '@spirithaus/shopify': pkg('shopify'),
       '@spirithaus/testing': pkg('testing'),
     },

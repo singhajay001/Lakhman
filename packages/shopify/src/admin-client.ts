@@ -1,8 +1,20 @@
 import { err, ok, type Result } from '@spirithaus/domain';
 import { childLogger } from '@spirithaus/observability';
+import { classifyDeniedResponse, classifyThrownOutbound, outboundDiagnostic } from './network.js';
 
 export type AdminErrorClass =
-  'auth' | 'throttled' | 'user_error' | 'transient' | 'timeout' | 'unavailable';
+  | 'auth'
+  | 'throttled'
+  | 'user_error'
+  | 'transient'
+  | 'timeout'
+  | 'unavailable'
+  /**
+   * The container's network refused to let the call out. Separate from `auth` because an
+   * egress denial arrives as a 403 and would otherwise read as a rejected token, and separate
+   * from `transient` because it is never worth retrying.
+   */
+  | 'network_blocked';
 
 export interface AdminError {
   class: AdminErrorClass;
@@ -92,6 +104,10 @@ export class AdminClient {
     query: string,
     variables: Record<string, unknown>,
   ): Promise<AdminResult<T>> {
+    const log = childLogger({
+      shop: this.options.shopDomain,
+      apiVersion: this.options.apiVersion,
+    });
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 
@@ -107,6 +123,16 @@ export class AdminClient {
       });
 
       const requestId = response.headers.get('x-request-id') ?? undefined;
+
+      // Checked before the auth branch: when Node's fetch bypasses the proxy and goes direct,
+      // the egress gateway answers a blocked host with its own 403. Read as authentication,
+      // that sends whoever is debugging to the Partner Dashboard over a network setting.
+      const denied = classifyDeniedResponse(response);
+      if (denied) {
+        const message = outboundDiagnostic(this.options.shopDomain, denied);
+        log.warn({ block: denied.kind, status: response.status }, message);
+        return { ok: false, error: { class: 'network_blocked', message, retryable: false } };
+      }
 
       if (response.status === 401 || response.status === 403) {
         return err({
@@ -173,6 +199,15 @@ export class AdminClient {
           : undefined,
       });
     } catch (thrown) {
+      // Order matters. A refused proxy tunnel surfaces as a TypeError wrapping an AbortError,
+      // so checking for an abort first would report a network policy denial as a timeout.
+      const blocked = classifyThrownOutbound(thrown);
+      if (blocked) {
+        const message = outboundDiagnostic(this.options.shopDomain, blocked);
+        log.warn({ block: blocked.kind }, message);
+        return { ok: false, error: { class: 'network_blocked', message, retryable: false } };
+      }
+
       const aborted = thrown instanceof Error && thrown.name === 'AbortError';
       return err({
         class: aborted ? 'timeout' : 'transient',

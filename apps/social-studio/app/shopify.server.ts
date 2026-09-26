@@ -20,7 +20,10 @@ const shopify = shopifyApp({
   apiVersion: ApiVersion.July25,
   scopes: mandatoryScopeList(),
   appUrl: required('SHOPIFY_APP_URL'),
-  authPathPrefix: '/auth',
+  // Derives callbackPath, loginPath, patchSessionTokenPath and exitIframePath. The callback
+  // that results, <SHOPIFY_APP_URL>/auth/shopify/callback, is what has to be registered as an
+  // allowed redirection URL in the Partner Dashboard — byte for byte, scheme included.
+  authPathPrefix: '/auth/shopify',
   // Online tokens, deliberately: section 20 requires a *verified human* for every
   // approval, and an offline session has no user attached to verify.
   useOnlineTokens: true,

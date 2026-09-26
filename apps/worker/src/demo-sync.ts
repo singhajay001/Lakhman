@@ -9,12 +9,8 @@
  *   pnpm --filter @spirithaus/worker demo:sync
  */
 import { prisma, recordAudit } from '@spirithaus/db';
-import {
-  AdminClient,
-  PrismaProductStore,
-  syncCollections,
-  syncProducts,
-} from '@spirithaus/shopify';
+import { AdminClient, syncCollections, syncProducts } from '@spirithaus/shopify';
+import { PrismaProductStore } from '@spirithaus/shopify/server';
 import { MockShopify } from '@spirithaus/testing';
 
 async function main(): Promise<void> {

@@ -108,6 +108,9 @@ importers:
       '@spirithaus/shopify':
         specifier: workspace:*
         version: link:../../packages/shopify
+      '@tesseract.js-data/eng':
+        specifier: ^1.0.0
+        version: 1.0.0
       isbot:
         specifier: ^5.1.0
         version: 5.2.2
@@ -120,6 +123,12 @@ importers:
       react-router:
         specifier: ^7.18.4
         version: 7.18.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      sharp:
+        specifier: ^0.35.4
+        version: 0.35.4(@types/node@22.20.4)
+      tesseract.js:
+        specifier: ^7.0.0
+        version: 7.0.0
     devDependencies:
       '@react-router/dev':
         specifier: ^7.18.4

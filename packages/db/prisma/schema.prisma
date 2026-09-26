@@ -354,6 +354,10 @@ enum SyncStatus {
   SUCCEEDED
   FAILED
   CANCELLED
+  /// The sync never reached Shopify: no offline session, or the host is refused by the
+  /// container's egress policy. Distinct from FAILED because nothing was attempted and
+  /// retrying changes nothing, and distinct from SUCCEEDED because the mirror was not updated.
+  UNREACHABLE
 }
 
 model SyncRun {
