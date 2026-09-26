@@ -97,12 +97,47 @@ The rendered pages could not be fetched — this session's egress proxy blocks
 `/robots.txt` and the RRP line on a product page still want one look from a
 local terminal.
 
-## Open question for the owner
+## Published — and a trap worth recording
 
-**Publish the 32?** They are SEO-complete and priced. Publishing adds 32
-indexable pages, most of them high-value names (Grange, Hill of Grace, Cristal,
-Krug, Dom Pérignon) that attract exactly the branded searches worth ranking for.
+Owner confirmed: publish all 32. Done. The store now has **238 live products**,
+up from 206.
 
-The catch is that inventory is untracked, so each becomes orderable on
-publication. Either confirm you are happy to take orders on them as special
-orders, or set inventory tracking first.
+**Setting `status: ACTIVE` was not enough.** After the status change, Grange and
+Krug still returned `onlineStoreUrl: null` — they were ACTIVE and published to
+Point of Sale and Shop, but never to the **Online Store** sales channel. A
+product in that state has no public URL at all: Googlebot gets a 404, and no
+amount of sitemap submission or SEO metadata makes any difference.
+
+It took a second mutation (`publishablePublish` against publication
+`199293468918`) to give them real URLs. Worth remembering for every future
+product: in this store, newly created products are not on the Online Store
+channel by default.
+
+A store-wide check afterwards confirmed **all 238 active products now carry an
+`onlineStoreUrl`** — no pre-existing product was silently in this state.
+
+### The 32 now live
+
+Best's Thomson Family Shiraz · Bollinger La Grande Année · Chandon Vintage Brut ·
+Clonakilla Shiraz Viognier · Cullen Diana Madeline · Dom Pérignon Rosé ·
+Duckhorn Napa Valley Merlot · Henschke Hill of Grace · Howard Park Abercrombie ·
+Irvine Grand Merlot · Jansz Tasmania Vintage Cuvée · Jim Barry The Armagh ·
+Krug Grande Cuvée · Krug Vintage · Lark Devil's Storm No. 183 ·
+Louis Roederer Cristal · Morris Old Premium Rare Muscat · Moët & Chandon Dom
+Pérignon · Penfolds Grandfather · Penfolds Grange · Penfolds Great Grandfather ·
+Petaluma Coonawarra · Taittinger Comtes de Champagne · Tapanappa Whalebone ·
+Tequila Blu · Torbreck RunRig · Veuve Clicquot La Grande Dame · Woodlands
+Cabernet Merlot · Yalumba Antique Tawny · Yalumba The Menzies · Yalumba The
+Octavius · d'Arenberg The Dead Arm Shiraz
+
+Inventory is untracked on all of them, so they are orderable as special orders.
+
+## Next
+
+1. **Backlinks** — still the binding constraint on discovery.
+2. **Images for the remaining 248 drafts** — the bottleneck on the rest of the catalogue.
+3. **Costs for the 115 uncosted / 94 unpriced drafts** — from the fine-wine quote sheet.
+4. Shopify regenerates `sitemap.xml` automatically, so the 32 new URLs will
+   appear there shortly. Worth a re-fetch in GSC once they do.
+5. Delete the erroneous homepage-as-sitemap row in GSC.
+6. ABV backfill across the catalogue, if you want the SEO descriptions to carry it.
