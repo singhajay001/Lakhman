@@ -80,12 +80,17 @@ If cost dominates, Hetzner with Compose is roughly a fifth of the price and make
 
 ## 4. Expected monthly cost
 
-**~US$25–45 / month**, indicative. Web ~$5–7, worker ~$10–15 (2GB; image work is memory-hungry),
-Postgres ~$5–10, Redis ~$5–10, storage ~$1–3.
+**~US$30.23 / month expected, ~US$31.79 worst case**, excluding Australian GST. See the verified
+breakdown in [fly-staging.md](fly-staging.md#budget-ceiling-us40-per-month), which is the single
+source of truth.
 
-**This is the least reliable figure in the report.** This environment cannot reach pricing pages,
-so the numbers come from general knowledge and must be confirmed at sign-up. Stopping staging
-between test sessions, or co-hosting Postgres and Redis, roughly halves it.
+No longer an indicative figure: rates were retrieved 2026-09-26 from each vendor's own
+documentation source, priced from the 1 October 2026 Fly increase, with the Sydney 1.269230769
+markup applied. The only remaining soft numbers are Tigris's per-GB and per-operation rates,
+together ~US$0.20/month — a tenfold error in them costs $1.80.
+
+Stopping staging between test sessions reduces compute but not volumes, which bill on
+provisioned capacity whether attached or not.
 
 ## 5. Component topology
 

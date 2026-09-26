@@ -147,8 +147,8 @@ Two defects found here, both by running it rather than reading it:
 
 ## 9. Fly topology
 
-`syd`. Web and worker as separate process groups from one image. Web: `shared-cpu-1x`/1GB,
-suspends when idle, `min_machines_running = 1`. Worker: `shared-cpu-1x`/2GB, **no
+`syd`. Web and worker as separate process groups from one image. Web: `shared-cpu-1x`/512MB,
+`min_machines_running = 1`. Worker: `shared-cpu-1x`/1GB (measured — see fly-staging.md), **no
 `auto_stop_machines`** — a suspended worker is a worker that stopped mid-render holding a
 ten-minute queue lock. Single-node development-grade Fly Postgres, **marked not approved for
 production** in the config itself and in the runbook. Upstash Redis, Tigris storage, private
@@ -157,17 +157,16 @@ contains none. Migrations as a `release_command`, rolling strategy.
 
 ## 10. Cost, against the US$40 ceiling
 
-| Item | Indicative |
-| --- | --- |
-| Web machine (1GB, suspends) | ~US$3–6 |
-| Worker machine (2GB, always on) | ~US$11–15 |
-| Fly Postgres, development, single node | ~US$5–8 |
-| Upstash Redis, low volume | ~US$0–5 |
-| Tigris, a few GB | ~US$1–3 |
-| **Projected** | **~US$20–37** |
+Superseded by the verified table in [fly-staging.md](fly-staging.md#budget-ceiling-us40-per-month),
+which is now the single source of truth. In summary: **~US$30.23/month expected, ~US$31.79
+worst case**, from rates retrieved 2026-09-26 out of each vendor's own documentation source and
+priced from the 1 October 2026 Fly increase, with the Sydney markup applied.
 
-Under the ceiling with room. **Least reliable figure here** — this environment cannot reach
-pricing pages, so confirm each at sign-up. The worker is the always-on item and the one that
+The figures previously in this section were indicative and two of them were wrong in the
+expensive direction: they assumed a 1GB web machine and a 2GB worker, which together total
+US$41.81 and breach the ceiling. The corrected sizes are 512MB web and 1GB worker.
+
+The worker is the always-on item and the one that
 grows if concurrency is raised. `fly scale count web=0 worker=0` between test sessions removes
 most of it.
 

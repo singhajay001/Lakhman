@@ -49,18 +49,22 @@ everything else.
 
 ## Cost
 
-**These are indicative and must be confirmed at sign-up.** This environment cannot reach pricing
-pages, so the figures come from general knowledge of these platforms and are the least reliable
-thing in this document. Treat the shape as useful and the numbers as needing a check.
+See [fly-staging.md](fly-staging.md#budget-ceiling-us40-per-month) for the verified per-line
+breakdown; it is the single source of truth. Summary for the Fly/Upstash/Tigris shape in `syd`,
+priced from 1 October 2026 and excluding Australian GST:
 
-| Item | Indicative monthly |
+| Item | US$/month |
 | --- | --- |
-| Web machine (shared CPU, 1GB) | ~US$5–7 |
-| Worker machine (shared CPU, 2GB — image work is memory-hungry) | ~US$10–15 |
-| Managed Postgres (smallest) | ~US$5–10 |
-| Redis (smallest managed, or a small self-hosted machine) | ~US$5–10 |
-| Object storage (a few GB) | ~US$1–3 |
-| **Total** | **~US$25–45 / month** |
+| Web machine (`shared-cpu-1x`, 512MB) | 4.75 |
+| Worker machine (`shared-cpu-1x`, 1GB — measured, see below) | 8.62 |
+| Unmanaged single-node Postgres (`shared-cpu-1x`, 512MB) + 10GB volume | 6.25 |
+| Upstash Redis Fixed 250MB (`ap-southeast-2`) | 10.00 |
+| Object storage (Tigris, single-region `syd`, private) | ~0.20 |
+| Egress (Asia-Pacific band, $0.04/GB) | ~0.40 |
+| **Total** | **~US$30.23** |
+
+**Fly Managed Postgres was ruled out:** cheapest plan US$38.00/month plus $0.28/GB storage, and
+every plan includes a replica — there is no single-node development tier.
 
 Cheaper shapes, if cost is the binding constraint:
 
@@ -70,8 +74,21 @@ Cheaper shapes, if cost is the binding constraint:
   continuously, and machines that are stopped are not billed for compute.
 - **Hetzner CX22 running everything under Compose:** ~€4/month, and you are the DBA.
 
-The worker is the item worth attention: composites hold a decoded master and its masks in memory,
-and renders drive a headless browser. 1GB is likely to be tight; 2GB is the safer starting point.
+The worker is the item worth attention, and it has now been measured rather than estimated. One
+`COMPOSITE_STILL` job across all four formats peaks at:
+
+| Master | Megapixels | Peak RSS |
+| --- | --- | --- |
+| 1366×1932 (a real Shopify original) | 2.64 | 456.9MB |
+| 1600×1600 (a real packshot frame) | 2.56 | 475.5MB |
+| 2048×2048 | 4.19 | 512.4MB |
+| 2400×3200 | 7.68 | 578.8MB |
+
+So **512MB is an OOM kill on a real full-resolution packshot, not a tight fit**, and the earlier
+guess that "1GB is likely to be tight, 2GB is safer" was wrong in both directions: 1GB holds the
+worst case measured with ~42% headroom, and 2GB would breach the US$40 ceiling. Treat these as a
+floor — the measurement excluded Prisma, BullMQ, ioredis and the storage client, which this
+process also loads. Re-measure before trusting 1GB with masters much beyond 8 megapixels.
 
 ## Configuration
 

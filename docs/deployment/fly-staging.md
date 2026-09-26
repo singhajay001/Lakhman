@@ -14,18 +14,45 @@ app, database or bucket exists, and no payment method has been provided.
 
 If the projection below exceeds it, stop and re-scope rather than proceeding.
 
-| Item | Size | Indicative |
-| --- | --- | --- |
-| Web machine | `shared-cpu-1x`, 1GB, suspends when idle | ~US$3–6 |
-| Worker machine | `shared-cpu-1x`, 2GB, always on | ~US$11–15 |
-| Fly Postgres (development, single node) | 1GB volume | ~US$5–8 |
-| Upstash Redis | pay-as-you-go, low volume | ~US$0–5 |
-| Tigris object storage | a few GB | ~US$1–3 |
-| **Projected total** | | **~US$20–37** |
+This is the canonical cost table. The other deployment documents point here rather than keeping
+their own copy, because four copies drifted once already.
 
-Under the ceiling with room, but the figures are indicative: this environment cannot reach
-pricing pages, so confirm each at sign-up. Watch the worker — it is the always-on item and the
-one that would grow if concurrency is raised.
+Rates retrieved 2026-09-26 from each vendor's own documentation source and **priced from
+1 October 2026**, when Fly raises RAM 20% and shared CPU 12.9%. Sydney carries a **1.269230769
+markup** over Ashburn — every third-party figure you will read online is the Ashburn rate.
+730-hour month, USD, excluding Australian GST.
+
+**Guaranteed fixed charges**
+
+| Item | Size | US$/month | Confidence |
+| --- | --- | --- | --- |
+| Web machine | `shared-cpu-1x`, 512MB, `min_machines_running = 1` | 4.75 | High |
+| Worker machine | `shared-cpu-1x`, 1GB, always on | 8.62 | High |
+| Postgres machine | `shared-cpu-1x`, 512MB, single node, unmanaged | 4.75 | High |
+| Postgres volume | 10GB provisioned | 1.50 | High |
+| Upstash Redis | Fixed 250MB, primary `ap-southeast-2`, 0 read regions | 10.00 | High |
+| **Fixed subtotal** | | **29.63** | |
+
+**Usage-dependent**, normal staging: Fly egress ~$0.40 (10GB @ $0.04/GB, Asia-Pacific band),
+Tigris ~$0.20. Shared IPv4, Anycast IPv6, the first TLS certificate, the first 10GB of volume
+snapshots and Community support are all **free**. Tigris charges **no egress**.
+
+**Expected ~US$30.23/month. Maximum plausible ~US$31.79.** Headroom against the ceiling:
+~US$8–10 ex-GST. If 10% Australian GST applies the worst case is ~US$34.97, still under.
+
+Two sizes here are load-bearing and must not be raised casually:
+
+- **Worker at 1GB is measured, not guessed.** One `COMPOSITE_STILL` job across four formats peaks
+  at 456.9MB on a 1366×1932 master, 512.4MB at 2048×2048 and 578.8MB at 2400×3200 — so 512MB is
+  an OOM kill on a real packshot, not a tight fit. Raising it to 2GB costs $7.72/month and
+  **breaches the ceiling** ($41.81 total).
+- **Fly Managed Postgres is not usable here.** Its cheapest plan is $38.00/month plus $0.28/GB
+  storage, and all plans include a replica — there is no single-node development tier. Hence
+  unmanaged Postgres (a plain Machine plus a volume).
+
+To reduce: stop the environment between test sessions (`fly scale count web=0 worker=0`). Stopped
+machines are not billed for compute, but note Fly still bills **$0.15/GB of root filesystem per
+30 days**, and volumes bill on provisioned capacity whether attached or not.
 
 To reduce: stop the environment between test sessions (`fly scale count web=0 worker=0`).
 Suspended machines are not billed for compute.
@@ -62,8 +89,21 @@ key discovered to be missing on the first OAuth callback is a token already writ
 
 ```sh
 fly postgres create --name spirithaus-staging-db --region syd \
-  --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 1
+  --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 10
 fly postgres attach spirithaus-staging-db --config fly.staging.toml
+```
+
+`--initial-cluster-size 1` is what makes this single-node, and `--volume-size 10` matches the
+costed 10GB. **A volume can be grown but never shrunk**, so oversizing it here is a permanent
+charge at $0.15/GB/month.
+
+Confirm the memory landed at 512MB — `fly postgres create` picks a default for the VM size, and
+the costing assumes 512MB:
+
+```sh
+fly machine list --app spirithaus-staging-db
+# if it is not 512MB:
+fly machine update <machine-id> --vm-memory 512 --app spirithaus-staging-db
 ```
 
 `attach` sets `DATABASE_URL` as a secret and uses Fly's private network, so the database is not

@@ -80,14 +80,22 @@ primary_region = "syd"
 [[vm]]
   processes = ["web"]
   size = "shared-cpu-1x"
-  memory = "1gb"
+  # The web process composites nothing — that moved to the worker in ADR 0013 — so it holds a
+  # React Router server and a connection pool, not decoded rasters.
+  memory = "512mb"
 
 [[vm]]
   processes = ["worker"]
   size = "shared-cpu-1x"
-  # 2GB, not 1: a composite holds a decoded master and its masks in memory, and a render drives
-  # a headless browser. This is a starting point, not a measurement of a real workload.
-  memory = "2gb"
+  # 1GB, and this is now measured rather than guessed. One COMPOSITE_STILL job across all four
+  # formats peaks at 456.9MB on a 1366x1932 master (a real Shopify original), 512.4MB at
+  # 2048x2048 and 578.8MB at 2400x3200. So 512MB is not a tight fit, it is an OOM kill on a
+  # real full-resolution packshot; 1GB leaves ~42% headroom over the worst case measured.
+  #
+  # The measurement excluded Prisma, BullMQ, ioredis and the storage client, all of which this
+  # process also loads, so treat those figures as a floor. Re-measure before trusting 1GB with
+  # masters larger than ~8 megapixels.
+  memory = "1gb"
 
 # Migrations run once, before any new machine takes traffic. Forward-only: several add
 # constraints and triggers, and there is no down path. Snapshot first.
