@@ -257,3 +257,25 @@ anywhere — the wine pages especially. The Artwork block is the hook and the
 precedence now honours it, but there is nothing apt to point it at. That is a
 shoot, not a theme change, and it belongs on the run sheet beside the eleven
 hero files.
+
+### Staging branch created
+
+`staging` is branched from `main` at `29582cc` and pushed. It carries two
+merges and is two files ahead of `main`:
+
+- the portrait fallback gate (`sections/spirithaus-collection-hero.liquid`)
+- the rewritten git workflow in the theme repo's `CLAUDE.md`
+
+Both linters pass on it. Nothing here is live: `main` is untouched, so the
+storefront has not changed.
+
+The theme side is a single admin action and cannot be done from the API.
+`themeCreate(source: URL, name, role)` takes a theme zip, and no Admin API
+mutation attaches a repository to a theme — the GitHub connection only exists
+through the admin UI. Online Store > Themes > Add theme > Connect from GitHub,
+`singhajay001/spirithaus-theme`, branch `staging`, leave it unpublished.
+
+Once that theme exists, the loop is: merge a `claude/*` branch into `staging`,
+look at the staging theme's preview, then fast-forward `main` to `staging`.
+The fast-forward is what makes the review meaningful — what was previewed is
+byte-for-byte what ships.
