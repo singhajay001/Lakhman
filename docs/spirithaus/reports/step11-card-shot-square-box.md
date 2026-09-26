@@ -166,6 +166,40 @@ supplier feed, not a theme change.
 
 ## Shipped
 
-`spirithaus-theme` `claude/card-shot-square-box` → `staging`
-(`3b5fa97`, merged as `197d6b1`). Live on the staging theme; not yet on
-`main`.
+`claude/card-shot-square-box` → `staging` (`3b5fa97`, merged as `197d6b1`) →
+`main` by fast-forward, after the user checked it on staging. Live.
+
+Confirmed on the published storefront, not just in the repo: the stylesheet
+`www.spirithaus.com.au` serves from the live theme carries
+`.sh-card__img{width:100%;height:auto;aspect-ratio:1 / 1;…}`, and
+`measure-cards.cjs` run against *that* file reports 0 of 36 clipped.
+
+The fast-forward carried the rest of `staging` with it:
+
+| | |
+|---|---|
+| `assets/spirithaus.css` | the square box — this fix |
+| `assets/sh-bottle.js` | the transform-order fix (real bug, wrong diagnosis) |
+| `sections/spirithaus-collection-hero.liquid` | the portrait gate — 17 collections without landscape photography now fall to the plain ink band instead of a sliced bottle |
+| `templates/collection.json` | drops the duplicate homepage hero from collection pages |
+| 4 section schemas | the silent-rejection fixes; defaults only, so no existing section changes appearance |
+| `CLAUDE.md`, `patches/schema-lint.py` | in `.shopifyignore`, never uploaded |
+
+## A trap worth knowing about
+
+The pre-deploy diff was wrong the first time I ran it, and not by a little:
+`git log origin/main..origin/staging` reported a seven-file release when the
+real one was ten files, silently omitting the three newest commits — including
+the card fix this whole report is about.
+
+The clone arrives with `remote.origin.fetch` narrowed to
+`+refs/heads/main:refs/remotes/origin/main`. Fetching any other branch
+therefore writes `FETCH_HEAD` and nothing else, so
+`refs/remotes/origin/staging` keeps whatever the first `git push -u` left in
+it and never moves again. Nothing errors. The push goes to the right place,
+`git ls-remote` reports the truth, and only the one command you would reach
+for before deploying quietly lies.
+
+Caught because the diff did not list `assets/spirithaus.css` and it obviously
+should have. Now noted in the theme's `CLAUDE.md`: compare against
+`git ls-remote origin refs/heads/staging`, or widen the refspec first.
