@@ -49,8 +49,8 @@ runs against mocks.
 ## Verifying it
 
 ```sh
-pnpm verify            # typecheck, lint, 407 unit tests, and the app build
-pnpm test:integration  # 77 tests against a real Postgres and Redis
+pnpm verify            # typecheck, lint, 445 unit tests, and the app build
+pnpm test:integration  # 85 tests against a real Postgres and Redis
 ```
 
 The app build is part of `verify` deliberately: a shared package accidentally pulling a
@@ -67,17 +67,34 @@ To see the app with data in it, without Shopify:
 
 ```sh
 pnpm --filter @spirithaus/worker demo:sync
+pnpm sync:shopify-assets      # real product artwork, if a catalogue is reachable
 pnpm --filter @spirithaus/social-studio demo:media
+pnpm calibrate:packshots      # re-runs the geometry against what was ingested
 ```
 
 `demo:sync` fills the mirror from the fixture catalogue — five products including an
 archived one, a draft, one out of stock and one with no unit cost, because a catalogue
-that is all happy paths proves nothing. `demo:media` ingests a synthetic bottle as a
-protected master and composites it for four formats, so the Media Studio has verified
-assets and real per-viewport geometry to show. Both are development scripts that refuse to
-run in production, and neither mock is reachable from a runtime path, so no environment
-variable can make the worker serve fixture data. The demo bottle is obviously synthetic on
-purpose: it is not a product, and its label is not a label.
+that is all happy paths proves nothing.
+
+`sync:shopify-assets` ingests real packshots into the protected-product pipeline: it takes
+image #1 at its original resolution, cuts the backdrop where there is one, trims to the
+subject, digests, masks, baselines the label colour and reads the label back. It needs a
+rights basis stated on the command (`ASSET_LICENCE_HOLDER`, `ASSET_LICENCE_TERMS`) and has
+no default, because a supplier's packshot carried in a retailer's catalogue is not
+automatically licensed for marketing use. `SOURCE=admin` is the production path;
+`SOURCE=storefront STOREFRONT_ORIGIN=…` reads the public catalogue, which is what works
+where a network policy allows `cdn.shopify.com` but refuses `*.myshopify.com`. On Node 22
+`fetch` ignores proxy environment variables, so behind an egress proxy it needs
+`NODE_USE_ENV_PROXY=1`.
+
+`demo:media` then composites whatever real masters were ingested, falling back to the
+synthetic bottle and saying so when there are none. `calibrate:packshots` re-runs the
+placement and per-viewport measurement against the ingested subjects and prints what it
+finds; it writes nothing, because a calibration that silently rewrote the thresholds it
+was checking would be worth nothing.
+
+All are development scripts that refuse to run in production, and no mock is reachable
+from a runtime path, so no environment variable can make the worker serve fixture data.
 
 ## What is built
 
@@ -96,7 +113,7 @@ purpose: it is not a product, and its label is not a label.
 | `packages/protected-assets` | Masks, deterministic compositing, renditions, and the four verification checks              |
 | `apps/render`               | Remotion compositions, rendered headlessly. Imports nothing from the app                    |
 
-## Seven things worth knowing before reading the code
+## Eight things worth knowing before reading the code
 
 **Mocks do not imitate success.** `PROVIDER_*=mock` is a supported configuration, not a
 test double. A mocked publisher returns `published: false, state: 'not_published'` on
@@ -130,6 +147,16 @@ nothing else. On top of that, the compliance engine blocks an ABV, age statement
 rating, vintage, price or availability claim the sheet does not support. That is a guard
 over the claim types that carry the most risk when invented — it will not catch a
 fabricated tasting note, and the rule documentation and a test both say so.
+
+**Real packshots broke four things the synthetic bottle had made look true.** Its subject
+is 0.643 wide for its height; real single-product packshots run 0.219 to 0.55. A packshot
+is mostly empty canvas, so placing the frame rather than the subject undersized every
+bottle. A minimum-edge gate is aspect-blind — it refused a 528×1622 Jack Daniel's that has
+ample resolution and accepted a 600×600 square that has too little. And image #1 is not
+always one product: Talisker 10 and Lark Devil's Storm are photographed beside their gift
+boxes, and about a third of primary images are opaque JPEGs on white. Each of those is now
+measured per product and recorded on the asset rather than assumed. `docs/adr/0011` has
+the numbers.
 
 **A protected product layer is never resampled.** Where a bottle must be smaller than its
 master, a rendition is made as a recorded step with its own digest, and the composite
@@ -168,6 +195,10 @@ Stated rather than left for someone to discover:
   real token: it was observed failing correctly with "No offline session for this shop",
   which is the honest outcome, and the sync itself is covered against Postgres with a
   mocked Shopify.
+- **The Shopify Admin API has still not been called.** `*.myshopify.com` is refused at
+  CONNECT, so the Admin catalogue source is covered by tests against a mocked client and has
+  never run against a live Admin endpoint. Every asset ingested here came through the public
+  storefront reader, and each one records which source it came from.
 - **No platform capability is verified**, for the reason above. Every caption limit,
   hashtag ceiling and media spec in `packages/domain/src/content/platform-specs.ts` carries
   `verified: false` and a spec version, for the same reason.
@@ -175,6 +206,13 @@ Stated rather than left for someone to discover:
   words and links nothing, because a wrong clause reference is worse than none — it looks
   authoritative. A Compliance Reviewer reads the standard text and decides; the report says
   so verbatim.
+- **The platform profile is still `unverified`, on purpose.** Real packshots calibrate the
+  subject half of the geometry model — how tall and narrow a product is, how much of a safe
+  zone it fills, how far it is scaled. They say nothing about where Instagram draws its
+  caption bar or TikTok its right rail, because no platform client could be loaded here to
+  photograph one. Flipping `PLATFORM_PROFILE_VERSION` on the strength of a bottle
+  measurement would let a real number vouch for a guess, so the measured half is recorded
+  separately as `PRODUCT_GEOMETRY_BASELINE` and the insets keep saying what they are.
 - **No threshold or score here is calibrated.** The quality dimensions measure the copy in
   front of them and predict nothing; the near-duplicate distance of 12 bits is a starting
   candidate, not a derived value. The same is true of the media thresholds: the ΔE, SSIM,

@@ -17,7 +17,9 @@
     "format": "prettier --check .",
     "test": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm --filter @spirithaus/social-studio build"
+    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm --filter @spirithaus/social-studio build",
+    "sync:shopify-assets": "pnpm --filter @spirithaus/social-studio sync:shopify-assets",
+    "calibrate:packshots": "pnpm --filter @spirithaus/social-studio calibrate:packshots"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

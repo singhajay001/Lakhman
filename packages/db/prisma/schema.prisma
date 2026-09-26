@@ -993,6 +993,24 @@ model ProtectedProductAsset {
   /// deliberately and recorded, rather than inside every composite — because at a downscale
   /// three of the four protection checks stop being decisive.
   renditionOfId   String?
+  /// Where the master came from, when it was ingested from a catalogue rather than uploaded.
+  /// The CDN URL with every sizing transform stripped, so it names the original.
+  sourceUrl       String?
+  /// Which source produced it, in the source's own words. Never inferred: a storefront read is
+  /// never recorded as an Admin read.
+  sourceKind      String?
+  /// What the subject measured as: aspect, fill, and the column-profile separation that says
+  /// whether this packshot shows one product or a bottle beside its gift box.
+  subjectProfile  Json?
+  /// What the cutout step did, or why it declined to do anything.
+  cutout          Json?
+  /// The label text OCR read on the master at ingestion, with the catalogue values it was
+  /// checked against. This is the ground truth later reads are compared to.
+  groundTruth     Json?
+  /// Set when something about this asset needs a person to look before it is staged. An asset
+  /// may be ingested and still not be fit to use.
+  needsReview     Boolean              @default(false)
+  reviewReasons   String[]             @default([])
   approvedByUserId String?
   approvedAt  DateTime?
   createdAt   DateTime             @default(now())
@@ -1008,6 +1026,8 @@ model ProtectedProductAsset {
 
   @@index([shopId, status])
   @@index([renditionOfId, widthPx])
+  /// The same artwork is ingested once. A second sync finds the row rather than making another.
+  @@unique([shopId, masterDigest])
   @@map("protected_product_asset")
 }
 

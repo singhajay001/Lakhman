@@ -97,3 +97,47 @@ export function cropRaster(raster: Raster, region: Region): Raster {
   }
   return { width: region.w, height: region.h, data: out };
 }
+
+/**
+ * Re-encodes any decodable image as PNG.
+ *
+ * The CDN serves whatever was uploaded — JPEG, WebP, PNG. A protected master has to be PNG,
+ * because a JPEG has no alpha to composite with and every later check is defined over RGBA. This
+ * runs before the digest is taken, so the digest identifies the bytes the pipeline actually holds.
+ */
+export async function toPng(bytes: Uint8Array): Promise<Uint8Array> {
+  return sharp(Buffer.from(bytes)).png({ compressionLevel: 9 }).toBuffer();
+}
+
+/**
+ * Crops to a region and flattens onto a solid colour, for reading.
+ *
+ * OCR sees transparency as black, which turns pale label text on a cut-out bottle into nothing.
+ * Flattening onto white first is what makes the read possible; the colour is the caller's choice
+ * because it changes what OCR sees.
+ */
+export async function cropForReading(
+  png: Uint8Array,
+  region: { x: number; y: number; w: number; h: number },
+  background = '#ffffff',
+  /**
+   * Minimum width to present to OCR. Tesseract needs glyphs of a certain pixel height, and a
+   * narrow bottle inside a square packshot gives it nothing: a Penfolds Grange crops to 200px
+   * wide, where OCR finds 2 words. Upscaled to 600, the same crop yields 63.
+   *
+   * This resamples what is *read*, never what is composited. ADR 0009 forbids resampling the
+   * protected layer because it destroys the checks; enlarging a copy to read text off it changes
+   * no stored artwork and no digest.
+   */
+  minWidth = 600,
+): Promise<Uint8Array> {
+  const pipeline = sharp(Buffer.from(png))
+    .extract({ left: region.x, top: region.y, width: region.w, height: region.h })
+    .flatten({ background });
+
+  if (region.w < minWidth) {
+    pipeline.resize({ width: minWidth, kernel: 'lanczos3' }).greyscale().normalise();
+  }
+
+  return pipeline.png().toBuffer();
+}

@@ -102,6 +102,42 @@ export async function readText(png: Uint8Array): Promise<Result<OcrResult, strin
   }
 }
 
+export interface OcrWord {
+  text: string;
+  confidence: number;
+  /** Pixel box in the image that was read. */
+  bbox: { x0: number; y0: number; x1: number; y1: number };
+}
+
+/**
+ * The same read, with each word's box.
+ *
+ * Used to find where the printed label actually is, rather than asking a person to draw a
+ * rectangle on every product in a 238-item catalogue. The words are evidence: a region derived
+ * from them is a region that demonstrably contains text.
+ */
+export async function readWords(png: Uint8Array): Promise<Result<OcrWord[], string>> {
+  const instance = await worker();
+  if (!instance.ok) return instance;
+
+  try {
+    const { data } = await instance.value.recognize(Buffer.from(png), {}, { blocks: true });
+    const words: OcrWord[] = [];
+    for (const block of data.blocks ?? []) {
+      for (const paragraph of block.paragraphs) {
+        for (const line of paragraph.lines) {
+          for (const word of line.words) {
+            words.push({ text: word.text, confidence: word.confidence, bbox: word.bbox });
+          }
+        }
+      }
+    }
+    return ok(words);
+  } catch (error) {
+    return err(`OCR failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
 export async function shutdownOcr(): Promise<void> {
   if (!shared) return;
   const instance = await shared.catch(() => null);

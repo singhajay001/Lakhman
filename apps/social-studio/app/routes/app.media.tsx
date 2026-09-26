@@ -60,18 +60,30 @@ export async function loader({ request }: LoaderFunctionArgs) {
       imageEditConfigured: imageEdit?.configured ?? false,
       voiceConfigured: voice?.configured ?? false,
     },
-    assets: assets.map((asset) => ({
-      id: asset.id,
-      product: asset.product?.title ?? 'unlinked',
-      status: asset.status,
-      dimensions: `${asset.widthPx}×${asset.heightPx}`,
-      digest: asset.masterDigest.slice(0, 12),
-      masks: asset.masks.map(
-        (mask) => `${mask.kind.toLowerCase()} v${mask.version} (+${mask.dilatePx}px)`,
-      ),
-      licence: `${asset.licence.kind.toLowerCase()} · ${asset.licence.holder}`,
-      createdAt: formatInZone(asset.createdAt, shop.timezone),
-    })),
+    assets: assets.map((asset) => {
+      const truth = asset.groundTruth as { labelText?: string } | null;
+      return {
+        id: asset.id,
+        product: asset.product?.title ?? 'unlinked',
+        status: asset.status,
+        dimensions: `${asset.widthPx}×${asset.heightPx}`,
+        digest: asset.masterDigest.slice(0, 12),
+        masks: asset.masks.map(
+          (mask) => `${mask.kind.toLowerCase()} v${mask.version} (+${mask.dilatePx}px)`,
+        ),
+        licence: `${asset.licence.kind.toLowerCase()} · ${asset.licence.holder}`,
+        // Where the bytes came from. A storefront read is never shown as an Admin read.
+        source: asset.sourceKind,
+        // Reasons a person has to look before this artwork is staged. Shown rather than
+        // counted, because "3 issues" is not something anybody can act on.
+        reviewReasons: asset.reviewReasons,
+        // Missing when OCR could not read the label; that asset waits for someone to draw a
+        // region, and saying so is more use than an empty cell.
+        labelText: truth?.labelText ?? null,
+        needsLabelRegion: !asset.masks.some((mask) => mask.kind === 'LABEL'),
+        createdAt: formatInZone(asset.createdAt, shop.timezone),
+      };
+    }),
     composites: composites.map((media) => {
       const report = media.verificationReport as {
         checks: { check: string; outcome: string; detail: string }[];
@@ -193,29 +205,84 @@ export default function MediaStudio() {
               </Text>
               {data.assets.length === 0 ? (
                 <EmptyState heading="No protected assets yet" image="">
-                  <Text as="p">
-                    A master arrives with a licence record, a product mask from its alpha, and a
-                    label region drawn by a person. No licence, no ingestion.
-                  </Text>
+                  <BlockStack gap="200">
+                    <Text as="p">
+                      A master arrives with a licence record and a product mask from its alpha. No
+                      licence, no ingestion.
+                    </Text>
+                    <Text as="p" tone="subdued">
+                      Run <code>pnpm sync:shopify-assets</code> to ingest real packshots from the
+                      Shopify catalogue, or upload a master and draw its label region here.
+                    </Text>
+                  </BlockStack>
                 </EmptyState>
               ) : (
-                <DataTable
-                  columnContentTypes={['text', 'text', 'text', 'text', 'text', 'text']}
-                  headings={['Product', 'Status', 'Master', 'Digest', 'Masks', 'Licence']}
-                  rows={data.assets.map((asset) => [
-                    asset.product,
-                    <Badge
-                      key={asset.id}
-                      tone={asset.status === 'APPROVED' ? 'success' : undefined}
-                    >
-                      {asset.status}
-                    </Badge>,
-                    asset.dimensions,
-                    asset.digest,
-                    asset.masks.join(', '),
-                    asset.licence,
-                  ])}
-                />
+                <BlockStack gap="300">
+                  <DataTable
+                    columnContentTypes={['text', 'text', 'text', 'text', 'text', 'text']}
+                    headings={['Product', 'Status', 'Master', 'Digest', 'Masks', 'Source']}
+                    rows={data.assets.map((asset) => [
+                      asset.product,
+                      <Badge
+                        key={asset.id}
+                        tone={
+                          asset.status === 'APPROVED'
+                            ? 'success'
+                            : asset.reviewReasons.length > 0
+                              ? 'attention'
+                              : undefined
+                        }
+                      >
+                        {asset.reviewReasons.length > 0 ? 'needs review' : asset.status}
+                      </Badge>,
+                      asset.dimensions,
+                      asset.digest,
+                      asset.masks.join(', '),
+                      asset.source ?? asset.licence,
+                    ])}
+                  />
+
+                  {data.assets.some(
+                    (asset) => asset.reviewReasons.length > 0 || asset.needsLabelRegion,
+                  ) ? (
+                    <Card>
+                      <BlockStack gap="200">
+                        <Text as="h3" variant="headingSm">
+                          Waiting on a person
+                        </Text>
+                        <Text as="p" tone="subdued">
+                          These masters are held, digested and masked to their silhouette. They are
+                          not staged, because something about them could not be settled
+                          automatically.
+                        </Text>
+                        {data.assets
+                          .filter(
+                            (asset) => asset.reviewReasons.length > 0 || asset.needsLabelRegion,
+                          )
+                          .map((asset) => (
+                            <BlockStack gap="100" key={`review-${asset.id}`}>
+                              <Text as="p" fontWeight="semibold">
+                                {asset.product === 'unlinked'
+                                  ? (asset.labelText ?? asset.digest)
+                                  : asset.product}
+                              </Text>
+                              {asset.needsLabelRegion ? (
+                                <Text as="p" tone="subdued">
+                                  No label region: nothing to measure a colour against or read text
+                                  in. Draw one to make this asset stageable.
+                                </Text>
+                              ) : null}
+                              {asset.reviewReasons.map((reason) => (
+                                <Text as="p" tone="subdued" key={reason}>
+                                  {reason}
+                                </Text>
+                              ))}
+                            </BlockStack>
+                          ))}
+                      </BlockStack>
+                    </Card>
+                  ) : null}
+                </BlockStack>
               )}
             </BlockStack>
           </Card>

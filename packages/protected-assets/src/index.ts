@@ -42,7 +42,9 @@ export {
   normaliseLabelText,
   findLanguageData,
   shutdownOcr,
+  readWords,
   type OcrResult,
+  type OcrWord,
   type TextComparison,
 } from './ocr.js';
 export {
@@ -56,3 +58,21 @@ export {
   type CheckName,
   type VerifyInput,
 } from './verify.js';
+export {
+  cutout,
+  hasUsableAlpha,
+  haloBrightness,
+  trimToSubject,
+  DEFAULT_CUTOUT_OPTIONS,
+  type CutoutOptions,
+  type CutoutResult,
+} from './cutout.js';
+export {
+  detectLabelRegion,
+  productBounds,
+  DEFAULT_LABEL_DETECTION,
+  type LabelDetection,
+  type LabelDetectionOptions,
+} from './label-region.js';
+export { subjectProfile, MAX_SEPARATION, type SubjectProfile } from './subject.js';
+export { toPng, cropForReading } from './raster.js';

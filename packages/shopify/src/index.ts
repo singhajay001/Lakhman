@@ -57,3 +57,16 @@ export {
   type WebhookHeaders,
   type WebhookRejection,
 } from './webhooks.js';
+export {
+  originalImageUrl,
+  pickPrimaryImage,
+  parseAbv,
+  parseVolumeMl,
+  mapMediaProduct,
+  PRODUCT_MEDIA_PAGE_QUERY,
+  type CatalogueImage,
+  type CatalogueProduct,
+  type CatalogueSource,
+  type MediaProductNode,
+} from './product-images.js';
+export { AdminCatalogueSource, StorefrontCatalogueSource } from './catalogue-sources.js';

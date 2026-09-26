@@ -1,6 +1,7 @@
 export {
   PLATFORM_FORMATS,
   PLATFORM_PROFILE_VERSION,
+  PRODUCT_GEOMETRY_BASELINE,
   formatFor,
   formatsFor,
   type FormatKey,
@@ -14,6 +15,7 @@ export {
   typeRegion,
   safeRect,
   safeZone,
+  requiredMasterHeightPx,
   intersection,
   area,
   discCoverage,

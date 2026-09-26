@@ -8,7 +8,9 @@
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
     "typegen": "react-router typegen",
-    "demo:media": "tsx scripts/demo-media.ts"
+    "demo:media": "tsx scripts/demo-media.ts",
+    "sync:shopify-assets": "tsx scripts/sync-shopify-assets.ts",
+    "calibrate:packshots": "tsx scripts/calibrate-packshots.ts"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",

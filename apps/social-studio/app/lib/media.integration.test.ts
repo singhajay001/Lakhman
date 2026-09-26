@@ -81,7 +81,7 @@ describe('ingesting a protected master', () => {
     }
   });
 
-  it('refuses a master too small to use at hero size', async () => {
+  it('refuses a master too small to place without upscaling', async () => {
     const result = await ingestProtectedAsset({
       shopId,
       actor: creator,
@@ -91,7 +91,11 @@ describe('ingesting a protected master', () => {
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error).toContain('600px');
+    // The gate is aspect-aware and derived from this repository's own safe zones, not a flat
+    // minimum edge: a tall narrow bottle has plenty of resolution at 528px wide, and a square
+    // has too little at 600.
+    expect(result.error).toContain('961px tall');
+    expect(result.error).toContain('upscaling');
   });
 });
 

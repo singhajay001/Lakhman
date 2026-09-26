@@ -17,7 +17,13 @@ import {
   type Lab,
   type Region,
 } from '@spirithaus/protected-assets';
-import { formatFor, placeInSafeZone, measure, type FormatKey } from '@spirithaus/media-geometry';
+import {
+  formatFor,
+  placeInSafeZone,
+  measure,
+  requiredMasterHeightPx,
+  type FormatKey,
+} from '@spirithaus/media-geometry';
 import { QUEUES, renderIdempotencyKey, type RenderPayload } from '@spirithaus/jobs';
 import type { Platform } from '@spirithaus/domain';
 import { resolveAdapter } from '@spirithaus/providers';
@@ -44,27 +50,58 @@ export interface IngestInput {
   actor: Principal;
   productId?: string | null;
   masterPng: Uint8Array;
-  /** Where the label sits on the master, normalised. Drawn by a person. */
-  labelRegion: Region;
+  /**
+   * Where the label sits on the master, normalised. Drawn by a person, or derived from OCR word
+   * boxes when a catalogue is ingested in bulk (see `detectLabelRegion`).
+   *
+   * Null when neither has happened yet. The master is still stored, digested and masked to its
+   * silhouette — it simply cannot be composited until somebody draws the region, which
+   * `compositeForPlatform` already refuses to do without. Storing the artwork and admitting the
+   * region is missing beats either skipping the product or inventing a rectangle.
+   */
+  labelRegion: Region | null;
   licence: {
     kind: 'OWNED' | 'COMMISSIONED' | 'LICENSED';
     holder: string;
     terms: string;
     permittedUses: string[];
     expiresAt?: Date | null;
+    evidenceUrl?: string | null;
   };
+  /** Where the bytes came from, when they were not uploaded by hand. */
+  provenance?: { sourceUrl: string | null; sourceKind: string } | null;
+  /** What was measured about the subject and the cutout, recorded for the reviewer. */
+  observations?: {
+    subjectProfile?: unknown;
+    cutout?: unknown;
+    groundTruth?: unknown;
+  } | null;
+  /** Reasons a person must look at this asset before it is staged. */
+  reviewReasons?: string[];
 }
 
 export async function ingestProtectedAsset(
   input: IngestInput,
-): Promise<{ ok: true; assetId: string } | { ok: false; error: string }> {
+): Promise<{ ok: true; assetId: string; alreadyPresent: boolean } | { ok: false; error: string }> {
   const raster = await decode(input.masterPng);
-  if (raster.width < 600 || raster.height < 600) {
+  // Aspect-aware, and derived from this repository's own safe zones rather than picked: a bottle
+  // is tall and narrow, and a flat "600px on either edge" rule failed real packshots that had
+  // plenty of resolution while passing squares that did not.
+  const required = requiredMasterHeightPx(raster.width / raster.height);
+  if (raster.height < required) {
     return {
       ok: false,
-      error: `This master is ${raster.width}×${raster.height}. A product master below 600px on either edge cannot be used at hero size without upscaling, which is not a thing this pipeline will do.`,
+      error: `This master is ${raster.width}×${raster.height}. A product of this shape is placed at up to ${required}px tall by the largest format, so using it would mean upscaling, which is not a thing this pipeline will do.`,
     };
   }
+
+  // The same artwork ingests once. Checked before a licence row is written, so re-running a
+  // catalogue sync does not litter the database with licences for masters that already exist.
+  const digest = createHash('sha256').update(Buffer.from(input.masterPng)).digest('hex');
+  const existing = await prisma.protectedProductAsset.findUnique({
+    where: { shopId_masterDigest: { shopId: input.shopId, masterDigest: digest } },
+  });
+  if (existing) return { ok: true, assetId: existing.id, alreadyPresent: true };
 
   const licence = await prisma.assetLicence.create({
     data: {
@@ -74,10 +111,11 @@ export async function ingestProtectedAsset(
       terms: input.licence.terms,
       permittedUses: input.licence.permittedUses,
       expiresAt: input.licence.expiresAt ?? null,
+      evidenceUrl: input.licence.evidenceUrl ?? null,
     },
   });
 
-  const masterDigest = createHash('sha256').update(Buffer.from(input.masterPng)).digest('hex');
+  const masterDigest = digest;
   const masterKey = `protected/${masterDigest.slice(0, 16)}.png`;
   await storage().put(masterKey, input.masterPng, 'image/png');
 
@@ -90,8 +128,24 @@ export async function ingestProtectedAsset(
       masterDigest,
       widthPx: raster.width,
       heightPx: raster.height,
-      minUsableWidthPx: Math.round(raster.width * 0.5),
-      colourReference: (await colourReferenceFor(input.masterPng, input.labelRegion)) as never,
+      // The smallest this master could have been and still have cleared the ingest gate. It
+      // records why the asset is usable; it is not a floor on placement. Placement only ever
+      // scales down — `placeInSafeZone` clamps at 1 — and downscaling invents no detail. The
+      // earlier rule, half the master's native width, was contradicted by every correct
+      // placement: real bottles land between 0.30 and 0.56 of native across the four formats.
+      minUsableWidthPx: Math.round(required * (raster.width / raster.height)),
+      // No region, no reference. A colour baseline read off a guessed rectangle would make the
+      // ΔE guard measure the wrong pixels while looking like it worked.
+      colourReference: input.labelRegion
+        ? ((await colourReferenceFor(input.masterPng, input.labelRegion)) as never)
+        : undefined,
+      sourceUrl: input.provenance?.sourceUrl ?? null,
+      sourceKind: input.provenance?.sourceKind ?? null,
+      subjectProfile: (input.observations?.subjectProfile ?? null) as never,
+      cutout: (input.observations?.cutout ?? null) as never,
+      groundTruth: (input.observations?.groundTruth ?? null) as never,
+      needsReview: (input.reviewReasons?.length ?? 0) > 0,
+      reviewReasons: input.reviewReasons ?? [],
     },
   });
 
@@ -101,46 +155,53 @@ export async function ingestProtectedAsset(
   const productPng = await encodeMask(product);
   await storage().put(productKey, productPng, 'image/png');
 
-  const labelPx = {
-    x: Math.round(input.labelRegion.x * raster.width),
-    y: Math.round(input.labelRegion.y * raster.height),
-    w: Math.round(input.labelRegion.w * raster.width),
-    h: Math.round(input.labelRegion.h * raster.height),
-  };
-  const label = maskFromRect(raster.width, raster.height, labelPx);
-  const labelKey = `protected/${asset.id}/label-mask.png`;
-  const labelPng = await encodeMask(label);
-  await storage().put(labelKey, labelPng, 'image/png');
-
   const { dilatePx } = await inpaintMask(input.masterPng);
 
-  await prisma.assetMask.createMany({
-    data: [
-      {
-        shopId: input.shopId,
-        assetId: asset.id,
-        kind: 'PRODUCT',
-        maskKey: productKey,
-        regionDigest: createHash('sha256').update(productPng).digest('hex'),
-        bounds: (maskBounds(product) ?? {}) as never,
-        dilatePx,
-      },
-      {
-        shopId: input.shopId,
-        assetId: asset.id,
-        kind: 'LABEL',
-        maskKey: labelKey,
-        regionDigest: createHash('sha256').update(labelPng).digest('hex'),
-        bounds: input.labelRegion as never,
-        dilatePx,
-      },
-    ],
-  });
+  const maskRows = [
+    {
+      shopId: input.shopId,
+      assetId: asset.id,
+      kind: 'PRODUCT' as const,
+      maskKey: productKey,
+      regionDigest: createHash('sha256').update(productPng).digest('hex'),
+      bounds: (maskBounds(product) ?? {}) as never,
+      dilatePx,
+    },
+  ];
 
-  await prisma.protectedProductAsset.update({
-    where: { id: asset.id },
-    data: { status: 'MASKED' },
-  });
+  if (input.labelRegion) {
+    const labelPx = {
+      x: Math.round(input.labelRegion.x * raster.width),
+      y: Math.round(input.labelRegion.y * raster.height),
+      w: Math.round(input.labelRegion.w * raster.width),
+      h: Math.round(input.labelRegion.h * raster.height),
+    };
+    const label = maskFromRect(raster.width, raster.height, labelPx);
+    const labelKey = `protected/${asset.id}/label-mask.png`;
+    const labelPng = await encodeMask(label);
+    await storage().put(labelKey, labelPng, 'image/png');
+    maskRows.push({
+      shopId: input.shopId,
+      assetId: asset.id,
+      kind: 'LABEL' as never,
+      maskKey: labelKey,
+      regionDigest: createHash('sha256').update(labelPng).digest('hex'),
+      bounds: input.labelRegion as never,
+      dilatePx,
+    });
+  }
+
+  await prisma.assetMask.createMany({ data: maskRows });
+
+  // MASKED means ready to stage. Without a label region the master is only INGESTED: it is held,
+  // digested and masked to its silhouette, but `compositeForPlatform` already refuses to stage an
+  // asset with no label region, so it waits for somebody to draw one.
+  if (input.labelRegion) {
+    await prisma.protectedProductAsset.update({
+      where: { id: asset.id },
+      data: { status: 'MASKED' },
+    });
+  }
 
   await recordAudit(prisma, {
     shopId: input.shopId,
@@ -153,10 +214,13 @@ export async function ingestProtectedAsset(
       dimensions: `${raster.width}x${raster.height}`,
       licence: input.licence.kind,
       dilatePx,
+      source: input.provenance?.sourceKind ?? 'uploaded',
+      needsReview: (input.reviewReasons?.length ?? 0) > 0,
+      reviewReasons: input.reviewReasons ?? [],
     },
   });
 
-  return { ok: true, assetId: asset.id };
+  return { ok: true, assetId: asset.id, alreadyPresent: false };
 }
 
 export interface CompositeInputForApp {

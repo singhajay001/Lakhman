@@ -34,6 +34,8 @@ export default tseslint.config(
       'apps/worker/src/index.ts',
       'apps/worker/src/demo-sync.ts',
       'apps/social-studio/scripts/demo-media.ts',
+      'apps/social-studio/scripts/sync-shopify-assets.ts',
+      'apps/social-studio/scripts/calibrate-packshots.ts',
     ],
     rules: { 'no-console': 'off' },
   },

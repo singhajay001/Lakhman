@@ -37,6 +37,7 @@ export const AUDIT_ACTIONS = [
   'approval.invalidated',
 
   'media.ingested',
+  'media.catalogue_synced',
   'media.mask_drawn',
   'media.composited',
   'media.verified',

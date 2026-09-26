@@ -3,12 +3,45 @@ import type { Platform } from '@spirithaus/domain';
 /**
  * Where a platform puts its own furniture, and where we put our type.
  *
- * **Unverified**, like every other platform figure in this build: section 4 requires these
- * to be checked against current documentation and this environment cannot reach it. The
- * safe insets in particular are the ones most likely to be wrong, because platforms move
- * their buttons.
+ * **Still unverified**, and deliberately so. Real product packshots now exercise this model
+ * (see `PRODUCT_GEOMETRY_BASELINE`), and it would be easy to read that as "calibrated" and
+ * flip this string. It is not the same claim. Real bottles calibrate the *subject* half of the
+ * model: how tall and narrow a product is, how much of a safe zone it fills, how far it is
+ * scaled. They say nothing about where Instagram draws its caption bar or TikTok its right
+ * rail, because no platform client could be loaded in this environment to photograph one.
+ *
+ * The insets below remain this repository's reading of `calibrate.mjs` and public layout
+ * guidance. Section 4 wants them checked against current documentation, and until they are,
+ * this string says so.
  */
 export const PLATFORM_PROFILE_VERSION = '2026-09-26.unverified';
+
+/**
+ * The product geometry this model has actually been exercised against.
+ *
+ * Separate from the version above on purpose: this half *is* measured, from real packshots in
+ * the SPIRITHAUS Shopify catalogue, and conflating the two would let a real measurement of
+ * bottles vouch for an unmeasured guess at platform furniture.
+ *
+ * Phase 3 was tuned against one synthetic bottle whose subject was 0.643 wide for its height.
+ * Real single-product packshots run roughly 0.22 to 0.55, with a median near 0.31 — far
+ * narrower and taller. Re-running the placement and per-viewport measurement across the four
+ * delivered formats against the ingested catalogue produced no geometry failure and no
+ * upscale; `pnpm calibrate:packshots` reproduces it.
+ */
+export const PRODUCT_GEOMETRY_BASELINE = {
+  measuredOn: '2026-09-26',
+  source: 'SPIRITHAUS Shopify catalogue, primary packshots, trimmed to subject',
+  /** Single-product packshots; bottle-beside-box packshots are excluded by `subjectProfile`. */
+  subjectAspect: { min: 0.219, median: 0.313, max: 0.989 },
+  syntheticReferenceAspect: 0.643,
+  /** What the synthetic bottle could not show, found only once real artwork went through. */
+  findings: [
+    'A packshot is mostly empty canvas; placing the frame rather than the subject undersized every bottle.',
+    'A minimum-edge gate is aspect-blind: a 528x1622 bottle has ample resolution and failed it, a 600x600 square had too little and passed.',
+    'Roughly a third of primary images are opaque JPEGs on white and need a cutout before they can be composited.',
+  ],
+} as const;
 
 export type FormatKey =
   'feed' | 'story' | 'reel' | 'short' | 'standard' | 'pin' | 'thumbnail' | 'square';

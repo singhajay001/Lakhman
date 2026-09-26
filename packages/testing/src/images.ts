@@ -113,3 +113,109 @@ export async function environmentPng(width: number, height: number, seed = 1): P
 </svg>`;
   return sharp(Buffer.from(svg)).png().toBuffer();
 }
+
+/**
+ * A packshot as a supplier actually ships one: the bottle on an opaque white backdrop, with no
+ * alpha at all. Roughly a third of the primary images in the SPIRITHAUS catalogue look like this,
+ * and they are the ones the cutout step exists for.
+ *
+ * `backdropHex` exists so a test can prove the cutout subtracts the backdrop it measured rather
+ * than assuming white, and `noise` so a test can prove a textured backdrop is refused instead of
+ * being hacked at.
+ */
+export async function packshotOnBackdropPng(
+  options: BottleOptions & { backdropHex?: string; noise?: number } = {},
+): Promise<Buffer> {
+  const bottle = await bottlePng(options);
+  const config = { ...DEFAULT_BOTTLE, ...options };
+  const backdrop = options.backdropHex ?? '#ffffff';
+  const noise = options.noise ?? 0;
+
+  let base = sharp({
+    create: {
+      width: config.width,
+      height: config.height,
+      channels: 4,
+      background: backdrop,
+    },
+  }).composite([{ input: bottle, left: 0, top: 0 }]);
+
+  if (noise > 0) {
+    // A lifestyle plate's backdrop is not one colour. Grain here stands in for that, so the
+    // "is this a plain backdrop" test is exercised on something that is genuinely not.
+    const grain = Buffer.alloc(config.width * config.height * 3);
+    for (let index = 0; index < grain.length; index += 1) {
+      grain[index] = Math.round(128 + ((Math.sin(index * 12.9898) * 43758.5453) % noise));
+    }
+    base = sharp({
+      create: { width: config.width, height: config.height, channels: 4, background: backdrop },
+    }).composite([
+      {
+        input: grain,
+        raw: { width: config.width, height: config.height, channels: 3 },
+        blend: 'over',
+      },
+      { input: bottle, left: 0, top: 0 },
+    ]);
+  }
+
+  // Flattened to three channels, because a supplier's JPEG has no alpha to fall back on.
+  return base.removeAlpha().png().toBuffer();
+}
+
+/**
+ * A cut-out bottle sitting inside a much larger transparent canvas, the way packshots are
+ * routinely exported. A 1600x1600 frame holding a 649x1437 bottle is 63% nothing, and that
+ * padding is what `trimToSubject` removes before the master is digested.
+ */
+export async function paddedPackshotPng(
+  options: BottleOptions & { canvas?: { width: number; height: number } } = {},
+): Promise<Buffer> {
+  const bottle = await bottlePng(options);
+  const config = { ...DEFAULT_BOTTLE, ...options };
+  const canvas = options.canvas ?? { width: config.width * 2, height: config.height * 2 };
+
+  return sharp({
+    create: { width: canvas.width, height: canvas.height, channels: 4, background: '#00000000' },
+  })
+    .composite([
+      {
+        input: bottle,
+        left: Math.round((canvas.width - config.width) / 2),
+        top: Math.round((canvas.height - config.height) / 2),
+      },
+    ])
+    .png()
+    .toBuffer();
+}
+
+/**
+ * A bottle standing beside its gift box: two subjects in one packshot, separated by a gap of
+ * backdrop. This is the case `subjectProfile` exists to flag — real examples in the catalogue
+ * include Talisker 10 and Lark Devil's Storm, and staging one means masking and colour-
+ * referencing whichever object the detector happened to land on.
+ */
+export async function bottleAndBoxPng(options: BottleOptions = {}): Promise<Buffer> {
+  const config = { ...DEFAULT_BOTTLE, ...options };
+  const bottle = await bottlePng(options);
+  const gap = Math.round(config.width * 0.35);
+  const boxWidth = Math.round(config.width * 0.8);
+  const boxHeight = Math.round(config.height * 0.85);
+
+  const box = await sharp({
+    create: { width: boxWidth, height: boxHeight, channels: 4, background: '#1e2a44' },
+  })
+    .png()
+    .toBuffer();
+
+  const width = boxWidth + gap + config.width;
+  return sharp({
+    create: { width, height: config.height, channels: 4, background: '#00000000' },
+  })
+    .composite([
+      { input: box, left: 0, top: config.height - boxHeight },
+      { input: bottle, left: boxWidth + gap, top: 0 },
+    ])
+    .png()
+    .toBuffer();
+}

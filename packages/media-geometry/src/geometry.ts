@@ -1,3 +1,4 @@
+import { PLATFORM_FORMATS } from './profiles.js';
 import type { Insets, PlatformFormat, Rect, TypeSpec } from './profiles.js';
 
 /**
@@ -232,4 +233,38 @@ export function placeInSafeZone(input: {
     },
     scaledToFit: scale < 1,
   };
+}
+
+/**
+ * The smallest master height that never needs upscaling, for a product of a given shape.
+ *
+ * The old gate — "at least 600px on either edge" — was aspect-blind, and real packshots showed why
+ * that is wrong. A bottle is tall and narrow: trimmed to its subject, a Jack Daniel's packshot is
+ * 528 x 1622, which has ample resolution for every format this repository renders, yet fails a
+ * 600px *short edge* test. Meanwhile a 600x600 square would pass while being too small for a
+ * Pinterest pin.
+ *
+ * What actually matters is whether the product has as many pixels as the largest place it will be
+ * put. For a subject of aspect `a` in a safe zone of `zw x zh` at fill `f`, the placement scale is
+ * `min(zh·f / h, zw·f / w)`, so the height it ends up at is `min(zh·f, zw·f / a)`. The master needs
+ * at least the largest of those across every format, and nothing more.
+ *
+ * At the current profiles a typical bottle (aspect 0.3) needs 960px of height, set by the
+ * Pinterest pin; a square subject needs 837px, set by the Instagram story.
+ */
+export function requiredMasterHeightPx(aspect: number, fill = 0.9): number {
+  if (!(aspect > 0) || !Number.isFinite(aspect)) return Infinity;
+
+  let required = 0;
+  for (const format of PLATFORM_FORMATS) {
+    const zone = safeZone(format);
+    const zoneHeight = zone.h * format.render.h;
+    const zoneWidth = zone.w * format.render.w;
+    // The height this subject reaches in this zone: limited by the zone's height, or by its
+    // width once the subject's own proportions are taken into account.
+    const placedHeight = Math.min(zoneHeight * fill, (zoneWidth * fill) / aspect);
+    if (placedHeight > required) required = placedHeight;
+  }
+
+  return Math.ceil(required);
 }
