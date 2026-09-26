@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: spirithaus
+          POSTGRES_PASSWORD: spirithaus
+          POSTGRES_DB: spirithaus_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U spirithaus"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://spirithaus:spirithaus@localhost:5432/spirithaus_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      # Not a secret: the build never contacts Shopify, and the webhook tests sign with
+      # a known value on purpose.
+      SHOPIFY_API_KEY: ci_api_key
+      SHOPIFY_API_SECRET: ci_api_secret
+      SHOPIFY_APP_URL: https://ci.invalid
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Generate the Prisma client
+        run: pnpm db:generate
+
+      - name: Migrations apply to an empty database
+        run: pnpm db:migrate
+
+      - name: A shadow database for the drift check
+        run: PGPASSWORD=spirithaus createdb -h localhost -U spirithaus spirithaus_shadow
+
+      - name: Migrations match the schema
+        # A schema edited without a migration is a deployment that works locally and
+        # fails in production. The check needs its own scratch database: it creates and
+        # drops tables, so it cannot run against the one the tests use.
+        run: pnpm --filter @spirithaus/db exec prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --shadow-database-url "postgresql://spirithaus:spirithaus@localhost:5432/spirithaus_shadow?schema=public" --exit-code
+
+      - run: pnpm typecheck
+
+      - run: pnpm lint
+
+      - run: pnpm format
+
+      - run: pnpm test
+
+      - name: Integration tests
+        run: pnpm test:integration
+
+      - name: The app builds
+        run: pnpm --filter @spirithaus/social-studio build

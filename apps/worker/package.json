@@ -1,0 +1,25 @@
+{
+  "name": "@spirithaus/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "demo:sync": "tsx src/demo-sync.ts"
+  },
+  "dependencies": {
+    "@spirithaus/db": "workspace:*",
+    "@spirithaus/domain": "workspace:*",
+    "@spirithaus/jobs": "workspace:*",
+    "@spirithaus/observability": "workspace:*",
+    "@spirithaus/providers": "workspace:*",
+    "@spirithaus/shopify": "workspace:*",
+    "bullmq": "^6.3.0",
+    "ioredis": "^6.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "@spirithaus/testing": "workspace:*"
+  }
+}

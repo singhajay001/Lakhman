@@ -9,7 +9,7 @@ assumed throughout and not repeated per row.
 
 ### Phase 1 — Foundation
 
-Monorepo, Docker Compose, embedded app shell with all 22 navigation sections (empty states,
+Monorepo, Docker Compose, embedded app shell with all 23 navigation sections (empty states,
 not stubs that pretend), Shopify OAuth, session storage, HMAC-verified webhooks, product and
 inventory sync with reconciliation, roles and permissions, audit log, the sixteen provider
 interfaces with mock adapters, cost meter, structured logging.

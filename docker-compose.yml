@@ -1,0 +1,43 @@
+# Development dependencies. The app and the worker run on the host so that the Shopify
+# CLI can tunnel to them; everything they talk to runs here.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: spirithaus
+      POSTGRES_PASSWORD: spirithaus
+      POSTGRES_DB: spirithaus_dev
+    ports: ['5432:5432']
+    volumes: ['postgres-data:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U spirithaus']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    # No persistence: the queue is durable across restarts of the app, not across a
+    # deliberate teardown of the development environment.
+    command: ['redis-server', '--save', '', '--appendonly', 'no']
+    ports: ['6379:6379']
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # S3-compatible object storage for Phase 3 media. Present now so the storage adapter
+  # has somewhere to point in development.
+  minio:
+    image: minio/minio:latest
+    command: ['server', '/data', '--console-address', ':9001']
+    environment:
+      MINIO_ROOT_USER: spirithaus
+      MINIO_ROOT_PASSWORD: spirithaus
+    ports: ['9000:9000', '9001:9001']
+    volumes: ['minio-data:/data']
+
+volumes:
+  postgres-data:
+  minio-data:

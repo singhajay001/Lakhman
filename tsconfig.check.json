@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": [
+    "packages/*/src/**/*.ts",
+    "packages/*/src/**/*.tsx",
+    "apps/*/src/**/*.ts",
+    "apps/*/app/**/*.ts",
+    "apps/*/app/**/*.tsx",
+    "vitest.config.ts",
+    "apps/*/*.ts"
+  ],
+  "exclude": ["**/node_modules", "**/dist", "**/build", "**/.react-router"]
+}

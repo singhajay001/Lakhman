@@ -1,0 +1,46 @@
+# SPIRITHAUS Social Studio — Shopify app configuration.
+#
+# Scopes are declared in code, with a reason each, in
+# packages/shopify/src/scopes.ts. The lists below must stay in step with it; the
+# test in that file's suite is what keeps them honest.
+#
+# client_id is filled in by `shopify app config link` against your Partner
+# organisation. It is not a secret, but it is environment-specific, so it is left
+# empty here rather than committed wrong.
+
+name = "spirithaus-social-studio"
+client_id = ""
+application_url = "https://example.invalid/"
+embedded = true
+
+[access_scopes]
+# Mandatory set. Optional scopes are requested at the point the feature is enabled,
+# not at install, so that declining one does not block installation.
+scopes = "read_products,read_inventory,read_orders,write_pixels,read_customer_events,read_marketing_events,write_marketing_events"
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = ["https://example.invalid/auth/callback", "https://example.invalid/auth/shopify/callback"]
+
+[webhooks]
+api_version = "2025-07"
+
+  [[webhooks.subscriptions]]
+  topics = ["app/uninstalled", "shop/update"]
+  uri = "/webhooks/app"
+
+  [[webhooks.subscriptions]]
+  topics = ["products/create", "products/update", "products/delete", "collections/update"]
+  uri = "/webhooks/catalogue"
+
+  [[webhooks.subscriptions]]
+  topics = ["inventory_levels/update"]
+  uri = "/webhooks/inventory"
+
+  # Required of every public app. Handled in app/routes/webhooks.privacy.tsx.
+  [[webhooks.subscriptions]]
+  topics = ["customers/data_request", "customers/redact", "shop/redact"]
+  uri = "/webhooks/privacy"
+
+[build]
+automatically_update_urls_on_dev = true

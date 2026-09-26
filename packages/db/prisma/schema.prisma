@@ -1,0 +1,481 @@
+// SPIRITHAUS Social Studio — Phase 1 schema (migrations 1–3 of the ten in
+// docs/social-studio/03-data-model.md).
+//
+// Conventions, applied without exception:
+//   * every non-global table carries shopId as the first column of its primary index
+//   * status is an enum, never a string or a pair of booleans
+//   * money is Decimal(12,4) with an explicit currency, never a float
+//   * timestamps are stored UTC; Shop.timezone is for display only
+
+generator client {
+  // Default output (node_modules/.prisma/client), deliberately: a generated client
+  // inside the package source is bundled by Rollup, which cannot read named exports
+  // out of its CommonJS entry. Left external, it resolves at runtime as intended.
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Migration 1 — shop, identity, audit, webhooks
+// ---------------------------------------------------------------------------
+
+model Shop {
+  id             String    @id @default(cuid())
+  domain         String    @unique
+  name           String?
+  timezone       String    @default("Australia/Sydney")
+  currency       String    @default("AUD")
+  /// Scopes Shopify actually granted, which is not always what was requested.
+  grantedScopes  String[]  @default([])
+  installedAt    DateTime  @default(now())
+  uninstalledAt  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  users        User[]
+  auditEvents  AuditEvent[]
+  notifications Notification[]
+  products     ShopifyProduct[]
+  collections  ShopifyCollection[]
+  syncRuns     SyncRun[]
+  providers    ProviderConfig[]
+  promptTemplates PromptTemplate[]
+  aiUsage      AIUsageRecord[]
+
+  @@map("shop")
+}
+
+/// Shopify's own session table. The shape is dictated by
+/// @shopify/shopify-app-session-storage-prisma and must not be edited freely.
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+
+  @@index([shop])
+  @@map("session")
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model User {
+  id            String     @id @default(cuid())
+  shopId        String
+  email         String
+  name          String?
+  /// Shopify staff id when the user arrived through an online session.
+  shopifyUserId BigInt?
+  status        UserStatus @default(ACTIVE)
+  lastSeenAt    DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  shop        Shop       @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  roles       UserRole[]
+  auditEvents AuditEvent[] @relation("AuditActor")
+  notifications Notification[]
+  grantedRoles UserRole[]  @relation("RoleGrantedBy")
+  promptVersions PromptVersion[]
+  reviewedProviders ProviderConfig[] @relation("ProviderReviewer")
+
+  @@unique([shopId, email])
+  @@index([shopId, status])
+  @@map("user")
+}
+
+/// The six roles of section 20. Global catalogue, seeded, not shop-scoped —
+/// a role means the same thing in every shop.
+model Role {
+  id          String @id @default(cuid())
+  key         String @unique
+  name        String
+  description String
+
+  permissions RolePermission[]
+  users       UserRole[]
+
+  @@map("role")
+}
+
+model Permission {
+  id          String @id @default(cuid())
+  key         String @unique
+  description String
+
+  roles RolePermission[]
+
+  @@map("permission")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permission")
+}
+
+model UserRole {
+  userId      String
+  roleId      String
+  grantedById String?
+  grantedAt   DateTime @default(now())
+
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  grantedBy User? @relation("RoleGrantedBy", fields: [grantedById], references: [id], onDelete: SetNull)
+
+  @@id([userId, roleId])
+  @@map("user_role")
+}
+
+/// Append-only. A Postgres rule in migration 1 rejects UPDATE and DELETE, so an
+/// audit trail cannot be rewritten by a feature nobody has written yet.
+model AuditEvent {
+  id          String   @id @default(cuid())
+  shopId      String
+  actorUserId String?
+  actorRole   String?
+  action      String
+  targetType  String
+  targetId    String?
+  before      Json?
+  after       Json?
+  ip          String?
+  requestId   String?
+  createdAt   DateTime @default(now())
+
+  shop  Shop  @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  actor User? @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([shopId, createdAt])
+  @@index([shopId, targetType, targetId])
+  @@index([shopId, action, createdAt])
+  @@map("audit_event")
+}
+
+enum NotificationSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+model Notification {
+  id        String               @id @default(cuid())
+  shopId    String
+  userId    String?
+  kind      String
+  severity  NotificationSeverity @default(INFO)
+  title     String
+  body      String?
+  readAt    DateTime?
+  createdAt DateTime             @default(now())
+
+  shop Shop  @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, readAt, createdAt])
+  @@map("notification")
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+  SKIPPED_DUPLICATE
+}
+
+/// Shopify redelivers. The unique index is what makes replay free, and it is
+/// checked before any handler side effect (section 7).
+model WebhookEvent {
+  id              String        @id @default(cuid())
+  shopDomain      String
+  topic           String
+  shopifyEventId  String
+  apiVersion      String?
+  payload         Json
+  status          WebhookStatus @default(RECEIVED)
+  attempts        Int           @default(0)
+  error           String?
+  receivedAt      DateTime      @default(now())
+  processedAt     DateTime?
+
+  @@unique([shopDomain, topic, shopifyEventId])
+  @@index([topic, status, receivedAt])
+  @@map("webhook_event")
+}
+
+// ---------------------------------------------------------------------------
+// Migration 2 — the Shopify mirror
+// ---------------------------------------------------------------------------
+
+enum ProductStatus {
+  ACTIVE
+  ARCHIVED
+  DRAFT
+}
+
+model ShopifyProduct {
+  id               String        @id @default(cuid())
+  shopId           String
+  gid              String
+  handle           String
+  title            String
+  descriptionHtml  String?
+  productType      String?
+  vendor           String?
+  tags             String[]      @default([])
+  status           ProductStatus
+  featuredImageUrl String?
+  onlineStoreUrl   String?
+  publishedAt      DateTime?
+  shopifyUpdatedAt DateTime?
+  syncedAt         DateTime      @default(now())
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  shop        Shop                       @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  variants    ShopifyVariant[]
+  collections ShopifyCollectionProduct[]
+
+  @@unique([shopId, gid])
+  @@unique([shopId, handle])
+  @@index([shopId, status])
+  @@index([shopId, syncedAt])
+  @@map("shopify_product")
+}
+
+model ShopifyVariant {
+  id                 String   @id @default(cuid())
+  shopId             String
+  productId          String
+  gid                String
+  sku                String?
+  title              String
+  position           Int      @default(1)
+  price              Decimal  @db.Decimal(12, 4)
+  compareAtPrice     Decimal? @db.Decimal(12, 4)
+  currency           String   @default("AUD")
+  /// inventoryItem.unitCost — COGS for contribution margin. Often empty, and the
+  /// margin is labelled estimated when it is (docs/social-studio/07-attribution.md).
+  unitCost           Decimal? @db.Decimal(12, 4)
+  inventoryQuantity  Int      @default(0)
+  inventoryPolicy    String?
+  availableForSale   Boolean  @default(false)
+  syncedAt           DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  product ShopifyProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([shopId, gid])
+  @@index([shopId, productId])
+  @@index([shopId, availableForSale])
+  @@map("shopify_variant")
+}
+
+model ShopifyCollection {
+  id              String   @id @default(cuid())
+  shopId          String
+  gid             String
+  handle          String
+  title           String
+  descriptionHtml String?
+  sortOrder       String?
+  productCount    Int      @default(0)
+  syncedAt        DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  shop     Shop                       @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  products ShopifyCollectionProduct[]
+
+  @@unique([shopId, gid])
+  @@unique([shopId, handle])
+  @@map("shopify_collection")
+}
+
+model ShopifyCollectionProduct {
+  shopId       String
+  collectionId String
+  productId    String
+
+  collection ShopifyCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  product    ShopifyProduct    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, productId])
+  @@index([shopId, productId])
+  @@map("shopify_collection_product")
+}
+
+enum SyncKind {
+  PRODUCTS
+  COLLECTIONS
+  INVENTORY
+  FULL
+}
+
+enum SyncStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+model SyncRun {
+  id         String     @id @default(cuid())
+  shopId     String
+  kind       SyncKind
+  status     SyncStatus @default(RUNNING)
+  trigger    String
+  cursor     String?
+  counts     Json       @default("{}")
+  /// Populated by the reconciliation pass: what the mirror held that Shopify no
+  /// longer does, and the reverse.
+  reconciliation Json?
+  error      String?
+  startedAt  DateTime   @default(now())
+  finishedAt DateTime?
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, kind, startedAt])
+  @@map("sync_run")
+}
+
+// ---------------------------------------------------------------------------
+// Migration 3 — AI governance foundations (section 34)
+// ---------------------------------------------------------------------------
+
+model ProviderConfig {
+  id               String   @id @default(cuid())
+  shopId           String
+  /// The provider contract this configures, e.g. "TextGenerationProvider".
+  contract         String
+  adapterId        String   @default("mock")
+  enabled          Boolean  @default(false)
+  /// Rate card an administrator entered, with the date and source it was read
+  /// from. An unconfigured rate card yields an estimate of unknown, which blocks
+  /// any operation with a ceiling rather than silently costing nothing.
+  rateCard         Json?
+  termsUrl         String?
+  termsVersion     String?
+  reviewedByUserId String?
+  reviewedAt       DateTime?
+  budgets          Json?
+  /// Non-secret configuration only. Credentials live in the secret manager.
+  config           Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  shop       Shop  @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("ProviderReviewer", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([shopId, contract])
+  @@map("provider_config")
+}
+
+model ModelRegistry {
+  id        String   @id @default(cuid())
+  provider  String
+  model     String
+  purpose   String
+  active    Boolean  @default(true)
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@unique([provider, model, purpose])
+  @@map("model_registry")
+}
+
+model PromptTemplate {
+  id          String   @id @default(cuid())
+  shopId      String
+  key         String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  shop     Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  versions PromptVersion[]
+
+  @@unique([shopId, key])
+  @@map("prompt_template")
+}
+
+model PromptVersion {
+  id              String   @id @default(cuid())
+  templateId      String
+  version         Int
+  body            String
+  variables       Json     @default("[]")
+  active          Boolean  @default(false)
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+
+  template  PromptTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  createdBy User?          @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  usage     AIUsageRecord[]
+
+  @@unique([templateId, version])
+  @@map("prompt_version")
+}
+
+enum ProviderOutcome {
+  SUCCEEDED
+  FAILED
+  REFUSED_BUDGET
+  REFUSED_POLICY
+}
+
+model AIUsageRecord {
+  id                String          @id @default(cuid())
+  shopId            String
+  contract          String
+  adapterId         String
+  model             String?
+  promptVersionId   String?
+  /// Set once campaigns exist (migration 5). Kept nullable rather than absent so
+  /// Phase 1 usage is still attributable later.
+  campaignId        String?
+  assetId           String?
+  units             Json            @default("{}")
+  estimatedCostAud  Decimal?        @db.Decimal(12, 4)
+  actualCostAud     Decimal?        @db.Decimal(12, 4)
+  providerRequestId String?
+  latencyMs         Int?
+  outcome           ProviderOutcome
+  errorClass        String?
+  createdAt         DateTime        @default(now())
+
+  shop          Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  promptVersion PromptVersion? @relation(fields: [promptVersionId], references: [id], onDelete: SetNull)
+
+  @@index([shopId, createdAt])
+  @@index([shopId, contract, createdAt])
+  @@index([shopId, campaignId])
+  @@map("ai_usage_record")
+}
