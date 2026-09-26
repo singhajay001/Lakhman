@@ -3,6 +3,8 @@ import {
   MockObjectStorageProvider,
   MockSocialPublishingProvider,
   MockTextGenerationProvider,
+  MockVideoRenderProvider,
+  MockVoiceProvider,
   UnconfiguredProvider,
 } from './adapters/mock/index.js';
 import type { AnyProvider, SocialPlatform } from './contracts/index.js';
@@ -104,6 +106,10 @@ export function resolveAdapter(
       return new MockObjectStorageProvider();
     case 'SocialPublishingProvider':
       return new MockSocialPublishingProvider('instagram');
+    case 'VoiceProvider':
+      return new MockVoiceProvider();
+    case 'VideoRenderProvider':
+      return new MockVideoRenderProvider();
     default:
       return new UnconfiguredProvider(
         contract,

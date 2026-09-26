@@ -2,7 +2,8 @@ import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { prisma } from '@spirithaus/db';
 import { logger } from '@spirithaus/observability';
-import { QUEUES, type ShopifySyncPayload } from '@spirithaus/jobs';
+import { QUEUES, type RenderPayload, type ShopifySyncPayload } from '@spirithaus/jobs';
+import { handleRender } from './handlers/render.js';
 import { handleShopifySync } from './handlers/shopify-sync.js';
 
 const redisUrl = process.env.REDIS_URL;
@@ -27,6 +28,35 @@ const syncWorker = new Worker<ShopifySyncPayload>(
   },
 );
 
+/**
+ * Renders get their own worker with a concurrency of one by default.
+ *
+ * A render drives a headless browser through every frame; two at once on a small machine make
+ * both slower and neither cancellable in reasonable time. Scale by adding workers, not
+ * concurrency.
+ */
+const renderWorker = new Worker<RenderPayload>(
+  QUEUES.render,
+  async (job) => {
+    await handleRender(job.data);
+  },
+  {
+    connection,
+    prefix: process.env.QUEUE_PREFIX ?? 'spirithaus',
+    concurrency: Number(process.env.RENDER_CONCURRENCY ?? 1),
+    // A render can take minutes; the default lock would expire mid-job and the queue would
+    // hand the same work to a second worker.
+    lockDuration: 10 * 60 * 1000,
+  },
+);
+
+renderWorker.on('failed', (job, error) => {
+  logger.error(
+    { jobId: job?.id, attempts: job?.attemptsMade, err: error.message },
+    'render job failed',
+  );
+});
+
 syncWorker.on('failed', (job, error) => {
   logger.error(
     { jobId: job?.id, attempts: job?.attemptsMade, err: error.message },
@@ -38,7 +68,7 @@ syncWorker.on('completed', (job) => {
   logger.info({ jobId: job.id }, 'sync job completed');
 });
 
-logger.info({ queues: [QUEUES.shopifySync] }, 'worker started');
+logger.info({ queues: [QUEUES.shopifySync, QUEUES.render] }, 'worker started');
 
 /**
  * Graceful shutdown. A worker killed mid-job leaves a stalled job that BullMQ will
@@ -47,7 +77,7 @@ logger.info({ queues: [QUEUES.shopifySync] }, 'worker started');
  */
 async function shutdown(signal: string): Promise<void> {
   logger.info({ signal }, 'worker shutting down');
-  await syncWorker.close();
+  await Promise.all([syncWorker.close(), renderWorker.close()]);
   await connection.quit();
   await prisma.$disconnect();
   process.exit(0);

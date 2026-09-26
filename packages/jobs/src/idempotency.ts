@@ -49,3 +49,14 @@ export const syncIdempotencyKey = (input: {
     syncKind: input.kind,
     windowStart: input.windowStart,
   });
+
+/**
+ * One render per composition, props and asset. A retry recomputes the same key, so a queue
+ * that redelivers cannot render the same thing twice and pay for it twice.
+ */
+export const renderIdempotencyKey = (input: {
+  shopId: string;
+  compositionId: string;
+  /** Stable digest of the props; the caller canonicalises before hashing. */
+  propsDigest: string;
+}): string => idempotencyKey({ kind: 'render', ...input });

@@ -11,6 +11,8 @@ export {
   MockTextGenerationProvider,
   MockSocialPublishingProvider,
   MockObjectStorageProvider,
+  MockVoiceProvider,
+  MockVideoRenderProvider,
   UnconfiguredProvider,
 } from './adapters/mock/index.js';
 export {

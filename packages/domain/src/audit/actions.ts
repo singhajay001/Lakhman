@@ -36,6 +36,17 @@ export const AUDIT_ACTIONS = [
   'approval.rejected',
   'approval.invalidated',
 
+  'media.ingested',
+  'media.mask_drawn',
+  'media.composited',
+  'media.verified',
+  'media.verification_failed',
+  'media.rendered',
+  'media.render_failed',
+  'media.approved',
+  'voice.consent_recorded',
+  'voice.consent_withdrawn',
+
   'prompt.version_created',
   'prompt.version_activated',
 

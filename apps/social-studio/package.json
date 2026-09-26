@@ -7,7 +7,8 @@
     "dev": "react-router dev",
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
-    "typegen": "react-router typegen"
+    "typegen": "react-router typegen",
+    "demo:media": "tsx scripts/demo-media.ts"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
@@ -31,6 +32,8 @@
     "@react-router/dev": "^7.18.4",
     "@react-router/fs-routes": "^7.18.4",
     "vite": "^7.0.0",
-    "vite-tsconfig-paths": "^5.1.0"
+    "vite-tsconfig-paths": "^5.1.0",
+    "tsx": "^4.19.0",
+    "@spirithaus/testing": "workspace:*"
   }
 }

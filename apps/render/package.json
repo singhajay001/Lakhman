@@ -1,0 +1,26 @@
+{
+  "name": "@spirithaus/render",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.529",
+    "@remotion/renderer": "4.0.529",
+    "@spirithaus/domain": "workspace:*",
+    "@spirithaus/observability": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "4.0.529"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.529",
+    "tsx": "^4.19.0"
+  }
+}

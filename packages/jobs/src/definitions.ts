@@ -3,6 +3,7 @@ export const QUEUES = {
   shopifySync: 'shopify-sync',
   webhook: 'webhook',
   reconciliation: 'reconciliation',
+  render: 'render',
 } as const;
 
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];
@@ -25,4 +26,13 @@ export interface ReconciliationPayload {
   shopId: string;
   shopDomain: string;
   syncRunId: string;
+}
+
+export interface RenderPayload {
+  shopId: string;
+  renderJobId: string;
+  compositionId: string;
+  props: Record<string, unknown>;
+  /** Object key the finished file is written to. */
+  outputKey: string;
 }

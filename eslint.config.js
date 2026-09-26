@@ -33,6 +33,7 @@ export default tseslint.config(
       '**/seed.ts',
       'apps/worker/src/index.ts',
       'apps/worker/src/demo-sync.ts',
+      'apps/social-studio/scripts/demo-media.ts',
     ],
     rules: { 'no-console': 'off' },
   },

@@ -28,7 +28,10 @@
       "@spirithaus/testing": ["packages/testing/src/index.ts"],
       "@spirithaus/compliance": ["packages/compliance/src/index.ts"],
       "@spirithaus/content": ["packages/content/src/index.ts"],
-      "@spirithaus/domain/server": ["packages/domain/src/server.ts"]
+      "@spirithaus/domain/server": ["packages/domain/src/server.ts"],
+      "@spirithaus/media-geometry": ["packages/media-geometry/src/index.ts"],
+      "@spirithaus/protected-assets": ["packages/protected-assets/src/index.ts"],
+      "@spirithaus/render": ["apps/render/src/render.ts"]
     }
   }
 }

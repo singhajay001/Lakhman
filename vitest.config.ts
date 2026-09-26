@@ -10,6 +10,7 @@ export default defineConfig({
       '@spirithaus/compliance': pkg('compliance'),
       '@spirithaus/content': pkg('content'),
       '@spirithaus/db': pkg('db'),
+      '@spirithaus/media-geometry': pkg('media-geometry'),
       '@spirithaus/domain/server': fileURLToPath(
         new URL('./packages/domain/src/server.ts', import.meta.url),
       ),
@@ -17,6 +18,7 @@ export default defineConfig({
       '@spirithaus/providers': pkg('providers'),
       '@spirithaus/jobs': pkg('jobs'),
       '@spirithaus/observability': pkg('observability'),
+      '@spirithaus/protected-assets': pkg('protected-assets'),
       '@spirithaus/shopify': pkg('shopify'),
       '@spirithaus/testing': pkg('testing'),
     },

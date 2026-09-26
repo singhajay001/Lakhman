@@ -48,6 +48,12 @@ model Shop {
   research     ProductResearch[]
   brandKit     BrandKit?
   campaigns    Campaign[]
+  licences     AssetLicence[]
+  protectedAssets ProtectedProductAsset[]
+  mediaAssets  MediaAsset[]
+  renderJobs   RenderJob[]
+  voiceProfiles VoiceProfile[]
+  audioAssets  AudioAsset[]
 
   @@map("shop")
 }
@@ -264,6 +270,7 @@ model ShopifyProduct {
   collections ShopifyCollectionProduct[]
   research    ProductResearch?
   campaigns   CampaignProduct[]
+  protectedAssets ProtectedProductAsset[]
 
   @@unique([shopId, gid])
   @@unique([shopId, handle])
@@ -924,4 +931,286 @@ model ApprovalKey {
   @@unique([approvalId, keyIndex])
   @@index([shopId, userId])
   @@map("approval_key")
+}
+
+// ---------------------------------------------------------------------------
+// Migration 7 — protected media (sections 15, 16, 17)
+// ---------------------------------------------------------------------------
+
+enum AssetLicenceKind {
+  OWNED
+  COMMISSIONED
+  LICENSED
+  OPEN_FONT
+}
+
+/// No licence, no ingestion. Section 16 requires music and imagery rights recorded.
+model AssetLicence {
+  id           String           @id @default(cuid())
+  shopId       String
+  kind         AssetLicenceKind
+  holder       String
+  terms        String
+  permittedUses String[]        @default([])
+  expiresAt    DateTime?
+  evidenceUrl  String?
+  createdAt    DateTime         @default(now())
+
+  shop     Shop                    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  products ProtectedProductAsset[]
+  media    MediaAsset[]
+
+  @@index([shopId, expiresAt])
+  @@map("asset_licence")
+}
+
+enum ProtectedAssetStatus {
+  INGESTED
+  MASKED
+  APPROVED
+  RETIRED
+}
+
+/// The immutable product truth asset of section 15.
+model ProtectedProductAsset {
+  id          String               @id @default(cuid())
+  shopId      String
+  productId   String?
+  licenceId   String
+  status      ProtectedAssetStatus @default(INGESTED)
+  /// Object key of the original photograph, unmodified.
+  masterKey   String
+  /// sha256 of the original bytes. Write-once after approval, enforced by trigger.
+  masterDigest String
+  widthPx     Int
+  heightPx    Int
+  /// Mean Lab of the label on the approved master, recorded once at ingestion.
+  colourReference Json?
+  /// Minimum resolution this asset may be used at, so a low-resolution master cannot be
+  /// scaled into a hero.
+  minUsableWidthPx Int            @default(0)
+  /// Set when this asset is a rendition of another at a smaller size. Resampling happens once,
+  /// deliberately and recorded, rather than inside every composite — because at a downscale
+  /// three of the four protection checks stop being decisive.
+  renditionOfId   String?
+  approvedByUserId String?
+  approvedAt  DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  shop    Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  product ShopifyProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  licence AssetLicence    @relation(fields: [licenceId], references: [id])
+  masks   AssetMask[]
+  derived MediaAsset[]
+  renditionOf ProtectedProductAsset?  @relation("Renditions", fields: [renditionOfId], references: [id], onDelete: Cascade)
+  renditions  ProtectedProductAsset[] @relation("Renditions")
+
+  @@index([shopId, status])
+  @@index([renditionOfId, widthPx])
+  @@map("protected_product_asset")
+}
+
+enum MaskKind {
+  PRODUCT
+  LABEL
+}
+
+/// Two masks, not one: they answer different questions (section 15).
+model AssetMask {
+  id        String   @id @default(cuid())
+  shopId    String
+  assetId   String
+  kind      MaskKind
+  /// Object key of the single-channel mask PNG.
+  maskKey   String
+  /// sha256 of the mask bytes. Write-once once the asset is approved.
+  regionDigest String
+  /// Normalised bounds, for cropping the label region without decoding the mask.
+  bounds    Json
+  /// Pixels the inpainting mask was dilated by, so the generator cannot feather across the
+  /// silhouette. Two to four; below two a halo appears at the edge.
+  dilatePx  Int      @default(3)
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+
+  asset ProtectedProductAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, kind, version])
+  @@index([shopId, assetId])
+  @@map("asset_mask")
+}
+
+enum MediaKind {
+  COMPOSITE_STILL
+  ENVIRONMENT
+  VIDEO
+  AUDIO
+  MASK_PREVIEW
+  DIFF_OVERLAY
+}
+
+enum MediaVerification {
+  PENDING
+  PASSED
+  FAILED
+  INCOMPLETE
+  NOT_APPLICABLE
+}
+
+model MediaAsset {
+  id           String            @id @default(cuid())
+  shopId       String
+  campaignId   String?
+  variantId    String?
+  sourceAssetId String?
+  licenceId    String?
+  kind         MediaKind
+  objectKey    String
+  contentType  String
+  widthPx      Int?
+  heightPx     Int?
+  durationMs   Int?
+  bytes        Int?
+  /// The tuple the composite is reproducible from: master, mask, environment, transform.
+  compositeSpec Json?
+  /// The four-part verification result of section 15.
+  verification MediaVerification @default(PENDING)
+  verificationReport Json?
+  /// Which model and prompt produced the environment, if any (section 34).
+  generation   Json?
+  /// Per-platform geometry readings, per delivered viewport.
+  geometry     Json?
+  approvedByUserId String?
+  approvedAt   DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  shop        Shop                   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  sourceAsset ProtectedProductAsset? @relation(fields: [sourceAssetId], references: [id], onDelete: SetNull)
+  licence     AssetLicence?          @relation(fields: [licenceId], references: [id], onDelete: SetNull)
+  renderJobs  RenderJob[]
+
+  @@index([shopId, kind, createdAt])
+  @@index([shopId, verification])
+  @@index([shopId, campaignId])
+  @@map("media_asset")
+}
+
+enum RenderState {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+/// A durable render (section 36): progress, cancellation, retry, cost, and recovery after a
+/// worker restart. Never dependent on an open browser.
+model RenderJob {
+  id            String      @id @default(cuid())
+  shopId        String
+  campaignId    String?
+  variantId     String?
+  mediaAssetId  String?
+  compositionId String
+  props         Json
+  state         RenderState @default(QUEUED)
+  progress      Int         @default(0)
+  attempts      Int         @default(0)
+  /// Shown before the work starts, per section 37.
+  estimatedCostAud Decimal? @db.Decimal(12, 4)
+  actualCostAud    Decimal? @db.Decimal(12, 4)
+  renderMs      Int?
+  error         String?
+  /// Idempotency key, unique per shop: a retry cannot start a second render of the same thing.
+  idempotencyKey String
+  requestedByUserId String?
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  shop  Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  media MediaAsset? @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+
+  @@unique([shopId, idempotencyKey])
+  @@index([shopId, state, createdAt])
+  @@map("render_job")
+}
+
+enum VoiceKind {
+  LICENSED_SYNTHETIC
+  CLONED
+}
+
+enum ConsentState {
+  GRANTED
+  WITHDRAWN
+  EXPIRED
+}
+
+/// Section 17. Cloning is disabled by default and requires a consent record that names the
+/// owner, the evidence, the permitted uses and the expiry.
+model VoiceProfile {
+  id          String    @id @default(cuid())
+  shopId      String
+  provider    String
+  providerVoiceId String
+  name        String
+  kind        VoiceKind @default(LICENSED_SYNTHETIC)
+  /// Whether this voice may be used for new generations right now.
+  enabled     Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  shop     Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  consents VoiceConsent[]
+  audio    AudioAsset[]
+
+  @@unique([shopId, provider, providerVoiceId])
+  @@map("voice_profile")
+}
+
+model VoiceConsent {
+  id            String       @id @default(cuid())
+  shopId        String
+  voiceProfileId String
+  /// Who the voice belongs to. A cloned voice without this cannot exist.
+  ownerName     String
+  ownerContact  String?
+  evidenceUrl   String
+  identityVerifiedBy String?
+  permittedUses String[]     @default([])
+  state         ConsentState @default(GRANTED)
+  grantedAt     DateTime     @default(now())
+  expiresAt     DateTime?
+  /// Withdrawal blocks new generations. It does not erase the audit record.
+  withdrawnAt   DateTime?
+  withdrawnReason String?
+
+  voiceProfile VoiceProfile @relation(fields: [voiceProfileId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, state])
+  @@map("voice_consent")
+}
+
+model AudioAsset {
+  id           String   @id @default(cuid())
+  shopId       String
+  voiceProfileId String?
+  objectKey    String
+  contentType  String
+  durationMs   Int?
+  text         String?
+  /// Word-level alignment, which is what drives the caption track.
+  alignment    Json?
+  licenceId    String?
+  createdAt    DateTime @default(now())
+
+  shop         Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  voiceProfile VoiceProfile? @relation(fields: [voiceProfileId], references: [id], onDelete: SetNull)
+
+  @@index([shopId, createdAt])
+  @@map("audio_asset")
 }

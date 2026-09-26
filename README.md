@@ -3,12 +3,16 @@
 An embedded Shopify Admin application: a human-controlled, AI-assisted marketing command
 centre for SPIRITHAUS, a Sydney liquor retailer.
 
-**Phases 1 and 2 of seven are built.** The foundation — embedded app, authentication,
+**Phases 1 to 3 of seven are built.** The foundation — embedded app, authentication,
 roles, audit, product sync, webhooks, the sixteen provider contracts with honest mocks —
-and on top of it the knowledge and campaign layer: research with per-claim approval, a
-Brand Kit seeded from the live theme, one strategy producing six independently derived
-platform variants, the ABAC compliance engine, explainable content scoring, and approvals
-with content hashing and dual control.
+then the knowledge and campaign layer: research with per-claim approval, a Brand Kit
+seeded from the live theme, one strategy producing six independently derived platform
+variants, the ABAC compliance engine, explainable content scoring, and approvals with
+content hashing and dual control. Phase 3 adds the media layer: a protected-product
+staging pipeline that composites a masked bottle over a generated environment without
+touching a pixel of it, four independent checks that say so on real pixels, per-viewport
+safe-zone measurement ported from `calibrate.mjs`, and programmatic video renders driven
+headlessly from a worker.
 Every later phase has a plan and an exit gate in
 [`docs/social-studio/10-delivery-plan.md`](docs/social-studio/10-delivery-plan.md), and
 every screen that belongs to one says which phase builds it instead of showing an empty
@@ -45,8 +49,8 @@ runs against mocks.
 ## Verifying it
 
 ```sh
-pnpm verify            # typecheck, lint, 326 unit tests, and the app build
-pnpm test:integration  # 57 tests against a real Postgres and Redis
+pnpm verify            # typecheck, lint, 407 unit tests, and the app build
+pnpm test:integration  # 77 tests against a real Postgres and Redis
 ```
 
 The app build is part of `verify` deliberately: a shared package accidentally pulling a
@@ -63,29 +67,36 @@ To see the app with data in it, without Shopify:
 
 ```sh
 pnpm --filter @spirithaus/worker demo:sync
+pnpm --filter @spirithaus/social-studio demo:media
 ```
 
-That fills the mirror from the fixture catalogue — five products including an archived
-one, a draft, one out of stock and one with no unit cost, because a catalogue that is all
-happy paths proves nothing. It is a development script that refuses to run in production,
-and the mock is not reachable from the real sync, so no environment variable can make the
-worker serve fixture data.
+`demo:sync` fills the mirror from the fixture catalogue — five products including an
+archived one, a draft, one out of stock and one with no unit cost, because a catalogue
+that is all happy paths proves nothing. `demo:media` ingests a synthetic bottle as a
+protected master and composites it for four formats, so the Media Studio has verified
+assets and real per-viewport geometry to show. Both are development scripts that refuse to
+run in production, and neither mock is reachable from a runtime path, so no environment
+variable can make the worker serve fixture data. The demo bottle is obviously synthetic on
+purpose: it is not a product, and its label is not a label.
 
 ## What is built
 
-|                          |                                                                                             |
-| ------------------------ | ------------------------------------------------------------------------------------------- |
-| `apps/social-studio`     | The embedded app: 23 sections, OAuth, webhooks, product screens                             |
-| `apps/worker`            | BullMQ workers. Scheduled work does not depend on an open browser                           |
-| `packages/domain`        | Roles, permissions, audit vocabulary, Sydney time. No I/O, so its tests are fast and honest |
-| `packages/providers`     | The sixteen contracts, the retry/timeout/redaction wrapper, and the mocks                   |
-| `packages/shopify`       | HMAC verification, Admin GraphQL client, scope declarations, sync and reconciliation        |
-| `packages/jobs`          | The `JobQueue` port, its BullMQ and in-memory adapters, idempotency keys                    |
-| `packages/db`            | Prisma schema, migrations, seed, the append-only audit writer                               |
-| `packages/observability` | Structured logs with declared redaction, and the cost meter                                 |
-| `packages/testing`       | A mock Shopify Admin API as a `fetch` implementation, and fixtures                          |
+|                             |                                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------------- |
+| `apps/social-studio`        | The embedded app: 23 sections, OAuth, webhooks, product screens                             |
+| `apps/worker`               | BullMQ workers. Scheduled work does not depend on an open browser                           |
+| `packages/domain`           | Roles, permissions, audit vocabulary, Sydney time. No I/O, so its tests are fast and honest |
+| `packages/providers`        | The sixteen contracts, the retry/timeout/redaction wrapper, and the mocks                   |
+| `packages/shopify`          | HMAC verification, Admin GraphQL client, scope declarations, sync and reconciliation        |
+| `packages/jobs`             | The `JobQueue` port, its BullMQ and in-memory adapters, idempotency keys                    |
+| `packages/db`               | Prisma schema, migrations, seed, the append-only audit writer                               |
+| `packages/observability`    | Structured logs with declared redaction, and the cost meter                                 |
+| `packages/testing`          | A mock Shopify Admin API as a `fetch` implementation, and fixtures                          |
+| `packages/media-geometry`   | The closed-form port of `calibrate.mjs`: safe zones and per-viewport visibility             |
+| `packages/protected-assets` | Masks, deterministic compositing, renditions, and the four verification checks              |
+| `apps/render`               | Remotion compositions, rendered headlessly. Imports nothing from the app                    |
 
-## Six things worth knowing before reading the code
+## Seven things worth knowing before reading the code
 
 **Mocks do not imitate success.** `PROVIDER_*=mock` is a supported configuration, not a
 test double. A mocked publisher returns `published: false, state: 'not_published'` on
@@ -119,6 +130,15 @@ nothing else. On top of that, the compliance engine blocks an ABV, age statement
 rating, vintage, price or availability claim the sheet does not support. That is a guard
 over the claim types that carry the most risk when invented — it will not catch a
 fabricated tasting note, and the rule documentation and a test both say so.
+
+**A protected product layer is never resampled.** Where a bottle must be smaller than its
+master, a rendition is made as a recorded step with its own digest, and the composite
+places it at scale 1 — because under a downscale the pixel check cannot run, OCR reads
+identical honest content two different ways, and the structural check cannot separate a
+resample (SSIM 0.9998) from a changed strength statement (0.9983). The master's bytes are
+re-hashed on every composite; if storage no longer holds the artwork approved at ingestion
+the composite is refused outright, not produced carrying a failure. `docs/adr/0009` has
+the measurements.
 
 **Six platforms, one strategy, and the structure is ours.** Platform differences — which
 fields exist, how many hashtags, whether a link is clickable, what a storyboard needs —
@@ -157,7 +177,20 @@ Stated rather than left for someone to discover:
   so verbatim.
 - **No threshold or score here is calibrated.** The quality dimensions measure the copy in
   front of them and predict nothing; the near-duplicate distance of 12 bits is a starting
-  candidate, not a derived value.
+  candidate, not a derived value. The same is true of the media thresholds: the ΔE, SSIM,
+  pHash and visibility numbers were set from measurements on a synthetic bottle in this
+  container, never against real packshots or a human panel, and `PLATFORM_PROFILE_VERSION`
+  is literally `2026-09-26.unverified`.
+- **The safe-zone insets are modelled, not observed.** No Instagram, TikTok or YouTube
+  client could be loaded here to photograph its interface furniture, so the per-surface
+  insets are this repo's best reading of `calibrate.mjs` and public layout guidance. The
+  geometry engine is exact; its inputs are not confirmed.
+- **A rendered video is not verified.** The four checks are defined over a still composite.
+  A render produces a `MediaAsset` with `verification: 'NOT_APPLICABLE'` rather than a
+  verdict it has not earned.
+- **`@remotion/media-parser` prints a licence notice** — "Some companies are required to
+  obtain a license to use @remotion/media-parser". No licence has been purchased and none
+  may be without separate authorisation. Flagged here rather than buried in a lockfile.
 
 ## Not done, and deliberately
 

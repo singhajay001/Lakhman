@@ -16,7 +16,10 @@
     "@spirithaus/providers": "workspace:*",
     "@spirithaus/shopify": "workspace:*",
     "bullmq": "^6.3.0",
-    "ioredis": "^6.0.0"
+    "ioredis": "^6.0.0",
+    "@spirithaus/render": "workspace:*",
+    "@spirithaus/protected-assets": "workspace:*",
+    "@spirithaus/media-geometry": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.19.0",
