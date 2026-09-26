@@ -60,27 +60,45 @@ Suspended machines are not billed for compute.
 ## 1. Create the app and set secrets
 
 ```sh
-fly launch --no-deploy --copy-config --config fly.staging.toml --region syd
+fly apps create spirithaus-social-studio-staging -o <org>
 ```
+
+`fly apps create` rather than `fly launch`: launch prompts to provision Postgres and Redis
+extensions and rewrites your config file, and both are handled deliberately further down. An app
+with no Machines, no volumes and no IPs costs nothing, so this step is free.
 
 Then the secrets. **None of these belong in the repository or in `fly.staging.toml`.**
 
-```sh
-# Shopify, from the Partner Dashboard.
-fly secrets set --config fly.staging.toml \
-  SHOPIFY_API_KEY=... \
-  SHOPIFY_API_SECRET=... \
-  SHOPIFY_APP_URL=https://spirithaus-social-studio-staging.fly.dev
+Use `fly secrets import`, not `fly secrets set`. Import reads `NAME=VALUE` pairs from **stdin**, so
+the value never appears in a process argument — where any other user on the machine can read it
+from the process list, and where your shell writes it to history. `--stage` installs the secret
+without triggering a deployment.
 
-# Session encryption. Generate the key locally; it is never echoed back by the app.
-fly secrets set --config fly.staging.toml \
-  SESSION_ENCRYPTION_KEYS="k1:$(openssl rand -base64 32)" \
-  SESSION_ENCRYPTION_CURRENT_KEY_ID=k1
+```sh
+# Session encryption. Generate with a CSPRNG straight into the pipe; never echoed.
+printf 'SESSION_ENCRYPTION_KEYS=k1:%s\nSESSION_ENCRYPTION_CURRENT_KEY_ID=k1\n' \
+  "$(openssl rand -base64 32)" \
+  | fly secrets import --stage -a spirithaus-social-studio-staging
+
+# Shopify, from the Partner Dashboard.
+printf 'SHOPIFY_API_KEY=%s\nSHOPIFY_API_SECRET=%s\nSHOPIFY_APP_URL=%s\n' \
+  "$KEY" "$SECRET" "https://spirithaus-social-studio-staging.fly.dev" \
+  | fly secrets import --stage -a spirithaus-social-studio-staging
 ```
+
+`fly secrets list` shows names, digests and staged/deployed status — never values. That is the
+only verification available, and it is enough: a digest change proves a rotation happened.
 
 **Keep a copy of that key somewhere durable before deploying.** If it is lost, every stored
 Shopify token becomes unreadable and every shop must reinstall. Fly stores secrets encrypted and
 will not show them to you again.
+
+There is a genuine tension between that and the pipe above, which deliberately never shows you the
+key. Resolve it on purpose rather than by accident: either generate into a password manager first
+and pipe from there, or accept that the key is unrecoverable and that losing it means rotating. On
+**staging with no shops installed**, rotation is cheap — there are no tokens worth keeping, so
+generating a fresh key and redeploying costs nothing. On production it is not, and the copy must
+exist before the first install.
 
 The app **refuses to start** without a valid key ring, in both processes. That is deliberate: a
 key discovered to be missing on the first OAuth callback is a token already written in plaintext.
@@ -88,10 +106,37 @@ key discovered to be missing on the first OAuth callback is a token already writ
 ## 2. Provision the dependencies
 
 ```sh
-fly postgres create --name spirithaus-staging-db --region syd \
-  --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 10
-fly postgres attach spirithaus-staging-db --config fly.staging.toml
+fly postgres create --name spirithaus-staging-db --org <org> --region syd \
+  --initial-cluster-size 1 --vm-size shared-cpu-1x --vm-memory 512 --volume-size 10
+
+fly postgres attach spirithaus-staging-db -a spirithaus-social-studio-staging
 ```
+
+`--vm-memory 512` and `--volume-size 10` both work on flyctl v0.4.108, so the sizes are set at
+creation rather than corrected afterwards.
+
+**Do not pass `--enable-backups`.** Its help reads *"Create a new tigris bucket and enable
+WAL-based backups"* — a second billable bucket outside the approved configuration. The consequence
+is real and should be stated plainly: staging has **volume snapshots but no WAL backups**, which is
+part of what "development-grade, not approved for production" means.
+
+#### `fly postgres attach` needs an egress most sandboxes do not have
+
+Verified live: attach opens a WebSocket tunnel into Fly's private network and fails without it:
+
+```
+Error: can't build tunnel for <org>: websocket: failed to WebSocket dial:
+Get "https://iad1.gateway.6pn.dev:443/": Forbidden
+```
+
+It is HTTPS rather than UDP WireGuard, so an allowlisted egress *can* carry it — the host is
+`<region>.gateway.6pn.dev`, and the region prefix varies by which gateway flyctl picks, so a single
+pinned hostname may not be enough. `fly ssh console` and `fly proxy` need the same tunnel.
+
+Attach is not optional and has no safe substitute: it creates a scoped database and role inside the
+cluster and *then* sets `DATABASE_URL`. Pointing the app at the `postgres` superuser instead would
+skip the privilege separation the step exists to create. **If the tunnel is unavailable, run that
+one command from a machine that has the egress** — it is idempotent and touches nothing else.
 
 `--initial-cluster-size 1` is what makes this single-node, and `--volume-size 10` matches the
 costed 10GB. **A volume can be grown but never shrunk**, so oversizing it here is a permanent
@@ -111,29 +156,60 @@ publicly reachable.
 
 ### Redis (Upstash, through Fly)
 
+This is the command that actually works non-interactively. Every flag on it is load-bearing:
+
 ```sh
-fly redis create          # prompts for the primary region — choose Sydney
-fly redis status <name>   # confirm the plan and region before deploying
-fly secrets set --config fly.staging.toml REDIS_URL='<the rediss:// url it prints>'
+fly redis create \
+  --name spirithaus-staging-redis --org <org> --region syd \
+  --plan "Fixed 250MB" \
+  --no-replicas \
+  --disable-eviction \
+  --enable-auto-upgrade=false \
+  --enable-prodpack=false
+
+fly redis status spirithaus-staging-redis   # confirm before deploying anything
 ```
 
-Three things, in order, and the order matters:
+**Omitting `--enable-auto-upgrade` and `--enable-prodpack` is not the same as declining them.**
+The CLI *prompts* for both regardless, so a scripted run without a TTY dies at the prompt — which
+is the safe failure, but it means you must pass the explicit `=false` form. Both defaults cost
+money if accepted: Auto Upgrade silently moves you to the next plan up when you hit a limit, and
+ProdPack is **$200/month**, five times the entire staging budget.
 
-1. **The primary region cannot be changed later.** Fly's prompt says so. Choose Sydney
-   (Upstash `ap-southeast-2`) or live with the latency permanently.
-2. **`fly redis create` gives you a pay-as-you-go database, not the Fixed plan the budget
-   assumes.** Fly's own documentation: *"Upstash Redis databases start on the pay-as-you-go plan"*,
-   and *"Fixed price plans are available via `flyctl redis update <dbname>`."* Move it to
-   **Fixed 250MB** with `fly redis update <name>` before deploying anything.
-3. **Do not start the worker while it is still pay-as-you-go.** Upstash's own BullMQ page:
-   *"BullMQ accesses Redis regularly, even when there is no queue activity. This can incur extra
-   costs because Upstash charges per request on the Pay-As-You-Go plan."* An idle worker alone
-   exceeds the free tier's 500,000 commands a month, and on PAYG that is an unbounded charge for
-   doing nothing.
+`--plan "Fixed 250MB"` is the exact identifier from `fly redis plans`. Set it at creation:
+`fly redis update` on flyctl v0.4.108 has **no `--plan` flag**, whatever the Fly docs say about
+switching plans later. Getting this wrong leaves a pay-as-you-go database, and Upstash's own
+BullMQ page warns why that matters: *"BullMQ accesses Redis regularly, even when there is no
+queue activity. This can incur extra costs because Upstash charges per request on the
+Pay-As-You-Go plan."* An idle worker alone exceeds the free tier's 500,000 commands a month.
 
-The URL must use the **`rediss://`** scheme. ioredis derives TLS from the scheme, and `redis://`
-against Upstash fails in a way that reads like a network fault. Zero read regions — a read region
-costs 50% of the base tier each, and replicated writes are counted as commands.
+Ignore the line `fly redis create` prints about `$0.20 per 100K commands` — it is boilerplate
+shown to everyone, not a statement of your plan. `fly redis status` is the truth.
+
+**The primary region cannot be changed later**, so `--region syd` matters permanently.
+`--no-replicas` keeps read regions at zero; each one costs 50% of the base tier and replicated
+writes are billed as commands.
+
+`--disable-eviction` is deliberate. At the 256MB limit the database refuses writes instead of
+evicting keys — for a job queue that means an enqueue fails loudly rather than a queued render
+quietly disappearing.
+
+#### Fly returns `redis://`; harden it to `rediss://`
+
+Verified live: `fly redis create` prints a **`redis://`** URL on a **public `*.upstash.io`
+hostname**, port 6379. That is plaintext on a public host, and ioredis derives TLS from the
+scheme — so passing it through unchanged means credentials and queue payloads cross the internet
+unencrypted, with no error to tell you.
+
+Change **only** the scheme to `rediss://`, leaving every other byte untouched, and install it
+through stdin so the value never reaches a process argument or your shell history:
+
+```sh
+printf 'REDIS_URL=%s\n' "$REDISS_URL" | fly secrets import --stage -a <app>
+```
+
+`--stage` sets the secret without triggering a deployment. Because the app only ever receives
+`rediss://`, a TLS problem surfaces as a failed connection — it cannot silently downgrade.
 
 ### Object storage (Tigris, through Fly)
 
@@ -159,32 +235,61 @@ product master is not public artwork.
 bucket — left alone, Tigris's default is **Global**. Do not infer Sydney placement from the endpoint
 answering quickly from Sydney.
 
-Tigris's documented mechanism is `LocationConstraint` on the S3 `CreateBucket` call:
+**Create the bucket with the Tigris CLI instead**, which does expose the control. `syd` is an
+accepted value — verified from `tigris buckets create --help` on CLI v3.13.0:
 
 ```sh
-# Location types: omit or `auto` = Global; one region code = single-region;
-# two comma-separated = dual-region; `usa`/`eur` = multi-region.
-aws s3api --endpoint-url https://t3.storage.dev create-bucket \
-  --bucket spirithaus-staging-media \
-  --create-bucket-configuration '{"LocationConstraint":"syd"}'
-
-# The only acceptable evidence:
-aws s3api --endpoint-url https://t3.storage.dev get-bucket-location \
-  --bucket spirithaus-staging-media
+npm install -g @tigrisdata/cli          # or the unscoped alias: npm install -g tigris
+tigris login oauth                      # browser; choose Fly.io, then the Fly organisation
+tigris buckets create spirithaus-staging-media --locations syd --access private
+tigris buckets get spirithaus-staging-media --format json   # the only acceptable evidence
 ```
 
-**Unresolved at the time of writing:** `syd` appears in Tigris's *"Fly.io available regions"* table
-but **not** in the region list for the direct `t3.storage.dev` endpoint, which stops at Singapore
-(`sin`) and Tokyo (`nrt`) in Asia-Pacific. Whether `LocationConstraint: syd` is accepted has to be
-established against a live bucket. If it is refused, the alternatives cost materially the same and
-differ in latency and **data residency** — `sin`, `nrt`, or Global — and choosing one is a decision
-for whoever owns the data, not a detail to settle at the keyboard.
+Location semantics: omit or `auto` = Global; one region code = single-region; two comma-separated =
+dual-region; `usa`/`eur` = multi-region. `--access` already defaults to `private`; pass it anyway so
+the intent is in the command. Never pass `--public`, `--allow-object-acl`,
+`--enable-directory-listing` or `--enable-snapshots`.
+
+Logging in with Fly SSO is what ties ownership to the Fly organisation. Tigris's docs: *"If you use
+Fly to log in to Tigris, Tigris will use the Fly Organization to manage access… Users who log in
+with Fly must use Fly Organizations."*
+
+Two environment traps, both verified live:
+
+- **Behind an HTTPS proxy, the Tigris CLI needs `NODE_USE_ENV_PROXY=1`.** It uses Node's built-in
+  `fetch`, which ignores `HTTPS_PROXY` on Node ≥ 22.21, so every request bypasses the proxy and the
+  login fails as a bare `✖ Authentication failed` with no hint. Set `NODE_EXTRA_CA_CERTS` to the
+  proxy CA as well.
+- **It contacts more hosts than the data plane.** `console.storage.dev` (browser),
+  `iam.storageapi.dev` (device-flow identity) and `mgmt.storageapi.dev` (bucket create/get) are all
+  required in addition to `t3.storage.dev`. An allowlist with only the data-plane host produces the
+  same opaque authentication failure.
+- The CLI also reads `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` from the environment. On a
+  machine that has unrelated AWS credentials set, clear them for the Tigris commands or you may
+  authenticate as something other than you intend.
 
 Global placement is not a neutral default here. Tigris documents that on a Global bucket a GET or
 HEAD for a key that does not exist triggers a cross-region existence check adding *several hundred
 milliseconds per request*, and this pipeline checks keys constantly.
 
 ## 3. Deploy
+
+Before deploying, confirm every prerequisite. The app **fails closed** on three of them, so a
+missing one is a deployment that does not come up rather than one that half works:
+
+| Prerequisite | Why it blocks |
+| --- | --- |
+| `DATABASE_URL` | Set by `fly postgres attach`; Prisma throws on import without it |
+| `REDIS_URL` (`rediss://`) | Worker exits 1 without it; web falls back and warns |
+| `SESSION_ENCRYPTION_KEYS` + `..._CURRENT_KEY_ID` | Both processes refuse to start (ADR 0014) |
+| `AWS_ENDPOINT_URL_S3`, `BUCKET_NAME`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | Both processes refuse to start (ADR 0015) |
+| `SHOPIFY_API_KEY`, `SHOPIFY_API_SECRET`, `SHOPIFY_APP_URL` | `required()` throws at module load |
+
+`fly secrets list -a <app>` should show all of these before you run the deploy.
+
+**Egress:** `fly deploy` builds the image and pushes it to **`registry.fly.io`**. A restricted
+network needs that host allowed; `--remote-only` moves the *build* to Fly's builders but the image
+still lands in the same registry, so it is not a way around the requirement.
 
 ```sh
 fly deploy --config fly.staging.toml
