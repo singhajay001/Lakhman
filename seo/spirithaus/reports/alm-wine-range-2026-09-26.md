@@ -97,3 +97,83 @@ Your own POS history would beat it, but that sits on the Trafalgar side.
 both appear in the core list, and both were flagged earlier this session as
 missing from the range. That is a good sign the shortlist is pointing at the
 right things.
+
+---
+
+# Part 2 — real sales data arrives
+
+**Owner supplied** `Top_Sellers_AU.pdf` — ALM Portal Top 25 Sellers by Segment,
+**national, data to 26 July 2026**. 12 pages, parsed to **791 ranked rows**
+carrying item code, description, rank this year, rank last year and segment
+share.
+
+This replaces the brand-recognition ranking in Part 1 with measured data. It is
+a strict upgrade: my list could only surface brands I already thought of.
+
+| Category | Ranked rows |
+|---|---:|
+| WINE | 277 |
+| SPIRITS | 267 |
+| BEER | 122 |
+| RTDS | 50 |
+| CIDER | 50 |
+| Non-alcoholic | 25 |
+
+## Three worksheets
+
+| File | Rows |
+|---|---:|
+| `alm-topsellers-wine-2026-09-26.csv` | 277 |
+| `alm-topsellers-spirits-2026-09-26.csv` | 267 |
+| `alm-topsellers-rtd-nonalc-2026-09-26.csv` | 75 |
+
+Each row carries rank this year and last, segment share, ALM item code,
+**barcode**, supplier, stock type, carton size and unit cost ex GST. Sorted by
+segment then rank, so the top of each segment is the top of the list.
+
+## A finding that matters for sourcing
+
+**Every one of the 228 wine top-sellers held at ALM is a Warehouse line.
+Not one spirits, RTD, beer or cider top-seller is.**
+
+Wine you can buy from ALM's own stock. The spirits top-sellers are ALM Connect
+or outside the wine export entirely, which means supplier-direct ordering and
+no barcode on file for a third of them. That is a real difference in how much
+work each category takes to list, and it argues for leading the range build
+with wine.
+
+## What I could not determine, and why
+
+**"Which top sellers are you missing" cannot be answered reliably yet.**
+
+Only **52 of 791** can be confirmed as already stocked, by exact barcode match.
+The obstacle is on our side: just **106 of 486 products carry a barcode**, so
+most of the catalogue cannot be matched exactly at all.
+
+Name matching was attempted and **discarded**. It produced:
+
+| ALM line | Matched to | Reality |
+|---|---|---|
+| J/DANIEL BLACK LABEL | Johnnie Walker Black Label | different distillery |
+| J/DANIEL GENTLEMAN JACK | Jack Daniel's Old No. 7 | different expression |
+| WILD TURKEY 81 PROOF | Wild Turkey 101 | different expression |
+| JOSE CUERVO MARGARITA MIX | Jose Cuervo Especial Silver | a mixer, not a tequila |
+| MCGUIGAN ZERO SHIRAZ | McGuigan Sparkling Shiraz | zero-alcohol vs alcoholic |
+
+It claimed 194 stocked against a true confirmed 52. Shared words like BLACK,
+LABEL and the brand name are not enough to identify a bottle. This is the
+third time fuzzy matching has failed on this catalogue; the pattern is now
+clear enough to treat as a rule rather than a surprise.
+
+**So the worksheets flag only barcode-confirmed matches, and leave the rest
+blank rather than guessing.** A blank means unknown, not missing.
+
+**The fix is barcodes.** 380 products lack one. Filling them — from the ALM
+APN file where the item code is known — would make every future comparison
+exact instead of speculative. That is now the highest-value data job on the
+store, ahead of the range build it unblocks.
+
+## Still worth having: the NSW list
+
+This file is national. Spirithaus delivers Sydney metro only, so NSW
+sell-through is the better signal, and where the two disagree NSW should win.
