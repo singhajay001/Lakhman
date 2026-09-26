@@ -294,3 +294,58 @@ The row renders under Alcohol in the spec table, with the disclaimer on its own
 line beneath the year. The other 24 `to-confirm` products are unchanged and
 render no vintage row at all, which remains the correct state while the year is
 unknown.
+
+---
+
+# Part 5 — Cristal settled from the same source
+
+**Owner supplied** the Dan Murphy's listing for Louis Roederer Cristal:
+**Current Vintage 2014**, same "not guaranteed, may vary store to store"
+wording.
+
+Cristal was one of the four **LOW** confidence cases — my research found 2016
+cited as latest in 2025 and a separate 2008 late release launched June 2026,
+which was genuinely contradictory. Channel evidence settles it. **2014 set.**
+
+That is now two of the four LOW cases resolved by Australian retail listings
+rather than producer announcements, which confirms the pattern: for imported
+champagne, the producer's release calendar is the wrong source and a local
+retailer's listing is the right one.
+
+## Specs filled from the same listings
+
+Cristal already carried every spec in that listing — country, producer, region,
+style, volume, standard drinks 7.11, ABV 12.0 — so only the vintage was new.
+
+**Krug had almost nothing**, just volume. Filled from the listing supplied
+earlier: region Champagne, country France, producer Krug, style Champagne,
+ABV 12.0, standard drinks 7.1.
+
+Both standard-drinks figures were checked against the label maths rather than
+taken on trust: 750 mL × 12% × 0.789 ÷ 10 = 7.10, against Krug's 7.1 and
+Cristal's 7.11. They agree, so there is no discrepancy between the listing and
+what the bottle would state — which matters, because standard drinks is
+regulated and the theme deliberately never computes it.
+
+These specs are not cosmetic. `producer` becomes `brand` in the product
+JSON-LD, and the rest render as `additionalProperty`, so Krug's page went from
+almost no structured detail to a full set.
+
+## Not used: the Dan Murphy's description
+
+The listing copy was supplied too:
+
+> "One of the finest Champagnes around, this Louis Roederer Cristal will take
+> any celebration to the next level…"
+
+**Deliberately not used.** It is Dan Murphy's copyright, and duplicating a
+competitor's product description is the opposite of what these pages need —
+duplicate text is a reason for Google to prefer the original and discount ours.
+Cristal already has its own copy written for this store. Specs are facts and
+can be shared; prose cannot.
+
+## Vintage coverage now
+
+7 of the 30 `to-confirm` products carry a vintage: the six HIGH ones plus
+Cristal. The remaining 23 render no vintage row, which stays correct until
+their year is known.
