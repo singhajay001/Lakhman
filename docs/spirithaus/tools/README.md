@@ -136,3 +136,40 @@ suggestive, and states plainly that no threshold has been derived.
 
 The safe-zone sweep uses a focal disc of 9% of the master. The usable window depends
 on subject size: a smaller subject has more room, a larger one less.
+
+---
+
+# Building the social `sameAs` snippet
+
+`build-social-jsonld.mjs` turns `../social/profiles.json` into the Organization
+JSON-LD snippet the theme renders, which is what tells a search engine that the
+social profiles and the shop are one entity.
+
+```sh
+node build-social-jsonld.mjs      # writes ../theme/snippets/spirithaus-social-jsonld.liquid
+```
+
+Like the other generators here, it refuses rather than guesses. An account reaches
+`sameAs` only when its `status` is `"live"` — the profile exists, is public, and is
+ours. Three things make it exit non-zero:
+
+- **Nothing is live yet.** Emitting a `sameAs` full of profiles that do not exist
+  points a crawler at 404s. Worse, "Spirit Haus" is also a US liquor retailer with a
+  long web footprint, so a near-miss URL risks associating the shop with them. That
+  collision is documented in `../social/README.md`.
+- **A live URL does not match its platform's shape.** `twitter.com/…` where
+  `x.com/…` is expected is a stale paste, not a variant.
+- **The same URL appears twice.**
+
+So the normal workflow is: create an account, set its `status` to `"live"` and its
+real `handle`/`url` in `profiles.json`, rerun. It is idempotent — rerun as often as
+you like.
+
+The snippet is included once in the `<head>` of `layout/theme.liquid`:
+
+```liquid
+{% render 'spirithaus-social-jsonld' %}
+```
+
+Theme writes are blocked over the Admin API on this store, so that include is a
+manual edit in the theme editor — the same constraint as the Scrim Proof page.

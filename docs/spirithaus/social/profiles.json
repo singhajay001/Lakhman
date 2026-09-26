@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "brand": {
+    "legalName": "SPIRITHAUS",
+    "displayName": "SPIRITHAUS",
+    "url": "https://www.spirithaus.com.au",
+    "email": "sales@spirithaus.com.au",
+    "country": "AU",
+    "areaServed": "AU",
+    "tagline": "Every bottle chosen. Every one explained.",
+    "licenceNumber": null
+  },
+  "handle": {
+    "preferred": "spirithausau",
+    "fallbacks": ["spirithaus.au", "spirithausdrinks", "shopspirithaus"],
+    "note": "One string on every platform. Mixed handles fragment the entity and weaken sameAs. Bare 'spirithaus' is taken on TikTok, X, Pinterest, Instagram and Facebook by unrelated US businesses — see README."
+  },
+  "accounts": [
+    {
+      "platform": "instagram",
+      "tier": 1,
+      "status": "unclaimed",
+      "handle": "spirithausau",
+      "url": "https://www.instagram.com/spirithausau/",
+      "themeSetting": "social_instagram_link",
+      "ageGate": "Settings → Business tools → Age restrictions → 18+ (AU)",
+      "note": "Not on the original list, and the most important account on it. Default discovery surface for AU liquor."
+    },
+    {
+      "platform": "pinterest",
+      "tier": 1,
+      "status": "unclaimed",
+      "handle": "spirithausau",
+      "url": "https://www.pinterest.com/spirithausau/",
+      "themeSetting": "social_pinterest_link",
+      "ageGate": "Business account; claim www.spirithaus.com.au under Settings → Claimed accounts",
+      "note": "Best pure-SEO play on the list. Pins index in Google, cocktail intent is evergreen, pin lifespan is months. Claim the domain to get Rich Pins."
+    },
+    {
+      "platform": "youtube",
+      "tier": 1,
+      "status": "unclaimed",
+      "handle": "spirithausau",
+      "url": "https://www.youtube.com/@spirithausau",
+      "themeSetting": "social_youtube_link",
+      "ageGate": "Per-video age restriction on anything showing a pour",
+      "note": "Not on the original list. 'Every bottle explained' is a video-explainer business and YouTube is a search engine. Strictly dominates Vimeo."
+    },
+    {
+      "platform": "tiktok",
+      "tier": 2,
+      "status": "unclaimed",
+      "handle": "spirithausau",
+      "url": "https://www.tiktok.com/@spirithausau",
+      "themeSetting": "social_tiktok_link",
+      "ageGate": "Business account; alcohol content must be age-gated. No paid alcohol ads, no alcohol on TikTok Shop.",
+      "note": "Bare @spirithaus belongs to an unrelated personal account."
+    },
+    {
+      "platform": "x",
+      "tier": 2,
+      "status": "unclaimed",
+      "handle": "spirithausau",
+      "url": "https://x.com/spirithausau",
+      "themeSetting": "social_twitter_link",
+      "ageGate": "Settings → Privacy and safety → mark account as containing sensitive/alcohol content",
+      "note": "@SpiritHaus and @SpiritHausInc are both taken by unrelated parties. Low commercial value for AU retail; cheap to hold for service and announcements."
+    },
+    {
+      "platform": "facebook",
+      "tier": 2,
+      "status": "unclaimed",
+      "handle": "spirithausau",
+      "url": "https://www.facebook.com/spirithausau",
+      "themeSetting": "social_facebook_link",
+      "ageGate": "Page settings → Age restrictions → 18+ (AU minimum for alcohol)",
+      "note": "Not on the original list. Needed as the parent of the Instagram business account and for Meta catalogue/ads later. /thespirithaus is taken."
+    },
+    {
+      "platform": "snapchat",
+      "tier": 3,
+      "status": "unclaimed",
+      "handle": "spirithausau",
+      "url": "https://www.snapchat.com/add/spirithausau",
+      "themeSetting": "social_snapchat_link",
+      "ageGate": "Public Profile → age gate 18+",
+      "note": "Defensive claim only. No organic discovery for a bottle shop; it is an ad platform. Claim the name, do not build here."
+    },
+    {
+      "platform": "tumblr",
+      "tier": 3,
+      "status": "unclaimed",
+      "handle": "spirithausau",
+      "url": "https://spirithausau.tumblr.com",
+      "themeSetting": "social_tumblr_link",
+      "ageGate": "Blog settings → mark as explicit/adult where offered",
+      "note": "Defensive claim only. Negligible AU liquor audience. Costs one minute and keeps the name off a squatter."
+    },
+    {
+      "platform": "vimeo",
+      "tier": 3,
+      "status": "unclaimed",
+      "handle": "spirithausau",
+      "url": "https://vimeo.com/spirithausau",
+      "themeSetting": "social_vimeo_link",
+      "ageGate": "n/a",
+      "note": "Defensive claim only. Vimeo is paid video hosting, not a social network, and its free tier is capped. YouTube does this job for free and is searchable."
+    }
+  ]
+}
