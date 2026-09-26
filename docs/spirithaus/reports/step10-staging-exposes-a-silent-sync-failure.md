@@ -89,3 +89,64 @@ that reports a reason at all.
 `themeFilesDelete` is blocked by the same policy as theme deletion, so it
 cannot be removed from here. That theme is unused and due for deletion; the
 file goes with it.
+
+## Resolved — four faults, all silent, none of them related
+
+`themeFilesUpsert` names what the GitHub sync will not. Uploading the schemas
+one at a time to a scratch theme produced an error per file, and they turned
+out to be four different mistakes:
+
+| File | Shopify's answer | The mistake |
+| --- | --- | --- |
+| `spirithaus-hero.liquid` | `setting with id="overlay_opacity" default must be a step in the range` | `min: 20, step: 2, default: 45` — 45 is odd, so unreachable |
+| `spirithaus-categories.liquid` | same | `default: 55`, same range |
+| `main-cart-footer.liquid` | `setting with id="promo_help" default can't be blank` | a text setting carrying `"default": ""` |
+| `templates/collection.json` | `Section 'spirithaus_hero_Nhi8pz' is not supported on collection templates` | the template still renders a section now restricted to `index` |
+
+The first two date from the 9 September commit that took the hero's overlay
+`min` from 58 to 20. The old default of 62 was a step from 58; 45 and 55 are
+not steps from 20. **Two odd numbers cost the homepage, every collection page
+and the cart seventeen days of silent divergence.**
+
+The fourth is the same commit's other half. It was titled "Stop the homepage
+hero being placed on collection pages" and it added
+`enabled_on: {templates: ["index"]}` to the section — but never removed the
+instance already sitting in `templates/collection.json`. The section said
+index-only while the template went on rendering it.
+
+### Fixed
+
+- defaults moved to 46 and 56, the nearest valid steps
+- the empty default deleted rather than filled, which is what Shopify wants
+- the index-only hero removed from the collection template, finishing what the
+  September commit started
+
+`schema-lint.py` gains both schema rules, because it passed all three files. It
+now refuses an off-grid or out-of-bounds range default and any setting with an
+empty default, and it was verified both ways — it flags the originals and
+passes the fixes. All corrected schemas were then put through
+`themeFilesUpsert` and accepted with no `userErrors`.
+
+### One more thing the sync will not do
+
+Fixing the sections was not enough on its own. Shopify's GitHub sync diffs
+commits, so a file that was rejected once is never retried unless it changes
+again. The three templates stayed missing even after their sections arrived.
+They were written into the staging theme through the API instead — and Shopify
+promptly pushed them back to the `staging` branch as two "Update from Shopify"
+commits, which is the write-back working exactly as it should.
+
+**The staging theme now holds all 404 files.** It is complete, and it is the
+first honest preview this setup has had.
+
+### What to look at, and the one visible change
+
+The Champagne fix is on it: the portrait bottle fallback is gated, so Champagne
+and Fortified & Dessert fall to a plain ink band instead of a slice through a
+bottle.
+
+Also on it, and worth judging deliberately because it changes a page: collection
+pages lose the second hero band at the foot, below the product grid. That is
+the September intent finally taking effect, not a new decision.
+
+Not yet live. `main` is untouched; the fast-forward is the next step.
