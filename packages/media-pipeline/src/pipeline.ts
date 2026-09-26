@@ -24,11 +24,17 @@ import {
   requiredMasterHeightPx,
   type FormatKey,
 } from '@spirithaus/media-geometry';
-import { QUEUES, renderIdempotencyKey, type RenderPayload } from '@spirithaus/jobs';
+import {
+  QUEUES,
+  compositeIdempotencyKey,
+  renderIdempotencyKey,
+  type CompositePayload,
+  type RenderPayload,
+} from '@spirithaus/jobs';
 import type { Platform } from '@spirithaus/domain';
 import { resolveAdapter } from '@spirithaus/providers';
-import { queue } from './queue.server.js';
-import { storage } from './storage.server.js';
+import { queue } from './queue.js';
+import { storage } from './storage.js';
 
 /**
  * The protected-product pipeline, as the app drives it (section 15).
@@ -503,6 +509,85 @@ async function renditionFor(input: {
       colourReference: row.colourReference,
     },
   };
+}
+
+/**
+ * Queues a composite instead of doing one.
+ *
+ * Compositing decodes a master, builds masks, runs a deterministic alpha-over, reads the label
+ * with OCR twice and measures colour in Lab — seconds of work, and more on a large packshot.
+ * Inside a loader that is a response held open until a gateway gives up, which is why ADR 0012
+ * called it an operational risk. The request now returns a job id and ends.
+ *
+ * The environment is written to storage first, because a job payload travels through Redis and
+ * a megabyte of PNG does not belong in it.
+ */
+export async function queueComposite(input: {
+  shopId: string;
+  actor: Principal;
+  assetId: string;
+  platform: Platform;
+  format: FormatKey;
+  environmentPng?: Uint8Array;
+}): Promise<{ ok: true; jobId: string; queued: boolean } | { ok: false; error: string }> {
+  const asset = await prisma.protectedProductAsset.findFirst({
+    where: { id: input.assetId, shopId: input.shopId },
+    select: { id: true },
+  });
+  if (!asset) return { ok: false, error: 'That protected asset does not exist in this shop.' };
+
+  let environmentKey: string | null = null;
+  let environmentDigest = 'none';
+  if (input.environmentPng) {
+    environmentDigest = createHash('sha256')
+      .update(Buffer.from(input.environmentPng))
+      .digest('hex');
+    environmentKey = `environments/${environmentDigest.slice(0, 16)}.png`;
+    await storage().put(environmentKey, input.environmentPng, 'image/png');
+  }
+
+  const key = compositeIdempotencyKey({
+    shopId: input.shopId,
+    assetId: input.assetId,
+    platform: input.platform,
+    format: input.format,
+    environmentDigest,
+  });
+
+  const existing = await prisma.renderJob.findUnique({
+    where: { shopId_idempotencyKey: { shopId: input.shopId, idempotencyKey: key } },
+  });
+  if (existing) return { ok: true, jobId: existing.id, queued: false };
+
+  const job = await prisma.renderJob.create({
+    data: {
+      shopId: input.shopId,
+      kind: 'COMPOSITE',
+      // The same three fields a render carries, so one screen can show both kinds of work.
+      compositionId: `composite:${input.platform}-${input.format}`,
+      props: {
+        assetId: input.assetId,
+        platform: input.platform,
+        format: input.format,
+        environmentKey,
+      } as never,
+      idempotencyKey: key,
+      requestedByUserId: input.actor.userId,
+    },
+  });
+
+  const payload: CompositePayload = {
+    shopId: input.shopId,
+    jobId: job.id,
+    assetId: input.assetId,
+    platform: input.platform,
+    format: input.format,
+    environmentKey,
+    requestedByUserId: input.actor.userId,
+  };
+
+  await queue().enqueue(QUEUES.composite, payload, { jobId: key, maxAttempts: 2 });
+  return { ok: true, jobId: job.id, queued: true };
 }
 
 /** Queues a render. Idempotent: the same composition and props cannot be rendered twice. */

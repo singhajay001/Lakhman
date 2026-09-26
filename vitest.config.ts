@@ -11,6 +11,7 @@ export default defineConfig({
       '@spirithaus/content': pkg('content'),
       '@spirithaus/db': pkg('db'),
       '@spirithaus/media-geometry': pkg('media-geometry'),
+      '@spirithaus/media-pipeline': pkg('media-pipeline'),
       '@spirithaus/domain/server': fileURLToPath(
         new URL('./packages/domain/src/server.ts', import.meta.url),
       ),

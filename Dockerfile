@@ -5,17 +5,21 @@ ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH
 RUN corepack enable
 WORKDIR /app
 
+# Every workspace manifest, and nothing else.
+#
+# This stage exists because the dependency layer used to list each package.json by hand, and
+# that list went stale the moment a package was added: five of the fourteen workspaces were
+# missing, so `pnpm install --frozen-lockfile` could not resolve the lockfile and the image
+# would not build at all. Collecting the manifests instead means adding a package needs no
+# change here.
+FROM base AS manifests
+COPY . .
+RUN find . -name node_modules -prune -o -name package.json -print \
+    | xargs -I{} install -D {} /manifests/{}
+
 FROM base AS deps
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-COPY packages/db/package.json packages/db/
-COPY packages/domain/package.json packages/domain/
-COPY packages/providers/package.json packages/providers/
-COPY packages/jobs/package.json packages/jobs/
-COPY packages/observability/package.json packages/observability/
-COPY packages/shopify/package.json packages/shopify/
-COPY packages/testing/package.json packages/testing/
-COPY apps/social-studio/package.json apps/social-studio/
-COPY apps/worker/package.json apps/worker/
+COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY --from=manifests /manifests/ ./
 RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
@@ -29,7 +33,14 @@ ENV NODE_ENV=production
 COPY --from=build /app /app
 EXPOSE 3000
 
-# Web:    docker run … pnpm --filter @spirithaus/social-studio start
-# Worker: docker run … pnpm --filter @spirithaus/worker start
+# Development dependencies are kept: the worker runs its TypeScript through tsx, which is one
+# of them. Dropping them would save image size and break the worker.
+#
+# The render worker additionally needs a Chromium headless shell. Remotion downloads its own on
+# first use, which needs egress to its CDN; set REMOTION_BROWSER_EXECUTABLE to a shell baked
+# into the image where that egress is not allowed. See docs/deployment/configuration.md.
+
+# Web:     docker run … pnpm --filter @spirithaus/social-studio start
+# Worker:  docker run … pnpm --filter @spirithaus/worker start
 # Migrate: docker run … pnpm --filter @spirithaus/db migrate
 CMD ["pnpm", "--filter", "@spirithaus/social-studio", "start"]

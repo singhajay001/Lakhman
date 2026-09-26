@@ -9,8 +9,8 @@ import {
 } from '@spirithaus/testing';
 import { shutdownOcr } from '@spirithaus/protected-assets';
 import type { CatalogueProduct, CatalogueSource } from '@spirithaus/shopify';
-import { ingestCatalogueImages } from './catalogue-ingest.server.js';
-import { compositeForPlatform } from './media.server.js';
+import { ingestCatalogueImages } from './catalogue-ingest.js';
+import { compositeForPlatform } from './pipeline.js';
 
 /**
  * The catalogue ingestion against a real Postgres, with the network replaced by a function.
@@ -245,7 +245,7 @@ describe('a catalogue-ingested master in the composite pipeline', () => {
     expect(composited.verification).toBe('PASS');
 
     // Now the supplier's file is swapped underneath us at the same storage key.
-    const { storage } = await import('./storage.server.js');
+    const { storage } = await import('./storage.js');
     await storage().put(
       asset.masterKey,
       await bottlePng({ width: 700, height: 1400, statement: '45% ABV 700ml' }),

@@ -22,6 +22,7 @@
     "@spirithaus/db": "workspace:*",
     "@spirithaus/domain": "workspace:*",
     "@spirithaus/jobs": "workspace:*",
+    "@spirithaus/media-pipeline": "workspace:*",
     "@spirithaus/observability": "workspace:*",
     "@spirithaus/providers": "workspace:*",
     "@spirithaus/shopify": "workspace:*",

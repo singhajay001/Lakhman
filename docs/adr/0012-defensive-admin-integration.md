@@ -122,6 +122,5 @@ wired and the handler runs, with no Shopify, no network and no real credentials.
 - The Admin API still has not been called. Everything here is exercised against a mocked client
   and against this container's real refusal of `*.myshopify.com`, which is a real measurement of
   the failure path and no measurement at all of the success path.
-- Compositing still runs OCR and image processing inside a request handler. It belongs in the
-  worker, which already has those dependencies and where a job can take seconds without holding a
-  response open. Left as it is here because moving it is a change of shape, not a defensive fix.
+- Compositing still ran OCR and image processing inside a request handler when this was written.
+  It has since moved to the worker — see ADR 0013.

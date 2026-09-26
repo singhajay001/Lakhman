@@ -99,6 +99,9 @@ importers:
       '@spirithaus/jobs':
         specifier: workspace:*
         version: link:../../packages/jobs
+      '@spirithaus/media-pipeline':
+        specifier: workspace:*
+        version: link:../../packages/media-pipeline
       '@spirithaus/observability':
         specifier: workspace:*
         version: link:../../packages/observability
@@ -163,6 +166,9 @@ importers:
       '@spirithaus/media-geometry':
         specifier: workspace:*
         version: link:../../packages/media-geometry
+      '@spirithaus/media-pipeline':
+        specifier: workspace:*
+        version: link:../../packages/media-pipeline
       '@spirithaus/observability':
         specifier: workspace:*
         version: link:../../packages/observability
@@ -261,6 +267,37 @@ importers:
       '@spirithaus/domain':
         specifier: workspace:*
         version: link:../domain
+
+  packages/media-pipeline:
+    dependencies:
+      '@spirithaus/db':
+        specifier: workspace:*
+        version: link:../db
+      '@spirithaus/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@spirithaus/jobs':
+        specifier: workspace:*
+        version: link:../jobs
+      '@spirithaus/media-geometry':
+        specifier: workspace:*
+        version: link:../media-geometry
+      '@spirithaus/observability':
+        specifier: workspace:*
+        version: link:../observability
+      '@spirithaus/protected-assets':
+        specifier: workspace:*
+        version: link:../protected-assets
+      '@spirithaus/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@spirithaus/shopify':
+        specifier: workspace:*
+        version: link:../shopify
+    devDependencies:
+      '@spirithaus/testing':
+        specifier: workspace:*
+        version: link:../testing
 
   packages/observability:
     dependencies:

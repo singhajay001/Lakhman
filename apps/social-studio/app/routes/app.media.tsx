@@ -24,7 +24,7 @@ import { PLATFORM_PROFILE_VERSION } from '@spirithaus/media-geometry';
 import { CALIBRATION_NOTE } from '@spirithaus/protected-assets';
 import { readSelections } from '@spirithaus/providers';
 import { requireSection } from '../lib/principal.server.js';
-import { cancelRender, queueRender } from '../lib/media.server.js';
+import { cancelRender, queueComposite, queueRender } from '@spirithaus/media-pipeline';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { shop, principal } = await requireSection(request, 'media:read');
@@ -109,6 +109,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }),
     renders: renders.map((job) => ({
       id: job.id,
+      kind: job.kind,
       composition: job.compositionId,
       state: job.state,
       progress: job.progress,
@@ -130,6 +131,26 @@ export async function action({ request }: ActionFunctionArgs) {
     return cancelled
       ? { message: 'Cancelled. The worker stops at its next progress check.' }
       : { error: 'That render has already finished, so there is nothing to cancel.' };
+  }
+
+  if (intent === 'composite') {
+    requirePermission(principal, 'media:generate');
+    // Enqueued, never run here. Compositing decodes a master, builds masks and reads the label
+    // twice with OCR; a loader holding a response open for that is a gateway timeout waiting to
+    // happen (ADR 0012). The request returns a job id and ends.
+    const result = await queueComposite({
+      shopId: shop.id,
+      actor: principal,
+      assetId: String(form.get('assetId')),
+      platform: String(form.get('platform')) as never,
+      format: String(form.get('format')) as never,
+    });
+    if (!result.ok) return { error: result.error };
+    return {
+      message: result.queued
+        ? 'Queued. The worker composites it and the four checks run there; this page shows the job below.'
+        : 'Already queued: the same asset, platform, format and environment is idempotent, so nothing was composited twice.',
+    };
   }
 
   if (intent === 'render') {

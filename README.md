@@ -20,7 +20,9 @@ version of itself.
 
 The design documents that precede the code are in
 [`docs/social-studio/`](docs/social-studio/README.md); the decisions taken while writing
-it are in [`docs/adr/`](docs/adr/).
+it are in [`docs/adr/`](docs/adr/); and what a first deployment needs is in
+[`docs/deployment/`](docs/deployment/README.md) — including an honest account of which
+steps have ever actually been performed.
 
 ## Running it
 
@@ -50,7 +52,7 @@ runs against mocks.
 
 ```sh
 pnpm verify            # typecheck, lint, 479 unit tests, the app build, and a server boot
-pnpm test:integration  # 85 tests against a real Postgres and Redis
+pnpm test:integration  # 90 tests against a real Postgres and Redis
 ```
 
 The app build is part of `verify` deliberately: a shared package accidentally pulling a

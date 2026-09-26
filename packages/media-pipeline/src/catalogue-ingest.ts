@@ -23,7 +23,7 @@ import {
   type CatalogueProduct,
   type CatalogueSource,
 } from '@spirithaus/shopify';
-import { ingestProtectedAsset } from './media.server.js';
+import { ingestProtectedAsset } from './pipeline.js';
 
 /**
  * Ingesting real product artwork from the Shopify catalogue (section 15).

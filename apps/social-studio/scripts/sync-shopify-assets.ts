@@ -32,7 +32,7 @@ import {
   StorefrontCatalogueSource,
   type CatalogueSource,
 } from '@spirithaus/shopify';
-import { ingestCatalogueImages } from '../app/lib/catalogue-ingest.server.js';
+import { ingestCatalogueImages } from '@spirithaus/media-pipeline';
 
 async function resolveSource(shopDomain: string): Promise<CatalogueSource> {
   const kind = process.env.SOURCE ?? 'admin';

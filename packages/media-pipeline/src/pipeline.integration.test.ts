@@ -8,7 +8,7 @@ import {
   ingestProtectedAsset,
   queueRender,
   cancelRender,
-} from './media.server.js';
+} from './pipeline.js';
 
 /**
  * The Phase 3 pipeline as the app drives it, against a real Postgres.
@@ -156,7 +156,7 @@ describe('compositing for a platform', () => {
     const asset = await prisma.protectedProductAsset.findUniqueOrThrow({
       where: { id: ingested.assetId },
     });
-    const { storage } = await import('./storage.server.js');
+    const { storage } = await import('./storage.js');
     await storage().put(
       asset.masterKey,
       await bottlePng({ statement: '45% ABV 700ml' }),

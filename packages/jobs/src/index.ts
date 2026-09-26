@@ -4,6 +4,7 @@ export {
   webhookIdempotencyKey,
   syncIdempotencyKey,
   renderIdempotencyKey,
+  compositeIdempotencyKey,
 } from './idempotency.js';
 export type { JobQueue, JobRecord, JobState, EnqueueOptions, EnqueueOutcome } from './port.js';
 export { MemoryQueue } from './memory-queue.js';
@@ -15,4 +16,5 @@ export {
   type WebhookPayload,
   type ReconciliationPayload,
   type RenderPayload,
+  type CompositePayload,
 } from './definitions.js';

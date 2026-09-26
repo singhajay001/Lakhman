@@ -17,7 +17,7 @@ import { bottlePng, environmentPng, labelRegion } from '@spirithaus/testing';
 import { shutdownOcr } from '@spirithaus/protected-assets';
 import { formatFor, type FormatKey } from '@spirithaus/media-geometry';
 import type { Platform } from '@spirithaus/domain';
-import { compositeForPlatform, ingestProtectedAsset } from '../app/lib/media.server.js';
+import { compositeForPlatform, ingestProtectedAsset } from '@spirithaus/media-pipeline';
 
 const TARGETS: { platform: Platform; format: FormatKey }[] = [
   { platform: 'INSTAGRAM', format: 'reel' },
