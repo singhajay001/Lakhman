@@ -75,7 +75,8 @@ None of these are read by the running application.
 | `SEED_SHOP_DOMAIN` | `db:seed`, demo scripts | no | **Development only. Do not set in staging** — the seed creates a shop and a first administrator. |
 | `SMOKE_PORT` | `pnpm smoke` | no (`3919`) | CI only. |
 | `TESSERACT_LANG_PATH`, `TESSERACT_CACHE_PATH` | OCR | no | Resolved from `node_modules` by default. |
-| `THEME_PROFILE_PATH`, `RENDER_OUTPUT_DIR` | tooling | no | Development. |
+| `THEME_PROFILE_PATH` | tooling | no | Development. |
+| `RENDER_OUTPUT_DIR` | worker | no (`/tmp/spirithaus-renders`) | **Scratch space, not a destination.** Remotion writes to a file, so a render lands on local disk first and is then put into object storage under its `objectKey` and deleted. It used to be where renders *stayed*, which meant a `media_asset` row pointing at bytes no other machine could read. |
 
 ## Container and platform
 
