@@ -1,5 +1,6 @@
 import { bundle } from '@remotion/bundler';
 import { renderMedia, selectComposition, getCompositions } from '@remotion/renderer';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { childLogger } from '@spirithaus/observability';
@@ -16,9 +17,17 @@ import { err, ok, type Result } from '@spirithaus/domain';
  * The bundle is built once and reused across renders in a process: bundling is the expensive
  * part, and a queue rendering six aspects of one campaign should pay it once.
  */
-export const BROWSER_EXECUTABLE =
-  process.env.REMOTION_BROWSER_EXECUTABLE ??
+const PREINSTALLED_HEADLESS_SHELL =
   '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell';
+
+/**
+ * An explicit REMOTION_BROWSER_EXECUTABLE wins; otherwise the pre-installed headless shell if
+ * this machine has one; otherwise null, which tells Remotion to download its own headless
+ * shell (what happens on CI runners and any machine without the pre-installed one).
+ */
+export const BROWSER_EXECUTABLE: string | null =
+  process.env.REMOTION_BROWSER_EXECUTABLE ??
+  (existsSync(PREINSTALLED_HEADLESS_SHELL) ? PREINSTALLED_HEADLESS_SHELL : null);
 
 const entryPoint = (): string => resolve(dirname(fileURLToPath(import.meta.url)), 'index.ts');
 
