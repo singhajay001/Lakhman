@@ -13,6 +13,7 @@
     "calibrate:packshots": "tsx scripts/calibrate-packshots.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1141.0",
     "@prisma/client": "6.19.3",
     "@react-router/node": "^7.18.4",
     "@react-router/serve": "^7.18.4",
@@ -39,9 +40,9 @@
   "devDependencies": {
     "@react-router/dev": "^7.18.4",
     "@react-router/fs-routes": "^7.18.4",
-    "vite": "^7.0.0",
-    "vite-tsconfig-paths": "^5.1.0",
+    "@spirithaus/testing": "workspace:*",
     "tsx": "^4.19.0",
-    "@spirithaus/testing": "workspace:*"
+    "vite": "^7.0.0",
+    "vite-tsconfig-paths": "^5.1.0"
   }
 }

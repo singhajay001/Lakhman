@@ -2,6 +2,7 @@ import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { prisma } from '@spirithaus/db';
 import { logger } from '@spirithaus/observability';
+import { assertStorage } from '@spirithaus/media-pipeline';
 import {
   QUEUES,
   type CompositePayload,
@@ -17,6 +18,24 @@ if (!redisUrl) {
   // A worker without a queue has nothing to do, and pretending otherwise would hide a
   // misconfiguration until a sync silently never ran.
   logger.error('REDIS_URL is not set. The worker cannot run.');
+  process.exit(1);
+}
+
+/**
+ * Object storage, before any queue is consumed.
+ *
+ * The worker is the half of the pair that *reads* what the web process wrote, so a missing bucket
+ * here does not degrade anything — it makes every composite fail on a plate it cannot find, and
+ * `handleComposite` records that as a terminal refusal naming the artwork rather than the
+ * configuration. Refusing to start says the true thing instead.
+ *
+ * Checked after Redis so the first thing a misconfigured deployment is told about is the queue it
+ * has no connection to; both are fatal, and the order only decides which message arrives first.
+ */
+try {
+  assertStorage('worker');
+} catch {
+  // assertStorage has already logged the reason, without the credentials.
   process.exit(1);
 }
 

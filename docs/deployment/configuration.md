@@ -28,7 +28,11 @@ failure, not a 500 halfway through an OAuth callback.
 | `SHOPIFY_API_VERSION` | `2025-07` | Pinned on purpose. An unpinned client changes behaviour without a deploy. |
 | `NODE_ENV` | `development` | `production` withholds developer diagnostics from the OAuth callback's error responses. Set it. |
 | `LOG_LEVEL` | `info` | `silent` in tests. Leave at `info` or `warn` in staging; the diagnostics this system relies on are logged, not displayed. |
-| `MEDIA_STORE_DIR` | `/tmp/spirithaus-media` | Where composites and masters are written when no object storage provider is configured. The local store **warns that it will not survive the machine**. Configure real storage before anything worth keeping is generated. |
+| `MEDIA_STORE_DIR` | `/tmp/spirithaus-media` | Local store, **development and test only**. Read only when no bucket is configured, and a deployed process refuses to start in that state rather than using it (ADR 0015). |
+| `AWS_ENDPOINT_URL_S3` | — | S3 endpoint for masters, composites and environment plates. One of the two variables that **select** object storage; setting it makes the bucket and credentials mandatory. Set by `fly storage create`. |
+| `BUCKET_NAME` | — | The bucket. The other selector. Must be identical for web and worker — they are separate machines and the bucket is all they share. Keep it **private**. |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | — | Storage credentials. Required once a bucket is selected, but never select one on their own: both are ambient on plenty of machines that have nothing to do with this app. |
+| `AWS_REGION` | `auto` | Tigris routes for you. Deliberately not a selector. |
 | `SEED_SHOP_DOMAIN` | `spirithaus-dev.myshopify.com` | Development seed only. Do not set it in production. |
 | `COMPOSITE_CONCURRENCY` | `2` | Composites per worker. Image work is CPU-bound and sharp already uses several threads per operation, so this is a starting point, not a measurement. |
 | `RENDER_CONCURRENCY` | `1` | Video renders per worker. Each drives a headless browser through every frame; two at once make both slower and neither cancellable in reasonable time. Scale by adding workers. |

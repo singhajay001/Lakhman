@@ -109,21 +109,80 @@ fly machine update <machine-id> --vm-memory 512 --app spirithaus-staging-db
 `attach` sets `DATABASE_URL` as a secret and uses Fly's private network, so the database is not
 publicly reachable.
 
-Redis (Upstash, via Fly) and object storage (Tigris):
+### Redis (Upstash, through Fly)
 
 ```sh
-fly redis create --name spirithaus-staging-redis --region syd
+fly redis create          # prompts for the primary region — choose Sydney
+fly redis status <name>   # confirm the plan and region before deploying
 fly secrets set --config fly.staging.toml REDIS_URL='<the rediss:// url it prints>'
-
-fly storage create --name spirithaus-staging-media
 ```
 
-`fly storage create` sets the bucket credentials as secrets automatically.
+Three things, in order, and the order matters:
 
-**Both processes must see the same object storage.** If `MEDIA_STORE_DIR` is left at its default,
-the web process writes an environment image to a local directory the worker cannot read, and
-every composite fails with a missing-environment error. This is the most likely first-day
-mistake.
+1. **The primary region cannot be changed later.** Fly's prompt says so. Choose Sydney
+   (Upstash `ap-southeast-2`) or live with the latency permanently.
+2. **`fly redis create` gives you a pay-as-you-go database, not the Fixed plan the budget
+   assumes.** Fly's own documentation: *"Upstash Redis databases start on the pay-as-you-go plan"*,
+   and *"Fixed price plans are available via `flyctl redis update <dbname>`."* Move it to
+   **Fixed 250MB** with `fly redis update <name>` before deploying anything.
+3. **Do not start the worker while it is still pay-as-you-go.** Upstash's own BullMQ page:
+   *"BullMQ accesses Redis regularly, even when there is no queue activity. This can incur extra
+   costs because Upstash charges per request on the Pay-As-You-Go plan."* An idle worker alone
+   exceeds the free tier's 500,000 commands a month, and on PAYG that is an unbounded charge for
+   doing nothing.
+
+The URL must use the **`rediss://`** scheme. ioredis derives TLS from the scheme, and `redis://`
+against Upstash fails in a way that reads like a network fault. Zero read regions — a read region
+costs 50% of the base tier each, and replicated writes are counted as commands.
+
+### Object storage (Tigris, through Fly)
+
+```sh
+fly storage create -n spirithaus-staging-media
+```
+
+This sets `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_ENDPOINT_URL_S3` and `BUCKET_NAME` as
+app secrets, which both process groups inherit. That is what makes web and worker share a store;
+they are separate machines and the bucket is the only thing they have in common.
+
+**The app refuses to start without all four** (ADR 0015), in both processes, and refuses a
+partially configured set in every environment including development. That is the guard against the
+defect this replaced: a local directory looks like it works, because the write succeeds and only
+the read from the other machine fails.
+
+The bucket must stay **private**. Nothing in the pipeline writes a public-read ACL, and a protected
+product master is not public artwork.
+
+#### Placement is not proven until you prove it
+
+`fly storage create` has **no region flag**, so it does not by itself produce a single-region Sydney
+bucket — left alone, Tigris's default is **Global**. Do not infer Sydney placement from the endpoint
+answering quickly from Sydney.
+
+Tigris's documented mechanism is `LocationConstraint` on the S3 `CreateBucket` call:
+
+```sh
+# Location types: omit or `auto` = Global; one region code = single-region;
+# two comma-separated = dual-region; `usa`/`eur` = multi-region.
+aws s3api --endpoint-url https://t3.storage.dev create-bucket \
+  --bucket spirithaus-staging-media \
+  --create-bucket-configuration '{"LocationConstraint":"syd"}'
+
+# The only acceptable evidence:
+aws s3api --endpoint-url https://t3.storage.dev get-bucket-location \
+  --bucket spirithaus-staging-media
+```
+
+**Unresolved at the time of writing:** `syd` appears in Tigris's *"Fly.io available regions"* table
+but **not** in the region list for the direct `t3.storage.dev` endpoint, which stops at Singapore
+(`sin`) and Tokyo (`nrt`) in Asia-Pacific. Whether `LocationConstraint: syd` is accepted has to be
+established against a live bucket. If it is refused, the alternatives cost materially the same and
+differ in latency and **data residency** — `sin`, `nrt`, or Global — and choosing one is a decision
+for whoever owns the data, not a detail to settle at the keyboard.
+
+Global placement is not a neutral default here. Tigris documents that on a Global bucket a GET or
+HEAD for a key that does not exist triggers a cross-region existence check adding *several hundred
+milliseconds per request*, and this pipeline checks keys constantly.
 
 ## 3. Deploy
 
@@ -177,16 +236,41 @@ Staging is disposable, and leaving it running is the main way this costs more th
 # Stop spending without losing anything:
 fly scale count web=0 worker=0 --config fly.staging.toml
 
-# Or remove it entirely. Each is irreversible and destroys its data.
-fly apps destroy spirithaus-social-studio-staging
+# Or remove it entirely, in this order. Each is irreversible and destroys its data.
 fly postgres detach spirithaus-staging-db --config fly.staging.toml
-fly apps destroy spirithaus-staging-db
+fly apps destroy spirithaus-social-studio-staging   # app, machines and volumes
+fly apps destroy spirithaus-staging-db              # database and its volume
 fly redis destroy spirithaus-staging-redis
-fly storage destroy spirithaus-staging-media
+fly storage destroy spirithaus-staging-media        # confirm the current flag with --help first
 ```
 
 Destroying the app does **not** destroy the Postgres app, the Redis instance or the bucket — each
-is separate and each bills separately. Check `fly apps list` and the dashboard afterwards.
+is separate and each bills separately. Check `fly apps list`, `fly redis list`, `fly storage list`
+and the dashboard afterwards.
+
+Three things that make "scaled to zero" less free than it sounds:
+
+- **Volumes bill on provisioned capacity**, attached or not, running or not. Scaling to zero leaves
+  the 10GB Postgres volume billing at $0.15/GB/month. Only destroying the app releases it.
+- **Stopped machines still bill for their root filesystem**, at $0.15/GB per 30 days.
+- **Snapshots outlive their volume.** The first 10GB a month are free; beyond that they bill at
+  $0.08/GB/month until deleted.
+
+### Recovering media after a teardown
+
+The bucket is the only durable copy of every master, composite and environment plate — the database
+holds `objectKey` references, not bytes. So:
+
+- **Destroying the bucket orphans every `media_asset` and `protected_product_asset` row.** The rows
+  survive, the artwork does not, and a composite against an ingested master fails its digest check
+  because there is nothing to hash. There is no recovery short of re-ingesting from the Shopify
+  catalogue with `pnpm sync:shopify-assets`.
+- **Destroy the app before the bucket, never after.** A running worker with a destroyed bucket
+  fails every job with a storage error rather than refusing at startup — the fail-closed check runs
+  once, at boot, and cannot notice a bucket that disappeared underneath it.
+- **Keep the bucket if you intend to redeploy.** Recreating the app and pointing it at the existing
+  bucket restores every asset, because keys are derived from content digests and asset ids rather
+  than from anything the deployment owns.
 
 ## 7. Key rotation
 

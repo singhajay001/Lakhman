@@ -13,3 +13,6 @@ coverage/
 # Local build-verification harness: this container intercepts TLS, so a Docker build here
 # needs its CA bundle in the context. It is never committed and never enters an image.
 .ci-ca.crt
+
+# Redis snapshot, if a local redis-server is run from the repo root.
+dump.rdb

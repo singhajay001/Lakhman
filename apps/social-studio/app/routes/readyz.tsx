@@ -21,6 +21,25 @@ import { redis } from '../lib/redis.server.js';
  * **No connection is created here.** The probe uses the same Prisma client and the same Redis
  * connection the application uses. A probe that opens its own pool exhausts the database's
  * connection limit at exactly the moment the database is already struggling.
+ *
+ * **Object storage is deliberately not checked here**, and the reasoning is worth recording
+ * because it looks like an omission. Storage is a hard dependency for compositing, so the
+ * temptation is to probe it — but:
+ *
+ * - Misconfiguration is already fatal at startup (`assertStorage`), so the case a probe would
+ *   catch here is an *outage*, not a mistake. A deployed process without a bucket never reaches
+ *   the point of answering this route.
+ * - Readiness gates traffic to the whole web process. Taking the dashboard out of rotation
+ *   because object storage is briefly unavailable would turn "composites fail" into "nothing
+ *   works", which is strictly worse for the person using it.
+ * - Every honest probe costs something. A GET needs an object that exists, which couples
+ *   readiness to data; a HEAD on a key that does not exist is a *negative lookup*, and Tigris
+ *   documents that as a cross-region existence check adding several hundred milliseconds — on a
+ *   2.5s total budget, against a dependency that is not gating the request.
+ *
+ * A storage outage therefore surfaces as a failed composite with a real reason, which is where it
+ * belongs. If it is ever added here it must be bounded like the others and must only read — never
+ * create, write or delete an object to prove the bucket works.
  */
 const CHECK_TIMEOUT_MS = 1_500;
 const TOTAL_TIMEOUT_MS = 2_500;

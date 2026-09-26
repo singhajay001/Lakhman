@@ -23,5 +23,22 @@ export {
   type GroundTruth,
   type IngestOutcome,
 } from './catalogue-ingest.js';
-export { storage, type Storage } from './storage.js';
+export {
+  storage,
+  createStorage,
+  resetStorage,
+  assertStorage,
+  LocalStorage,
+  type Storage,
+} from './storage.js';
+export { S3Storage, StorageError } from './s3-storage.js';
+export {
+  resolveStorageConfig,
+  assertStorageConfigured,
+  StorageConfigError,
+  DEFAULT_REGION,
+  DEFAULT_LOCAL_ROOT,
+  type S3StorageConfig,
+  type StorageResolution,
+} from './storage-config.js';
 export { queue } from './queue.js';

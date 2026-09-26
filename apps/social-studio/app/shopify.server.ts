@@ -4,6 +4,7 @@ import { PrismaSessionStorage } from '@shopify/shopify-app-session-storage-prism
 import { prisma } from '@spirithaus/db';
 import { mandatoryScopeList } from '@spirithaus/shopify';
 import { assertSessionCryptoConfigured, EncryptedSessionStorage } from '@spirithaus/session-crypto';
+import { assertStorage } from '@spirithaus/media-pipeline';
 
 function required(name: string): string {
   const value = process.env[name];
@@ -20,6 +21,17 @@ function required(name: string): string {
  * the first OAuth callback — by which point a token would already have been written.
  */
 const sessionCrypto = assertSessionCryptoConfigured({ component: 'web' });
+
+/**
+ * Object storage, validated at the same moment and for the same reason.
+ *
+ * It lives in this module because this is the one the server is guaranteed to load, and the
+ * check is worthless if it runs lazily: a deployed web process with no bucket would accept a
+ * composite request, write the environment plate to its own disk, return a job id, and only then
+ * have the worker fail to find it on a different machine. Refusing at startup turns that into a
+ * deployment that does not come up.
+ */
+assertStorage('web');
 
 const shopify = shopifyApp({
   apiKey: required('SHOPIFY_API_KEY'),

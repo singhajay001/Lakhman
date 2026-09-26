@@ -110,6 +110,42 @@ Note that Remotion requires the *headless shell*, not the full Chrome binary —
 ## Assets vanish after a restart
 
 `MEDIA_STORE_DIR` defaults to a local directory, and the local store logs a warning that it will
-not survive the machine.
+not survive the machine. Only possible in development and test: a deployed process refuses to start
+without a bucket (ADR 0015).
 
 **Fix:** configure object storage before generating anything worth keeping.
+
+## The process refuses to start, naming BUCKET_NAME
+
+```
+refusing to start: Object storage is not configured and NODE_ENV=production. …
+Set AWS_ENDPOINT_URL_S3, BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY.
+```
+
+Working as intended, in both web and worker. A deployed deployment runs the two processes on
+separate machines with separate filesystems, so a local directory is not shared storage — the web
+process would write an environment plate to its own disk and the worker would not find it.
+
+**Fix:** `fly storage create -n <bucket>`, which sets all four as app secrets. Do not work around it
+by setting `NODE_ENV=development`; that turns a refusal into every composite failing.
+
+A variant names a *partial* configuration — "`BUCKET_NAME` names a bucket, but
+`AWS_SECRET_ACCESS_KEY` is not set". Same fix. It refuses in development too, deliberately: a named
+bucket with a missing credential is a typo, and falling back to local storage would hide it until
+the worker read failed.
+
+## Every composite fails with "the environment image … is missing from storage"
+
+The job row says the plate is missing, which reads like a problem with the artwork. It is almost
+never that.
+
+**Check first:** do web and worker resolve to the *same* bucket and endpoint? Both log
+`object storage configured` at startup with `endpoint` and `bucket`. If those differ — or if one
+says it is using a local directory — that is the fault. Set the storage variables at the app level
+so both process groups inherit them, rather than per process group.
+
+**Then check:** `AccessDenied` in the worker's log. A credential that can write but not read
+produces exactly this symptom, because the web process's put succeeds and the worker's get fails.
+The adapter surfaces a denial as a `StorageError` rather than as a missing object, precisely so this
+is distinguishable — a missing plate is a terminal refusal with no retry, and a denial reported as
+absence would be recorded as the pipeline working correctly.

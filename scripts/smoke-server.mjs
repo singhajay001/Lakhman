@@ -40,6 +40,16 @@ const server = spawn(
       SESSION_ENCRYPTION_KEYS:
         process.env.SESSION_ENCRYPTION_KEYS ?? `smoke:${Buffer.alloc(32, 0x5a).toString('base64')}`,
       SESSION_ENCRYPTION_CURRENT_KEY_ID: process.env.SESSION_ENCRYPTION_CURRENT_KEY_ID ?? 'smoke',
+      // The app also fails closed without object storage, because a deployed process that fell
+      // back to a local directory would write media the worker machine cannot read. These are
+      // syntactically valid and deliberately unroutable: `.invalid` is reserved and resolves
+      // nowhere, so a boot that succeeds proves the S3 client is constructed without contacting
+      // any provider at module load. If that ever changes, this check hangs and then fails.
+      AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID ?? 'smoke-access-key-id',
+      AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY ?? 'smoke-secret-access-key',
+      AWS_ENDPOINT_URL_S3: process.env.AWS_ENDPOINT_URL_S3 ?? 'https://object-storage.invalid',
+      AWS_REGION: process.env.AWS_REGION ?? 'auto',
+      BUCKET_NAME: process.env.BUCKET_NAME ?? 'smoke-bucket',
       LOG_LEVEL: 'silent',
     },
     stdio: ['ignore', 'pipe', 'pipe'],

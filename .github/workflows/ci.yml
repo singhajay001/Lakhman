@@ -124,7 +124,7 @@ jobs:
           docker run --rm spirithaus-social-studio:ci node -e "
             const { createRequire } = require('node:module');
             const r = createRequire('/app/apps/social-studio/package.json');
-            for (const m of ['sharp', 'tesseract.js', '@tesseract.js-data/eng/package.json']) {
+            for (const m of ['sharp', 'tesseract.js', '@tesseract.js-data/eng/package.json', '@aws-sdk/client-s3']) {
               r.resolve(m);
               console.log('resolved', m);
             }
@@ -169,6 +169,8 @@ jobs:
             -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
             -e SESSION_ENCRYPTION_KEYS=ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo= \
             -e SESSION_ENCRYPTION_CURRENT_KEY_ID=ci \
+            -e AWS_ACCESS_KEY_ID=ci -e AWS_SECRET_ACCESS_KEY=ci \
+            -e AWS_ENDPOINT_URL_S3=https://object-storage.invalid -e BUCKET_NAME=ci \
             spirithaus-social-studio:ci node -e "console.log('started with no network')"
 
       - name: The image refuses to start without an encryption key
@@ -185,6 +187,55 @@ jobs:
           echo "$out" | grep -qi 'SESSION_ENCRYPTION_KEYS' \
             || { echo "Expected a refusal naming SESSION_ENCRYPTION_KEYS."; exit 1; }
 
+      - name: The web process refuses to start without object storage
+        # Fail closed, for the same class of reason as the key ring. A deployed web process that
+        # fell back to a local directory would accept a composite request, write the environment
+        # plate to its own disk, return a job id, and leave the worker machine unable to find it.
+        # Every composite would fail, blaming the artwork rather than the deployment.
+        run: |
+          set +e
+          out=$(docker run --rm \
+            -e NODE_ENV=production -e PORT=3000 \
+            -e SHOPIFY_API_KEY=k -e SHOPIFY_API_SECRET=s -e SHOPIFY_APP_URL=https://ci.invalid \
+            -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
+            -e SESSION_ENCRYPTION_KEYS=ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo= \
+            -e SESSION_ENCRYPTION_CURRENT_KEY_ID=ci \
+            spirithaus-social-studio:ci 2>&1)
+          echo "$out"
+          echo "$out" | grep -qi 'BUCKET_NAME' \
+            || { echo "Expected a refusal naming BUCKET_NAME."; exit 1; }
+
+      - name: The web process refuses a half-configured bucket
+        # A partial configuration is never a fallback: quietly using local storage would hide a
+        # typo in a variable name until the worker could not read what the web process wrote.
+        run: |
+          set +e
+          out=$(docker run --rm \
+            -e NODE_ENV=production -e PORT=3000 \
+            -e SHOPIFY_API_KEY=k -e SHOPIFY_API_SECRET=s -e SHOPIFY_APP_URL=https://ci.invalid \
+            -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
+            -e SESSION_ENCRYPTION_KEYS=ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo= \
+            -e SESSION_ENCRYPTION_CURRENT_KEY_ID=ci \
+            -e BUCKET_NAME=ci \
+            spirithaus-social-studio:ci 2>&1)
+          echo "$out"
+          echo "$out" | grep -qi 'partially configured' \
+            || { echo "Expected a refusal naming a partial configuration."; exit 1; }
+
+      - name: The worker refuses to start without object storage
+        run: |
+          set +e
+          out=$(docker run --rm --workdir /app \
+            -e NODE_ENV=production \
+            -e REDIS_URL='redis://127.0.0.1:6379' \
+            -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
+            -e SESSION_ENCRYPTION_KEYS=ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo= \
+            -e SESSION_ENCRYPTION_CURRENT_KEY_ID=ci \
+            --entrypoint pnpm spirithaus-social-studio:ci --filter @spirithaus/worker start 2>&1)
+          echo "$out"
+          echo "$out" | grep -qi 'BUCKET_NAME' \
+            || { echo "Expected the worker to name BUCKET_NAME."; exit 1; }
+
       - name: The image starts, and livez and readyz behave
         run: |
           docker run -d --name studio \
@@ -196,6 +247,8 @@ jobs:
             -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
             -e SESSION_ENCRYPTION_KEYS=ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo= \
             -e SESSION_ENCRYPTION_CURRENT_KEY_ID=ci \
+            -e AWS_ACCESS_KEY_ID=ci -e AWS_SECRET_ACCESS_KEY=ci \
+            -e AWS_ENDPOINT_URL_S3=https://object-storage.invalid -e BUCKET_NAME=ci \
             -p 3000:3000 spirithaus-social-studio:ci
 
           for i in $(seq 1 60); do
@@ -244,6 +297,8 @@ jobs:
             -e DATABASE_URL='postgresql://u:p@127.0.0.1:5432/none?schema=public' \
             -e SESSION_ENCRYPTION_KEYS=ci:WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo= \
             -e SESSION_ENCRYPTION_CURRENT_KEY_ID=ci \
+            -e AWS_ACCESS_KEY_ID=ci -e AWS_SECRET_ACCESS_KEY=ci \
+            -e AWS_ENDPOINT_URL_S3=https://object-storage.invalid -e BUCKET_NAME=ci \
             --entrypoint pnpm spirithaus-social-studio:ci --filter @spirithaus/worker start 2>&1)
           echo "$out"
           echo "$out" | grep -qi 'redis' || { echo "Expected the worker to name REDIS_URL."; exit 1; }

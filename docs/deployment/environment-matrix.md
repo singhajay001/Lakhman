@@ -23,13 +23,39 @@ shaped like the real thing and are not usable.
 | `SYNC_CONCURRENCY` | worker | no (`2`) | no | Sync jobs per worker. | `2` | You | Never |
 | `COMPOSITE_CONCURRENCY` | worker | no (`2`) | no | Composites per worker. CPU-bound; sharp already uses several threads per operation. A starting point, not a measurement. | `2` | You | Never |
 | `RENDER_CONCURRENCY` | worker | no (`1`) | no | Video renders per worker. Each drives a headless browser through every frame. Scale by adding workers. | `1` | You | Never |
-| `MEDIA_STORE_DIR` | web, worker | no (`/tmp/spirithaus-media`) | no | Local fallback store. **Warns that it will not survive the machine.** Both processes must see the same storage, which a local directory on separate hosts does not provide. | `/var/lib/spirithaus/media` | You | Never |
+| `MEDIA_STORE_DIR` | web, worker | no (`/tmp/spirithaus-media`) | no | Local store, **development and test only**. Read only when no bucket is configured, and a deployed process refuses to start in that state rather than using it — a local directory on separate hosts is not shared storage (ADR 0015). | `/var/lib/spirithaus/media` | You | Never |
+| `AWS_ENDPOINT_URL_S3` | web, worker | **yes when deployed** | no | S3 endpoint, and one of the two variables that **select** object storage. Setting it makes the credentials and bucket mandatory. Not a secret, and worth having in a log: "which store did this machine write to" is the first question of a storage incident. | `https://fly.storage.tigris.dev` | `fly storage create` | Never |
+| `BUCKET_NAME` | web, worker | **yes when deployed** | no | The bucket. The other selector. **Must be the same for web and worker** — they are separate machines and the bucket is the only thing they share. Must stay **private**; nothing writes a public-read ACL. | `spirithaus-staging-media` | `fly storage create` | Never |
+| `AWS_ACCESS_KEY_ID` | web, worker | **yes when deployed** | **yes** | Object storage credential. Required once a bucket is selected, but **never selects one on its own** — it is ambient on many machines, and treating it as intent makes unrelated environments refuse to start. | `tid_…` | `fly storage create` | On compromise |
+| `AWS_SECRET_ACCESS_KEY` | web, worker | **yes when deployed** | **yes** | As above. Never logged, and kept out of thrown errors: `StorageError` carries an error name, an HTTP status and the key, never the signed request. | `tsec_…` | `fly storage create` | On compromise |
+| `AWS_REGION` | web, worker | no (`auto`) | no | Tigris routes for you, so `auto` is correct. Deliberately **not** a selector: it is set incidentally by unrelated tooling. | `auto` | — | Never |
 | `REMOTION_BROWSER_EXECUTABLE` | worker | no | no | Chromium headless shell. Unset means Remotion downloads its own on first render, needing egress to its CDN. Must be the **headless shell**, not full Chrome. | `/opt/chromium/headless_shell` | Image | Never |
 | `PROVIDER_*` (16) | web, worker | no (`mock`) | no | One per contract. `mock` is a supported configuration: a mocked publisher returns `published: false`. A named adapter this build does not implement is refused rather than silently mocked. | `mock` | You | Never |
 | `SESSION_ENCRYPTION_KEYS` | web, worker | **yes when deployed** | **yes** | `id:key,id:key`. Every key can decrypt; only the current one encrypts. Each must decode to exactly 32 bytes. **Both processes refuse to start without a valid ring** when `NODE_ENV` is not `development` or `test`. | `k1:<base64 32 bytes>` | `openssl rand -base64 32` | Two-deploy rotation; see `fly-staging.md` |
 | `SESSION_ENCRYPTION_CURRENT_KEY_ID` | web, worker | **yes when deployed** | no | Which listed key encrypts new writes. Must be one of the ids above. | `k1` | You | Changed to promote a new key |
 | `SESSION_ENCRYPTION_ALLOW_PLAINTEXT_READS` | web, worker | no | no | Reads tokens written before encryption existed. **Refused outright** when deployed — the process will not start. Development only; run `pnpm db:encrypt-sessions` instead. | unset | — | Removed once the migration has run |
 | `PRISMA_LOG` | all | no | no | `query` enables SQL logging. Do not enable in staging: queries carry parameter values. | unset | You | Never |
+
+### Object storage is all-or-nothing
+
+The five storage variables are resolved once at startup, by the same resolver in both processes, and
+there are exactly three outcomes (ADR 0015):
+
+| State | Result |
+| --- | --- |
+| A bucket selected and fully configured | S3 is used |
+| Nothing selected, `NODE_ENV` is `development` or `test` | local directory, with a warning |
+| Anything else | **the process does not start** |
+
+"Anything else" covers two cases worth naming. A deployed process with no bucket refuses, because
+falling back to a local directory would make the web machine's writes invisible to the worker and
+every composite would fail blaming the artwork. And a *partially* configured bucket refuses in every
+environment, including development — a named bucket with a missing credential is a typo, and a
+silent fallback would hide it until exactly the same failure.
+
+Web and worker must resolve to the same endpoint and bucket. Nothing enforces that across machines,
+so set them at the app level (`fly secrets set` applies to both process groups) rather than per
+group.
 
 ## Consumed by scripts only
 
