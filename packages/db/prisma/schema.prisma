@@ -1129,8 +1129,6 @@ enum RenderState {
   CANCELLED
 }
 
-/// A durable render (section 36): progress, cancellation, retry, cost, and recovery after a
-/// worker restart. Never dependent on an open browser.
 /// What kind of visual work a job is. Compositing and video rendering have the same lifecycle —
 /// queued, running, progress, cancellable, ending in a MediaAsset — so they share a table rather
 /// than duplicating one.
@@ -1139,6 +1137,8 @@ enum MediaJobKind {
   COMPOSITE
 }
 
+/// A durable render (section 36): progress, cancellation, retry, cost, and recovery after a
+/// worker restart. Never dependent on an open browser.
 model RenderJob {
   id            String      @id @default(cuid())
   shopId        String
@@ -1169,6 +1169,7 @@ model RenderJob {
 
   @@unique([shopId, idempotencyKey])
   @@index([shopId, state, createdAt])
+  @@index([shopId, kind, state])
   @@map("render_job")
 }
 
