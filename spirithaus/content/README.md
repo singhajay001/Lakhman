@@ -115,19 +115,12 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    strong commercial query and the product title is a ranking signal, so both
    titles are leaving something on the table.
 
-5. **Maker's Mark is listed twice.** `makers-mark` ("Maker's Mark Kentucky
-   Straight Bourbon Whisky", product type Whisky) and `makers-mark-bourbon`
-   ("Maker's Mark Kentucky Straight Bourbon", product type Bourbon) are the
-   same product. Both now sit in Bourbon & Tennessee, side by side, so the
-   duplication is plain to see. Same shape as the Hibiki pair — tell me which
-   to keep and I will port the copy, 301 the loser and archive it.
-
-6. **No collection has an SEO title or meta description set** — all 28 return
+5. **No collection has an SEO title or meta description set** — all 28 return
    null, and most have an empty description too. Category pages are the
    strongest commercial landings on the store and they are shipping with
    whatever the theme generates.
 
-7. **Nearly everything reads as zero inventory.** If that is real rather than
+6. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
 
 **Done in this pass:** the duplicate Hibiki listing is resolved — the good copy
@@ -218,6 +211,36 @@ above.
 
 This gives `articles/first-single-malt.md` a real destination: its
 `/collections/single-malt` link previously landed on a one-product page.
+
+**Maker's Mark duplicate resolved — deleted by the client, 301 added here.**
+`makers-mark` (product type Whisky) was the duplicate of `makers-mark-bourbon`
+(product type Bourbon). By the time I came to remove it, it had already been
+**deleted outright** rather than archived: it returns null by handle and by ID,
+and a title search finds only the keeper.
+
+That left `/products/makers-mark` returning a 404, because Shopify does not
+create a redirect when a product is deleted. Added:
+
+```
+/products/makers-mark  →  /products/makers-mark-bourbon
+```
+
+Nothing needed porting. The keeper is in better shape than most of the
+catalogue already — full description, SEO title and meta description, and a
+complete metafield set including `why_we_stock_it`, `rrp`, `abv`, `region` and
+`standard_drinks`. Nothing in the published articles linked to the deleted
+handle, so no internal links broke.
+
+A note on the **Hibiki** pair, because the record here was out of date: the
+archived duplicate has since been deleted and the keeper **renamed** from
+`hibiki-japanese-harmony-700ml` to `hibiki-japanese-harmony`. The live redirect
+now reads `-700ml → bare handle`, which is the reverse of what this file
+previously described but is **correct given the rename** — it points the freed
+URL at the live product. Left as is. The one live Hibiki listing is why the
+Whisky collection reads 36 rather than 37.
+
+Current counts after all of the above: Spirits **149**, Whisky **36**,
+Bourbon & Tennessee **14**, Single Malt **22**, Low & No **3**.
 
 **Bourbon split out of Whisky.** The Whisky collection was the only category
 collection in the store built on a two-tag OR — `tag:whisky OR tag:whiskey` —
