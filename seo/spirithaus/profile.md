@@ -17,6 +17,36 @@
 | Liquor licence | **NSW Packaged Liquor Licence LIQP700301260.** Rendered by the `spirithaus-compliance` section as a schema setting, with the statutory warning and photo-ID notice in the footer of every page — verified in the theme, not hardcoded. |
 | Physical presence | TODO — the business presents as delivery-led. Confirm before building any local/GBP strategy. |
 
+### ⚠️ Theme settings: edit in Shopify, never in git
+
+`config/settings_data.json` in `singhajay001/spirithaus-theme` **runs behind the live
+store.** Shopify's GitHub integration syncs `main` bidirectionally, but theme-editor
+changes commit back with a delay.
+
+Observed 2026-09-26: the YouTube social link was corrected in the theme editor and,
+minutes later, the repo still held the old broken value. Committing an edit to
+`settings_data.json` at that moment would have deployed the stale file and silently
+reverted the fix.
+
+**Rule: change theme *settings* in the Shopify theme editor. Change theme *code* in
+git.** Before ever editing `settings_data.json` in a commit, pull `main` and confirm
+it already reflects every recent editor change.
+
+### Social profiles — the `sameAs` entity signal
+
+`sameAs` is emitted from `settings.social_*_link` by `sections/header.liquid`, and it
+is doing the real work of separating this domain from `spirithouse.com.au`.
+
+| Profile | Value | Note |
+|---|---|---|
+| Facebook | `https://www.facebook.com/spirithausau` | Vanity handle created 2026-09-26, replacing a numeric ID (`1345008665356257`) that did not match the live page (`profile.php?id=61594122853424`) |
+| Instagram | `https://www.instagram.com/spirithaus.com.au` | |
+| YouTube | `https://www.youtube.com/@SpiritHausAU` | Was missing `https://`, so it rendered as a non-URL string and was discarded by Google |
+
+Each must be an **absolute URL**. A protocol-less value passes Shopify's field
+validation, renders into the JSON-LD as a bare string, and is silently dropped —
+costing an entity signal with no visible error anywhere.
+
 ## 🔴 Name collision — never assume a "spirithaus" result is you
 
 `spirithaus.com.au` and **`spirithouse.com.au`** are homophones. Spirit House is
