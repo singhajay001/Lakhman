@@ -4,8 +4,11 @@ import { logger } from '@spirithaus/observability';
 import {
   decryptToken,
   encryptToken,
+  ENVELOPE_VERSION,
   isEncryptedEnvelope,
   SessionDecryptError,
+  type CredentialContext,
+  type CredentialField,
 } from './envelope.js';
 import type { SessionCryptoPolicy } from './policy.js';
 
@@ -46,13 +49,15 @@ export class EncryptedSessionStorage implements SessionStorage {
 
     // Already an envelope: a re-store of a session loaded and passed straight back. Encrypting
     // again would nest envelopes and make the credential unrecoverable.
-    const seal = (value: string | undefined): string | undefined =>
-      !value || isEncryptedEnvelope(value) ? value : encryptToken(value, keys.current);
+    const seal = (value: string | undefined, field: CredentialField): string | undefined =>
+      !value || isEncryptedEnvelope(value)
+        ? value
+        : encryptToken(value, keys.current, this.contextFor(session, field));
 
     return this.inner.storeSession(
       this.withCredentials(session, {
-        accessToken: seal(session.accessToken),
-        refreshToken: seal(session.refreshToken),
+        accessToken: seal(session.accessToken, 'accessToken'),
+        refreshToken: seal(session.refreshToken, 'refreshToken'),
       }),
     );
   }
@@ -95,10 +100,10 @@ export class EncryptedSessionStorage implements SessionStorage {
     // with both credentials in hand.
     const stale: { value: boolean } = { value: false };
 
-    const accessToken = this.openOne(session, session.accessToken, 'access token', stale);
+    const accessToken = this.openOne(session, session.accessToken, 'accessToken', stale);
     if (accessToken === REFUSED) return undefined;
 
-    const refreshToken = this.openOne(session, session.refreshToken, 'refresh token', stale);
+    const refreshToken = this.openOne(session, session.refreshToken, 'refreshToken', stale);
     if (refreshToken === REFUSED) return undefined;
 
     if (accessToken === session.accessToken && refreshToken === session.refreshToken) {
@@ -132,7 +137,7 @@ export class EncryptedSessionStorage implements SessionStorage {
   private openOne(
     session: Session,
     stored: string | undefined,
-    what: string,
+    what: CredentialField,
     stale: { value: boolean },
   ): string | undefined | typeof REFUSED {
     if (!stored) return stored;
@@ -166,11 +171,17 @@ export class EncryptedSessionStorage implements SessionStorage {
     }
 
     try {
-      const { plaintext, keyId } = decryptToken(stored, this.policy.keys);
+      const { plaintext, keyId, version } = decryptToken(
+        stored,
+        this.policy.keys,
+        this.contextFor(session, what),
+      );
 
-      // Rotation, lazily: anything opened with a retired key is rewritten with the current one,
-      // so a key becomes unused through normal traffic rather than through a migration window.
-      if (keyId !== this.policy.keys.current.id) stale.value = true;
+      // Rewritten when it is on a retired key *or* an older envelope. A v1 value carries no
+      // binding to its row, so upgrading it is the point of being able to read it at all.
+      if (keyId !== this.policy.keys.current.id || version !== ENVELOPE_VERSION) {
+        stale.value = true;
+      }
       return plaintext;
     } catch (error) {
       const reason = error instanceof SessionDecryptError ? error.reason : 'unknown';
@@ -182,6 +193,14 @@ export class EncryptedSessionStorage implements SessionStorage {
     }
   }
 
+  /**
+   * What a credential is bound to. Taken from the session rather than from the stored value: a
+   * binding an attacker can rewrite alongside the ciphertext binds nothing.
+   */
+  private contextFor(session: Session, field: CredentialField): CredentialContext {
+    return { sessionId: session.id, shop: session.shop, field };
+  }
+
   /** A copy carrying different credentials. Never mutates the original. */
   private withCredentials(
     session: Session,
@@ -190,5 +209,67 @@ export class EncryptedSessionStorage implements SessionStorage {
     const copy = Object.create(Object.getPrototypeOf(session) as object) as Session;
     Object.assign(copy, session, credentials);
     return copy;
+  }
+}
+
+/**
+ * Opens a credential read straight from the database rather than through the session storage.
+ *
+ * Two places legitimately do that — the worker, which runs on the offline token, and the asset
+ * sync script — and both were a bypass waiting to happen: a direct read returns the envelope, and
+ * handing that to the Admin client produces an authentication error naming the wrong cause. One
+ * shared function so there is one place to get this right.
+ *
+ * Returns null rather than the stored value when it cannot be opened, for the same reason.
+ */
+export function openStoredAccessToken(input: {
+  stored: string;
+  sessionId: string;
+  shop: string;
+  policy: SessionCryptoPolicy;
+  field?: CredentialField;
+}): string | null {
+  const field = input.field ?? 'accessToken';
+
+  if (!isEncryptedEnvelope(input.stored)) {
+    if (input.policy.allowPlaintextReads) {
+      logger.warn(
+        { shop: input.shop, sessionId: input.sessionId, credential: field },
+        'read a session credential stored in plaintext; run pnpm db:encrypt-sessions',
+      );
+      return input.stored;
+    }
+    logger.error(
+      { shop: input.shop, sessionId: input.sessionId, credential: field },
+      'refusing a session credential that is not encrypted; run pnpm db:encrypt-sessions',
+    );
+    return null;
+  }
+
+  if (!input.policy.keys) {
+    logger.error(
+      { shop: input.shop, sessionId: input.sessionId, credential: field },
+      'session credential is encrypted but no key is configured',
+    );
+    return null;
+  }
+
+  try {
+    return decryptToken(input.stored, input.policy.keys, {
+      sessionId: input.sessionId,
+      shop: input.shop,
+      field,
+    }).plaintext;
+  } catch (error) {
+    logger.error(
+      {
+        shop: input.shop,
+        sessionId: input.sessionId,
+        credential: field,
+        reason: error instanceof SessionDecryptError ? error.reason : 'unknown',
+      },
+      'could not decrypt a stored session credential',
+    );
+    return null;
   }
 }

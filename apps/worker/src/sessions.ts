@@ -27,6 +27,7 @@ export async function offlineAccessToken(shopDomain: string): Promise<string | n
   const session = await prisma.session.findFirst({
     where: { shop: shopDomain, isOnline: false },
     orderBy: { id: 'asc' },
+    select: { id: true, shop: true, accessToken: true },
   });
   const stored = session?.accessToken;
   if (!stored) return null;
@@ -52,7 +53,13 @@ export async function offlineAccessToken(shopDomain: string): Promise<string | n
   }
 
   try {
-    return decryptToken(stored, sessionCrypto.keys).plaintext;
+    // The context binds the envelope to this row: an access token copied from another session,
+    // another shop, or the refresh token column fails authentication rather than opening.
+    return decryptToken(stored, sessionCrypto.keys, {
+      sessionId: session.id,
+      shop: session.shop,
+      field: 'accessToken',
+    }).plaintext;
   } catch (error) {
     // Returning null rather than the ciphertext: a job that sends an unreadable string to
     // Shopify gets an authentication error naming the wrong cause, and the gateway would report

@@ -26,6 +26,7 @@
 import { prisma } from '@spirithaus/db';
 import type { Principal } from '@spirithaus/domain';
 import { shutdownOcr } from '@spirithaus/protected-assets';
+import { assertSessionCryptoConfigured, openStoredAccessToken } from '@spirithaus/session-crypto';
 import {
   AdminCatalogueSource,
   AdminClient,
@@ -50,6 +51,7 @@ async function resolveSource(shopDomain: string): Promise<CatalogueSource> {
   const session = await prisma.session.findFirst({
     where: { shop: shopDomain, isOnline: false },
     orderBy: { expires: 'desc' },
+    select: { id: true, shop: true, accessToken: true },
   });
   if (!session?.accessToken) {
     throw new Error(
@@ -57,10 +59,25 @@ async function resolveSource(shopDomain: string): Promise<CatalogueSource> {
     );
   }
 
+  // Decrypted here because this reads the row directly rather than through the session storage.
+  // Without this the script would hand an envelope to AdminClient, Shopify would reject an
+  // unreadable string, and the failure would read as a rejected token rather than a bug here.
+  const accessToken = openStoredAccessToken({
+    stored: session.accessToken,
+    sessionId: session.id,
+    shop: session.shop,
+    policy: assertSessionCryptoConfigured({ component: 'sync-shopify-assets' }),
+  });
+  if (!accessToken) {
+    throw new Error(
+      `The stored offline token for ${shopDomain} could not be decrypted. Check SESSION_ENCRYPTION_KEYS, or run pnpm db:encrypt-sessions if it predates encryption.`,
+    );
+  }
+
   return new AdminCatalogueSource(
     new AdminClient({
       shopDomain,
-      accessToken: session.accessToken,
+      accessToken,
       apiVersion: process.env.SHOPIFY_API_VERSION ?? '2025-07',
     }),
     shopDomain,

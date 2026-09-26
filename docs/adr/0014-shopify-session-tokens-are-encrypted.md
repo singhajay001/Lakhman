@@ -45,7 +45,7 @@ Encrypt every Shopify credential the application persists, with AES-256-GCM, in 
 ### Envelope
 
 ```
-shpenc.v1.<keyId>.<nonce>.<tag>.<ciphertext>
+shpenc.v2.<keyId>.<nonce>.<tag>.<ciphertext>
 ```
 
 Six dot-separated fields, each base64url so none can contain a dot.
@@ -60,8 +60,34 @@ decrypting everything first. The nonce is 12 random bytes, fresh for every encry
 derived: GCM's security collapses entirely if a nonce repeats under one key. The tag is verified
 on every decryption.
 
-Version and key id are not authenticated as associated data in v1, deliberately: they select a
-key rather than assert anything, and a wrong key fails the tag check regardless.
+### v2: the envelope is bound to where it is stored
+
+v1 encrypted the credential and nothing else. That stops someone *reading* a stolen row and does
+not stop someone *moving* one. A valid v1 envelope was valid anywhere: copy shop A's
+`accessToken` over shop B's and the tag still verified, because it only ever covered the
+ciphertext. Anyone with write access to the database could promote themselves into another
+merchant's shop **without ever learning a token** — which defeats much of the point of encrypting
+it.
+
+v2 passes the row's identity to GCM as Additional Authenticated Data, so an envelope only opens
+where it was written. The AAD is **not stored**; it is reconstructed from the row at decryption
+time, because a binding an attacker can rewrite alongside the ciphertext binds nothing. It
+covers:
+
+- the **session id**, so a value cannot move between sessions;
+- the **shop domain**, so it cannot move between shops;
+- the **field name**, so an access token cannot be pasted into the refresh token column;
+- the **envelope version**, so a v2 value cannot be relabelled as v1 to shed its binding.
+
+Encoded as `JSON.stringify` over a fixed-order array, which escapes its own separators. A naive
+`a|b|c` join would let a shop domain containing the separator collide with a different
+(sessionId, shop) pair; there is a test for exactly that. The shop domain is lowercased, because
+domains are case-insensitive and a casing mismatch would otherwise look identical to tampering.
+
+**v1 values remain readable** and are reported as v1 so the storage rewrites them as v2 on read —
+the same lazy-upgrade path as key rotation. A v1 value opens regardless of context, which is
+stated as a test rather than a footnote: being able to read it is the whole point of replacing
+it.
 
 ### Every credential, not only the offline access token
 
@@ -129,6 +155,11 @@ Verified against the live column definition rather than assumed.
   authentication error naming the wrong cause.
 - Backups now contain ciphertext. They still need to be encrypted and access-controlled — this
   reduces the blast radius of a leaked dump, it does not make one safe.
+- Anything reading the `session` table directly must decrypt with the right context. Two places
+  legitimately do — the worker, which runs on the offline token, and the asset sync script — and
+  the second was found doing a direct read with **no decryption at all**, which would have handed
+  an envelope to the Admin client and produced an authentication error naming the wrong cause.
+  Both now go through one shared `openStoredAccessToken`.
 - Fixing this surfaced a defect that had nothing to do with encryption: the `session` table was
   missing `refreshToken` and `refreshTokenExpires`, which `PrismaSessionStorage` 11 writes on
   every store. **Every `storeSession` would have failed**, so OAuth could never have persisted a

@@ -114,7 +114,17 @@ describe('storing and loading through the real session storage', () => {
 
     await prisma.session.update({
       where: { id: 'refresh_broken' },
-      data: { refreshToken: encryptToken('x', { id: 'k1', material: Buffer.alloc(32, 0xdd) }) },
+      data: {
+        refreshToken: encryptToken(
+          'x',
+          { id: 'k1', material: Buffer.alloc(32, 0xdd) },
+          {
+            sessionId: 'refresh_broken',
+            shop: 'encrypt-test.myshopify.com',
+            field: 'refreshToken',
+          },
+        ),
+      },
     });
     expect(await store.loadSession('refresh_broken')).toBeUndefined();
   });
@@ -257,6 +267,58 @@ describe('legacy plaintext', () => {
   });
 });
 
+describe('moving a valid envelope between rows', () => {
+  it('refuses a token copied from another session', async () => {
+    // The attack the AAD binding exists to stop, at the level it would actually happen:
+    // someone with write access copies one row's ciphertext over another's. Before the
+    // binding this succeeded, because the tag covered only the ciphertext.
+    const store = storage(CURRENT);
+    await store.storeSession(session({ id: 'donor' }));
+    await store.storeSession(session({ id: 'recipient' }));
+
+    await prisma.session.update({
+      where: { id: 'recipient' },
+      data: { accessToken: await rawToken('donor') },
+    });
+
+    expect(await store.loadSession('recipient')).toBeUndefined();
+    // The donor is untouched and still works.
+    expect((await store.loadSession('donor'))?.accessToken).toBe(TOKEN);
+  });
+
+  it('refuses a token copied from another shop', async () => {
+    const store = storage(CURRENT);
+    await store.storeSession(session({ id: 'shop_a_session' }));
+    const other = new Session({
+      id: 'shop_b_session',
+      shop: 'other-shop.myshopify.com',
+      state: 'nonce',
+      isOnline: false,
+      accessToken: TOKEN,
+    });
+    await store.storeSession(other);
+
+    await prisma.session.update({
+      where: { id: 'shop_b_session' },
+      data: { accessToken: await rawToken('shop_a_session') },
+    });
+    expect(await store.loadSession('shop_b_session')).toBeUndefined();
+
+    await prisma.session.deleteMany({ where: { shop: 'other-shop.myshopify.com' } });
+  });
+
+  it('refuses an access token pasted into the refresh token column', async () => {
+    const store = storage(CURRENT);
+    await store.storeSession(session({ id: 'field_swap' }));
+
+    await prisma.session.update({
+      where: { id: 'field_swap' },
+      data: { refreshToken: await rawToken('field_swap') },
+    });
+    expect(await store.loadSession('field_swap')).toBeUndefined();
+  });
+});
+
 describe('a tampered row', () => {
   it('is refused, and the session does not load', async () => {
     const store = storage(CURRENT);
@@ -279,7 +341,17 @@ describe('a tampered row', () => {
     await store.storeSession(session({ id: 'foreign' }));
     await prisma.session.update({
       where: { id: 'foreign' },
-      data: { accessToken: encryptToken(TOKEN, { id: 'k1', material: Buffer.alloc(32, 0xcc) }) },
+      data: {
+        accessToken: encryptToken(
+          TOKEN,
+          { id: 'k1', material: Buffer.alloc(32, 0xcc) },
+          {
+            sessionId: 'foreign',
+            shop: 'encrypt-test.myshopify.com',
+            field: 'accessToken',
+          },
+        ),
+      },
     });
     expect(await store.loadSession('foreign')).toBeUndefined();
   });

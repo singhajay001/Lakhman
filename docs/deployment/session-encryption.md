@@ -26,6 +26,17 @@ permanently unreadable and each merchant has to install the app again.
 **Store the key somewhere durable before deploying.** Fly stores secrets encrypted and will not
 show them to you again, so `fly secrets set` is not a backup.
 
+## Values are bound to their row
+
+An envelope carries no copy of what it is bound to — the binding is reconstructed from the row
+when it is opened. So a ciphertext moved to a different session, a different shop, or the other
+credential column **fails authentication** rather than opening. That closes the gap where someone
+with write access could copy a token between rows and gain a shop without ever reading a
+credential.
+
+Practical consequence: **you cannot repair a session by copying a token between rows.** If a row
+is wrong, re-run OAuth for that shop.
+
 ## What is protected, and what is not
 
 Protected: a database dump that escapes, read access to the database without access to the
@@ -86,7 +97,7 @@ developer machine. It is removed once the first environment holding real session
 | --- | --- |
 | `refusing a session credential that is not encrypted` | A plaintext token. Run the migration. |
 | `encrypted with key "<id>", which is not in the current key ring` | A key was retired too early. Restore it to `SESSION_ENCRYPTION_KEYS` if you still have it; otherwise that shop must reinstall. |
-| `failed authentication` | The value was modified, or encrypted under a different key with the same id. |
+| `failed authentication` | The value was modified, encrypted under a different key, or **copied from another session, shop or credential field**. |
 | `refusing to start: ...` | The key ring is missing or invalid. The process will not start, deliberately. |
 
 A session that cannot be opened returns nothing rather than the ciphertext. Handing back an

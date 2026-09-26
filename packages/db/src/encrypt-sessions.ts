@@ -34,6 +34,9 @@ export async function encryptStoredSessions(apply: boolean): Promise<Counts> {
     );
   }
 
+  // Captured once so the closure below has a non-null key without a repeated assertion.
+  const current = policy.keys.current;
+
   const rows = await prisma.session.findMany({
     select: { id: true, shop: true, accessToken: true, refreshToken: true },
   });
@@ -65,7 +68,13 @@ export async function encryptStoredSessions(apply: boolean): Promise<Counts> {
         data: Object.fromEntries(
           plaintext.map(([field, value]) => [
             field,
-            encryptToken(value as string, policy.keys!.current),
+            // Bound to this row and this column, so a migrated value cannot later be moved
+            // between sessions, shops or credential fields.
+            encryptToken(value as string, current, {
+              sessionId: row.id,
+              shop: row.shop,
+              field,
+            }),
           ]),
         ),
       });
