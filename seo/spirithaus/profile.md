@@ -39,7 +39,7 @@ is doing the real work of separating this domain from `spirithouse.com.au`.
 
 | Profile | Value | Note |
 |---|---|---|
-| Facebook | `https://www.facebook.com/spirithausau` | Vanity handle created 2026-09-26, replacing a numeric ID (`1345008665356257`) that did not match the live page (`profile.php?id=61594122853424`) |
+| Facebook | `https://www.facebook.com/spirithausau` | Vanity handle created 2026-09-26. The previous value, the numeric page ID `1345008665356257`, **was correct** — owner confirmed it 301s to the vanity URL. I had flagged it as a mismatch because the address bar showed `profile.php?id=61594122853424`; that is the new-Pages *profile* ID, a different identifier for the same page, not a second page. The switch is an improvement, not a repair: `sameAs` should name the canonical URL rather than one that redirects to it. |
 | Instagram | `https://www.instagram.com/spirithaus.com.au` | |
 | YouTube | `https://www.youtube.com/@SpiritHausAU` | Was missing `https://`, so it rendered as a non-URL string and was discarded by Google |
 
