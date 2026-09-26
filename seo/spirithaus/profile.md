@@ -11,9 +11,11 @@
 | Platform | **Shopify** — Dawn theme v16.0.0 (verified) |
 | Theme repo | `singhajay001/spirithaus-theme` @ `7ae5c95` |
 | Catalogue size | 350 products: 209 live, 141 draft. 25 products use variants for pack size. |
-| Store status | **LIVE — password removed 2026-09-18** (owner-confirmed 2026-09-25; an earlier note said 24 Sept and was wrong). Theme `spirithaus-theme/main` is published (role MAIN). Crawlable and indexable — but **as of 2026-09-25, 7 days later, Google has indexed zero pages**. A `site:spirithaus.com.au` search returns nothing from the domain. See `reports/not-indexed-2026-09-25.md`. |
-| Ships to | TODO — AU-wide? VIC only? click-and-collect? |
-| Physical presence | TODO — if yes, this also needs a local profile |
+| Store status | **LIVE — password removed 2026-09-18** (owner-confirmed; an earlier note said 24 Sept and was wrong). Theme `spirithaus-theme/main` is published (role MAIN), deployed via Shopify's GitHub integration on `main`. |
+| Indexation | **Zero pages indexed as of 2026-09-26.** GSC confirmed the homepage as *"URL is unknown to Google"* — never crawled, not rejected. Cause was discovery: no backlinks, no submitted sitemap. **Fixed 2026-09-26** — domain property verified, `sitemap.xml` submitted (Success, sitemap index), homepage + 5 collections placed in the priority crawl queue. Every technical blocker was ruled out first. See `reports/not-indexed-2026-09-25.md`. |
+| Ships to | **Sydney metro only** (owner-confirmed 2026-09-26). Not AU-wide. Photo ID on delivery, strictly 18+. |
+| Liquor licence | **NSW Packaged Liquor Licence LIQP700301260.** Rendered by the `spirithaus-compliance` section as a schema setting, with the statutory warning and photo-ID notice in the footer of every page — verified in the theme, not hardcoded. |
+| Physical presence | TODO — the business presents as delivery-led. Confirm before building any local/GBP strategy. |
 
 ## 🔴 Name collision — never assume a "spirithaus" result is you
 
@@ -34,6 +36,25 @@ Consequences, recorded so they are not rediscovered:
 
 Verified 2026-09-10: `site:spirithaus.com.au` returns zero results; the engine
 substitutes spirithouse.com.au.
+
+### Sydney metro delivery changes the answer to the collision
+
+Confirmed 2026-09-26: delivery is **Sydney metro only**. That is a materially
+different SEO position from national e-commerce and it opens a route the brand
+query does not.
+
+- **Geo-qualified product terms become winnable.** `spirits delivery sydney`,
+  `whisky delivery sydney`, `same day alcohol delivery sydney` are contested by
+  other Sydney retailers, not by every national spirits site — a far softer field
+  than `buy <brand> australia`, and far softer than the `spirithouse` homophone.
+- **Spirit House is in Yandina, Queensland.** Any Sydney qualifier separates the
+  two entities immediately. The collision costs nothing on a geo term.
+- The delivery radius is a genuine differentiator to state on-page, not a
+  limitation to hide. "Delivered across Sydney metro" is the kind of concrete,
+  checkable fact that both classical ranking and AI answers reward.
+- **Do not** chase national head terms. The catalogue cannot outrank Dan Murphy's
+  or BWS on `buy whisky online australia`, and the delivery footprint means a
+  national visitor cannot buy anyway — the traffic would not convert.
 
 ## What winning looks like
 
