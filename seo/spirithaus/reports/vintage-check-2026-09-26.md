@@ -74,3 +74,84 @@ which 11 added a vintage not already in the product title.
 `to-confirm` products, with the ALM vintage pre-filled where it exists, the ALM
 source row for checking, and blank columns for the actual vintage and any
 missing cost.
+
+---
+
+# Part 2 — current-release research for the 22
+
+Owner's decision: keep them live, research the likely current release for each.
+Done. Worksheet: `seo/spirithaus/worksheets/vintage-research-2026-09-26.csv`
+
+**Read this as "the vintage a customer would expect to receive if you ordered
+today", not as a statement about your stock.** For a retailer ordering on
+demand that is usually the same thing, but it is an inference, not a fact.
+
+| Confidence | Count |
+|---|---:|
+| HIGH — a dated release announcement or the producer's own current-release page | 6 |
+| MEDIUM — cited as current by a reputable source, no release date found | 9 |
+| LOW — conflicting or thin evidence | 4 |
+| NONE — could not establish | 3 |
+
+## HIGH confidence — 6
+
+| Product | Vintage | Basis |
+|---|---|---|
+| Henschke Hill of Grace | **2022** | 2022 Single Vineyard Collection released globally 6 May 2026 |
+| Krug Vintage | **2013** | Krug's own July 2026 release list |
+| Taittinger Comtes de Champagne | **2008** | Described Jan 2026 as just out of the cellar |
+| Cullen Diana Madeline | **2024** | Released May–June 2026 at Cullen's Icon Release dinners |
+| Clonakilla Shiraz Viognier | **2024** | Clonakilla's own 2024 release page |
+| Tapanappa Whalebone | **2021** | Current release per the producer |
+
+Hill of Grace at **2022** also sanity-checks against your $949.99 — that is
+about right for the current release, which is a good sign the price was set
+against the right wine.
+
+## MEDIUM — 9
+
+Dom Pérignon Rosé 2009 · Jim Barry The Armagh 2023 · Howard Park Abercrombie
+2023 · Irvine Grand Merlot 2016 · Duckhorn Napa Valley Merlot 2023 · Petaluma
+Coonawarra 2021 · Yalumba The Menzies 2022 · Chandon Vintage Brut 2019 ·
+Jansz Vintage Cuvée 2021
+
+## LOW — 4. Do not publish these years without checking.
+
+- **Louis Roederer Cristal** — 2016 was cited as latest in 2025, but a 2008
+  late release also launched in June 2026. Genuinely conflicting.
+- **Veuve Clicquot La Grande Dame** — the house lists 2018, 2015, 2012 and 2008
+  together without marking which is current.
+- **Torbreck RunRig** — the only dated evidence is a 2016–2021 vertical pack.
+- **Best's Thomson Family** — made roughly six times a decade, so vintages skip
+  and "most recent found" is unreliable.
+
+## NONE — 3
+
+**Yalumba The Octavius** and **d'Arenberg The Dead Arm** — searches were
+inconclusive.
+
+**Woodlands Cabernet Merlot** — a different problem. Woodlands make several
+cabernet merlots at different tiers (Wilyabrup Valley, the Margaret Reserve
+Cabernet Merlot Malbec). At $41.99 ours is presumably the entry Wilyabrup, but
+**the product itself is ambiguous, not just the vintage.** Worth confirming
+which wine this listing actually is before worrying about the year.
+
+## Two things worth acting on beyond vintages
+
+**Irvine Grand Merlot may be under-priced.** The 2016 is listed overseas around
+$199. Ours is $119.99 with no cost recorded, so the margin is unknown and
+possibly negative. Check this one against your invoice before anything else.
+
+**Tapanappa Whalebone is not what the title says.** The current release is
+53.5% cabernet sauvignon, 16% merlot, 16% cabernet franc and 14.5% shiraz — a
+four-variety blend. Our title calls it "Merlot Cabernet Franc", which describes
+an older bottling.
+
+## Recommendation
+
+Apply the 6 HIGH-confidence vintages to titles and SEO once you give the nod —
+that turns `Henschke Hill of Grace` into `Henschke Hill of Grace 2022`, which
+is both accurate and the query people actually search.
+
+Leave the 9 MEDIUM until you have checked a bottle or an invoice. Do not touch
+the 4 LOW or the 3 NONE.
