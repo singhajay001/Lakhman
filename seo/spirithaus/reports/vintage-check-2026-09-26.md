@@ -214,3 +214,20 @@ to close rather than a reason to unpublish. My earlier suggestion to pull the
 22 back to draft was based on treating a missing vintage as a broken promise;
 in fact no promise was ever made, and the fix is to state the position
 explicitly rather than to hide the products.
+
+## Merged and deployed
+
+PR #7 merged as `de5fad4` (squash). Shopify's GitHub integration synced
+`spirithaus-theme/main` at 06:48:12 UTC — `sections/main-product.liquid`,
+`snippets/product-structured-data.liquid`, `assets/spirithaus.css` and
+`locales/en.default.json` all updated.
+
+Verified by reading the deployed file back rather than trusting the timestamp:
+the `current_vintage` property is present in the live theme, the caveat is in
+the property name, and it sits in `additionalProperty` — not in the `offers`
+block. The field is empty on every product, so nothing renders yet; the row
+appears the moment a value is set.
+
+**To use it:** Shopify admin → the product → Metafields →
+*Current vintage (indicative)*. A year, `NV`, or a range. Leave it blank
+rather than guess — blank renders nothing, which is the honest state.
