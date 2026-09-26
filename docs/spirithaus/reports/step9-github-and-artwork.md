@@ -188,3 +188,25 @@ cocktails-cans-b 69%.
 Three publish attempts have now failed on the first try and two of the three
 succeeded on a second. Nothing in the themes explains it; it looks like the
 confirmation step.
+
+### Resolved
+
+`spirithaus-theme/main` was published on 2026-09-26 and is the live theme.
+Verified on the live theme rather than by label:
+
+| File | Size | What it is |
+| --- | --- | --- |
+| `sections/spirithaus-collection-hero.liquid` | 16921 | artwork precedence, the measured 70% floor, the mobile clamp |
+| `templates/collection.json` | 1731 | the Whisky artwork block, 70% scrims, the CTA link |
+| `templates/index.json` | 5187 | the calibration heroes and tiles |
+| `templates/robots.txt.liquid` | 4424 | the AI-crawler rules, stranded on main since before today |
+
+The storefront is a GitHub-connected theme again, so pushes to
+`singhajay001/spirithaus-theme@main` reach it and theme-editor changes write
+back. That closes the drift this step opened with.
+
+Housekeeping left to the owner: five superseded drafts
+(`desc-clamp`, `scrim-floor`, `calibration-heroes`, `chero-contrast-fix`,
+`hero-artwork`) and the remote branch
+`claude/collection-hero-artwork-precedence`, whose content is in `main` and
+which still points at its pre-rebase commits.
