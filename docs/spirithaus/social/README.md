@@ -150,17 +150,27 @@ ABAC applies to social media, so the same rules bind every account here:
 **Liquor licence.** NSW liquor licensees are required to display licence details in
 advertising, and every bio in `copy-pack.md` now carries them:
 
-| | |
-| --- | --- |
-| Licence | **NSW Packaged Liquor Licence No. LIQP700301260** |
-| Held by | Trafalgar Cellars of Marsfield |
-| Seller of record | SPIRITHAUS PTY LTD, ABN 97 701 853 483 (ACN 701 853 483) |
+> **NSW Packaged Liquor Licence No. LIQP700301260**
 
-These were not supplied by hand or guessed. They were read off the storefront's own
-policy pages — `/pages/terms`, `/pages/privacy`, `/pages/returns`, `/pages/delivery`
-and `/pages/responsible-service-of-alcohol` — which all state the same number, so
-the bios now match what the site already publishes rather than introducing a second
-version of it. The exact strings are in `profiles.json` under `brand.licence`.
+It was not supplied by hand or guessed. It was read off the storefront's own policy
+pages — `/pages/terms`, `/pages/privacy`, `/pages/returns`, `/pages/delivery` and
+`/pages/responsible-service-of-alcohol` — which all state the same number, so the
+bios match what the site already publishes rather than introducing a second version
+of it.
+
+**The licence number is the only such detail published.** No licensee name, no
+company name, no ABN, no ACN — not in a profile, and not in the site's structured
+data. Those remain on the storefront policy pages, which is where they belong. The
+JSON-LD generator was trimmed to match and carries a note saying so, because a
+company number is a strong entity disambiguator and someone will otherwise be
+tempted to add it back. Do not.
+
+Two approved forms, both in `profiles.json` under `brand.licence`:
+
+| Where | Form |
+| --- | --- |
+| Anywhere with room | `NSW Packaged Liquor Licence No. LIQP700301260` |
+| Fields under ~100 characters | `NSW Liquor Licence LIQP700301260` |
 
 The standard warning the site uses, where a bio has room for it, is: *"It is against
 the law to sell or supply alcohol to, or to obtain alcohol on behalf of, a person
@@ -231,6 +241,6 @@ confirm the Organization block parses and every `sameAs` URL resolves.
 | Item | Why it is blocked |
 | --- | --- |
 | Confirm `spirithausau` is free on each platform | No network route to the platforms from here; search data is stale |
-| **Marsfield or Box Hill?** | The policy pages say the licensed premises are at Marsfield and the licensee is *Trafalgar Cellars of Marsfield*, but the shop address on the Shopify account is 61 Tablelands Street, Box Hill NSW 2765. Both cannot be the trading address. Worth reconciling before it goes in a profile's location field — a licensee's stated premises is not a detail to leave contradictory across public pages. Nothing in this folder uses it, so nothing is blocked on it. |
+| **Marsfield or Box Hill?** | The storefront policy pages put the licensed premises at Marsfield; the address on the Shopify account is in Box Hill. Both cannot be the trading address, and a licensee's stated premises should not be contradictory across public pages. Settle it before an address goes in a profile's location field. Nothing in this folder uses it, so nothing is blocked on it. |
 | Whether a `social@` alias exists | Account ownership decision |
 | Who owns posting, and at what cadence | Tier 1 is three accounts; unstaffed, it should be one |

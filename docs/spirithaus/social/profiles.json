@@ -1,23 +1,19 @@
 {
   "schemaVersion": 1,
   "brand": {
-    "legalName": "SPIRITHAUS PTY LTD",
     "displayName": "SPIRITHAUS",
     "url": "https://www.spirithaus.com.au",
     "email": "sales@spirithaus.com.au",
     "country": "AU",
     "areaServed": "AU",
     "tagline": "Every bottle chosen. Every one explained.",
-    "abn": "97 701 853 483",
-    "acn": "701 853 483",
     "licence": {
       "number": "LIQP700301260",
-      "type": "NSW Packaged Liquor Licence",
-      "licensee": "Trafalgar Cellars of Marsfield",
-      "shortForm": "NSW Liquor Licence LIQP700301260",
-      "longForm": "SPIRITHAUS PTY LTD — NSW Packaged Liquor Licence No. LIQP700301260, held by Trafalgar Cellars of Marsfield.",
+      "publishAs": "NSW Packaged Liquor Licence No. LIQP700301260",
+      "publishAsShort": "NSW Liquor Licence LIQP700301260",
       "warning": "It is against the law to sell or supply alcohol to, or to obtain alcohol on behalf of, a person under the age of 18 years.",
-      "source": "Taken from the storefront's own policy pages (/pages/terms, /pages/privacy, /pages/returns, /pages/delivery, /pages/responsible-service-of-alcohol), which all carry the same number. Not transcribed from anywhere else."
+      "policy": "Publish the licence number and nothing else. The licensee name, the company name, the ABN and the ACN are deliberately absent from every social profile and from the storefront's structured data, by the shop's instruction. They remain on the storefront policy pages, which is where they belong. Do not reintroduce them here.",
+      "source": "The number was read off the storefront's own policy pages (/pages/terms, /pages/privacy, /pages/returns, /pages/delivery, /pages/responsible-service-of-alcohol), which all state the same one."
     }
   },
   "handle": {

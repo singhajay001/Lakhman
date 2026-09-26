@@ -9,6 +9,13 @@
  * pointing at a 404, or at one of the unrelated US businesses also called Spirit
  * Haus, does not merely fail to help -- it feeds the wrong entity.
  *
+ * This snippet publishes the shop name, URL, email, slogan, logo and sameAs, and
+ * nothing else. It deliberately carries no legal entity name, ABN or ACN: the shop's
+ * instruction is that the licence number is the only such detail that goes out, and
+ * those belong on the storefront policy pages rather than in every page's head. They
+ * would sharpen the disambiguation from the US liquor retailer of the same name, but
+ * that is not a reason to publish them here. Do not add them back.
+ *
  * So the rule this tool enforces is: an account reaches sameAs only once its
  * status is "live", meaning the profile exists, is public, and is ours. Flip the
  * status in profiles.json as each account goes up, and regenerate. The tool
@@ -75,20 +82,6 @@ if (!live.length) {
 
 const sameAs = live.map((a) => `    ${JSON.stringify(a.url)}`).join(",\n");
 
-// The legal entity and the ABN are the strongest disambiguators available. "Spirit
-// Haus" is also a US liquor retailer, so a name and a country alone leave the two
-// entities looking alike; a registered company number belongs to exactly one of them.
-const legalNameLine = brand.legalName
-  ? `  "legalName": ${JSON.stringify(brand.legalName)},\n`
-  : "";
-
-const identifierBlock = brand.abn
-  ? `\n  "identifier": {\n` +
-    `    "@type": "PropertyValue",\n` +
-    `    "propertyID": "ABN",\n` +
-    `    "value": ${JSON.stringify(brand.abn)}\n` +
-    `  },`
-  : "";
 
 const liquid = `{% comment %}
   Organization JSON-LD with sameAs — tells search engines that these profiles and
@@ -109,10 +102,10 @@ const liquid = `{% comment %}
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": ${JSON.stringify(brand.displayName)},
-${legalNameLine}  "url": ${JSON.stringify(brand.url)},
+  "url": ${JSON.stringify(brand.url)},
   "email": ${JSON.stringify(brand.email)},
   "areaServed": ${JSON.stringify(brand.areaServed || "AU")},
-  "slogan": ${JSON.stringify(brand.tagline || "")},${identifierBlock}
+  "slogan": ${JSON.stringify(brand.tagline || "")},
 {%- if settings.logo %}
   "logo": {{ settings.logo | image_url: width: 500 | prepend: 'https:' | json }},
 {%- endif %}
