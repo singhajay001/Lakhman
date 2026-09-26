@@ -1,4 +1,4 @@
-export { logger, childLogger } from './logger.js';
+export { logger, childLogger, REDACTED_PATHS } from './logger.js';
 export type { LogContext } from './logger.js';
 export {
   estimate,

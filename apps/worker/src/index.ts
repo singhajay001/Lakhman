@@ -3,6 +3,7 @@ import IORedis from 'ioredis';
 import { prisma } from '@spirithaus/db';
 import { logger } from '@spirithaus/observability';
 import { assertStorage } from '@spirithaus/media-pipeline';
+import { createShutdown } from './shutdown.js';
 import {
   QUEUES,
   type CompositePayload,
@@ -127,14 +128,32 @@ logger.info({ queues: [QUEUES.shopifySync, QUEUES.render, QUEUES.composite] }, '
  * Graceful shutdown. A worker killed mid-job leaves a stalled job that BullMQ will
  * re-run; closing first lets the current job finish, which is the difference between
  * at-least-once and twice.
+ *
+ * Every worker is registered here by name. The previous version listed two of the three and
+ * omitted the composite worker, so each SIGTERM — which is every deploy — abandoned an in-flight
+ * composite and had BullMQ re-run it once the five-minute lock expired.
  */
-async function shutdown(signal: string): Promise<void> {
-  logger.info({ signal }, 'worker shutting down');
-  await Promise.all([syncWorker.close(), renderWorker.close()]);
-  await connection.quit();
-  await prisma.$disconnect();
-  process.exit(0);
+const shutdown = createShutdown({
+  closables: [
+    { name: 'sync-worker', close: () => syncWorker.close() },
+    { name: 'render-worker', close: () => renderWorker.close() },
+    { name: 'composite-worker', close: () => compositeWorker.close() },
+  ],
+  // After the workers have drained, never before: closing Redis first would strip the connection
+  // out from under a job that is still finishing.
+  after: [
+    { name: 'redis', close: () => connection.quit() },
+    { name: 'prisma', close: () => prisma.$disconnect() },
+  ],
+});
+
+async function onSignal(signal: string): Promise<void> {
+  const result = await shutdown(signal);
+  if (!result.ran) return; // a repeat signal; the first shutdown owns the exit
+  // Non-zero when something would not close, so the platform's logs show an unclean stop rather
+  // than reporting success for a worker that leaked a connection.
+  process.exit(result.failed.length === 0 ? 0 : 1);
 }
 
-process.on('SIGTERM', () => void shutdown('SIGTERM'));
-process.on('SIGINT', () => void shutdown('SIGINT'));
+process.on('SIGTERM', () => void onSignal('SIGTERM'));
+process.on('SIGINT', () => void onSignal('SIGINT'));

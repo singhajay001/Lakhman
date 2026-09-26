@@ -60,8 +60,16 @@ export class BullMqQueue implements JobQueue {
       backoff: { type: 'exponential', delay: options.backoffMs ?? 1000 },
       // Keep a window of terminal jobs so a duplicate enqueue can still see that the
       // work already succeeded.
+      //
+      // Both bounds carry a `count`, not just an `age`. Age alone makes retention a function of
+      // the failure *rate*, which is the one variable you cannot predict — and failed jobs keep
+      // their whole payload. The staging Redis is a 256MB Upstash instance with eviction
+      // deliberately disabled, so that it refuses writes rather than silently dropping queue
+      // entries: unbounded retention there does not degrade, it stops the queue. A burst of
+      // failures — say a storage misconfiguration failing every composite — would otherwise
+      // accumulate for thirty days with no ceiling.
       removeOnComplete: { age: 7 * 24 * 3600, count: 5000 },
-      removeOnFail: { age: 30 * 24 * 3600 },
+      removeOnFail: { age: 30 * 24 * 3600, count: 1000 },
     };
 
     await queue.add(name, payload, jobOptions);

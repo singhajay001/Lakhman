@@ -66,3 +66,37 @@ describe('BullMqQueue against a real Redis', () => {
     expect(await queue.cancel(QUEUE, 'absent')).toBe(false);
   });
 });
+
+/**
+ * Retention is a reliability control, not a tidiness preference.
+ *
+ * Staging runs a 256MB Upstash Redis with eviction deliberately disabled, so that the queue
+ * refuses writes rather than silently dropping jobs. That makes unbounded retention a stop, not a
+ * degradation: an age-only bound ties retention to the failure rate, and failed jobs keep their
+ * whole payload. `removeOnFail` previously had no `count`, so a burst of failures — a storage
+ * misconfiguration failing every composite, for instance — would accumulate for thirty days with
+ * no ceiling.
+ */
+describe('terminal-job retention', () => {
+  it('bounds completed and failed jobs by count as well as age', async () => {
+    await queue.enqueue(QUEUE, { shopId: 'retention' }, { jobId: 'job-retention' });
+
+    // Read what BullMQ actually persisted, rather than trusting the options we passed in.
+    const redis = new IORedis(REDIS_URL, { maxRetriesPerRequest: null });
+    const raw = await redis.hget(`${PREFIX}:${QUEUE}:job-retention`, 'opts');
+    await redis.quit();
+
+    expect(raw, 'the job should be stored with its options').toBeTruthy();
+    const opts = JSON.parse(raw!) as {
+      removeOnComplete?: { age?: number; count?: number };
+      removeOnFail?: { age?: number; count?: number };
+    };
+
+    for (const label of ['removeOnComplete', 'removeOnFail'] as const) {
+      const bound = opts[label];
+      expect(bound, `${label} must be an explicit policy`).toBeTruthy();
+      expect(bound!.age, `${label} needs an age bound`).toBeGreaterThan(0);
+      expect(bound!.count, `${label} needs a count bound, not age alone`).toBeGreaterThan(0);
+    }
+  });
+});
