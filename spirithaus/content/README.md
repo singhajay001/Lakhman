@@ -115,14 +115,29 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    strong commercial query and the product title is a ranking signal, so both
    titles are leaving something on the table.
 
-5. **The two draft Moëts still need their bottling confirmed.** Both are DRAFT
-   and tagged `to-confirm`. `moet-chandon-vintage` does not say which year, and
-   Grand Vintage is released by year; `moet-chandon-rose` could be Rosé
-   Impérial NV or a Grand Vintage Rosé. Both now have SEO and body copy, but
-   written at house and category level — see below. Still empty on both:
-   `why_we_stock_it`, `abv`, `standard_drinks` and `style`.
+5. **30 of the 34 Champagne products are tagged `to-confirm`.** The four that
+   are not are exactly the four with finished copy — Moët Brut Impérial, Veuve
+   Yellow Label, Mumm Cordon Rouge and Piper-Heidsieck. The entire imported
+   fine-wine Champagne range behind them is unverified, and 22 of the 34 are
+   DRAFT. The two Moët drafts now have full copy, but the year on the Vintage
+   and the cuvée on the Rosé still need confirming, as do `abv`,
+   `standard_drinks` and `style` on both.
 
-6. **Nearly everything reads as zero inventory.** If that is real rather than
+6. **Three Champagnes are priced $0.00**: `pol-roger-sir-winston-churchill`,
+   `egly-ouriet-brut-tradition-grand-cru` and `jacquesson-cuvee-no-74x`. Draft,
+   so not sellable, but they will be the moment anyone publishes them.
+
+7. **No Champagne carries the `rosé` tag**, so `/collections/rose` contains no
+   rosé Champagne at all — while its own description promises "sparkling rosé
+   and rosé Champagne". There are eight rosé Champagnes in the catalogue. Tag
+   them and the page delivers what it says.
+
+8. **Prices are moving under us.** The two Moët drafts were repriced between two
+   reads on the same day (Vintage $156.99 → $172.99, Rosé $115.99 → $126.99).
+   Worth knowing before quoting any price in copy — which is why none of the
+   notes do.
+
+9. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
 
 **Done in this pass:** the duplicate Hibiki listing is resolved — the good copy
@@ -213,6 +228,28 @@ above.
 
 This gives `articles/first-single-malt.md` a real destination: its
 `/collections/single-malt` link previously landed on a one-product page.
+
+**`why_we_stock_it` written for all three Moëts.** This is the store's own
+voice — every other Champagne has one, built on a real figure rather than
+adjectives. I had held off on these for want of a market-share number, but the
+reason for a vintage and a rosé is not volume share, it is where they sit in the
+range, and that is checkable:
+
+- **Vintage** — the only Moët bottling the store carries between the Brut
+  Impérial and Dom Pérignon. Verified against the full Moët line-up: $82.99,
+  $172.99, $590.99, $971.99. It leans on the 27.41% NSW segment figure from the
+  store's own Brut Impérial note.
+- **Rosé** — the most accessible rosé Champagne in the range. Verified against
+  all eight rosé Champagnes listed; the next is Deutz at $153.99. **Re-check
+  before publishing**, since most of those eight are DRAFT.
+
+Neither note quotes a dollar figure. The existing notes cite market share, not
+price, and price here is volatile — see the open item on repricing below.
+
+**One thing I missed earlier.** The Brut Impérial's own `why_we_stock_it` still
+read "Claude Moet", "Epernay" and "Brut Imperial". The earlier Moët pass covered
+title, vendor, SEO, producer and body copy, but not this metafield. Now
+corrected, with the 27.41% figure and the store's hyphen style untouched.
 
 **Body copy written for the two draft Moëts.** Both had empty
 `descriptionHtml`. Each now carries two paragraphs, matching the house pattern
