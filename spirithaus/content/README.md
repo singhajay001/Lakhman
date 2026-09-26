@@ -115,13 +115,13 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    strong commercial query and the product title is a ranking signal, so both
    titles are leaving something on the table.
 
-5. **Three Moët & Chandon products still spell it "Moet".** Not just the
-   typo — `moet-et-chandon-brut-imperial-nv` has it in the title, vendor and
-   both SEO fields; `moet-chandon-vintage` and `moet-chandon-rose` have it in
-   title and vendor, are missing the ampersand ("Moet Chandon"), and have **no
-   SEO title or description at all**. I left product titles alone as a
-   merchandising call, but these three want a pass: correct name, and SEO
-   written for the two that have none.
+5. **`moet-chandon-vintage` has no vintage year, and both draft Moëts need
+   confirming.** "Moët & Chandon Vintage" does not say which year, and Grand
+   Vintage is released by year. Both it and `moet-chandon-rose` are DRAFT,
+   tagged `to-confirm`, and still have **empty body descriptions**. Their SEO is
+   written but deliberately general — see below. Confirm the actual bottling
+   (and for the rosé, whether it is Rosé Impérial NV or a Grand Vintage Rosé)
+   and both want a rewrite with the real detail.
 
 6. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
@@ -214,6 +214,45 @@ above.
 
 This gives `articles/first-single-malt.md` a real destination: its
 `/collections/single-malt` link previously landed on a one-product page.
+
+**Three Moët & Chandon products corrected.** The house name was wrong in every
+field that carried it, and in two different ways:
+
+| Handle | Was | Now |
+|---|---|---|
+| `moet-et-chandon-brut-imperial-nv` | Moet & Chandon Brut Imperial NV | Moët & Chandon Brut Impérial NV |
+| `moet-chandon-vintage` | Moet Chandon Vintage | Moët & Chandon Vintage |
+| `moet-chandon-rose` | Moet Chandon Rose | Moët & Chandon Rosé |
+
+Fixed on each: product title, `vendor`, and the `custom.producer` metafield.
+Vendor was previously split across two spellings — "Moet & Chandon" and "Moet
+Chandon" — which fragmented the brand in any vendor-faceted filter; all three
+now read `Moët & Chandon`. The Brut Impérial body copy was also mixed, opening
+with "Moet & Chandon" and switching to "Moët" mid-paragraph; normalised, along
+with its SEO title and description.
+
+**SEO written for the two that had none.** `moet-chandon-vintage` and
+`moet-chandon-rose` had null title and description tags. Both now follow the
+house product pattern — `<Name> <volume> | <differentiator>`, no brand suffix,
+which is how the rest of the catalogue is written:
+
+- **Vintage** — title 54 chars, description 140
+- **Rosé** — title 52 chars, description 143
+
+**Deliberately general, and here is why.** Both are DRAFT and tagged
+`to-confirm`, the store's own marker for unverified stock, and neither has body
+copy or an ABV. "Vintage" carries no year, and at $156.99 and $115.99 the rosé
+could be Rosé Impérial NV or a Grand Vintage Rosé. So the copy states only what
+is certain — producer, Épernay, 1743, Champagne, 750ml, and what
+vintage-declared means as a category — and asserts no year, no tasting notes
+and no ABV. Once the bottling is confirmed, both deserve a rewrite with the
+real detail.
+
+Also added to both drafts: `custom.producer`, `custom.country` (France) and
+`custom.region` (Champagne), which they lacked entirely.
+
+**Handles were not touched**, so no redirects were needed — the URLs still read
+`/products/moet-...` and the redirect table is unchanged at three entries.
 
 **Brand casing normalised to SPIRITHAUS, and the Moët typo cleared.** All 28
 collection SEO titles ended `| Spirithaus`; they now end `| SPIRITHAUS`,
