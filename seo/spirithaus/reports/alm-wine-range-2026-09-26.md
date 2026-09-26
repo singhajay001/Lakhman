@@ -177,3 +177,51 @@ store, ahead of the range build it unblocks.
 
 This file is national. Spirithaus delivers Sydney metro only, so NSW
 sell-through is the better signal, and where the two disagree NSW should win.
+
+---
+
+# Part 3 — the add list, built for image sourcing
+
+`worksheets/to-add-shortlist-2026-09-26.csv` — **240 products**, ranked by ALM
+national sales, excluding anything confirmed already stocked.
+
+| | Products | Segments |
+|---|---:|---|
+| Wine | 108 | 9 |
+| Spirits | 120 | 10 |
+| RTDs | 12 | 1 |
+
+**209 of the 240 already have a barcode**, which means most can be created with
+a valid GTIN from day one — no repeat of the backfill problem.
+
+Excluded: casks, kegs, miniatures, PET and 1.5 L+ formats — top sellers
+nationally, but wrong for a premium online retailer delivering Sydney metro.
+Capped at 12 per segment so one category cannot swamp the list.
+
+Each row carries a **readable product name** and a matching **image filename**
+in the store's existing convention, so downloaded images drop straight in. ALM
+descriptions are abbreviated past usefulness for image searching —
+`W/BLASS GRY LBL CAB SHZ 750ML` is expanded to
+`Wolf Blass Grey Label Cabernet Shiraz 750mL`.
+
+`worksheets/to-add-topsellers-2026-09-26.csv` holds the unfiltered 542 behind
+the shortlist.
+
+## A filter bug worth recording
+
+The first cut returned 38 wines instead of 108. The small-format filter
+`(50|100|200|375)ML$` was matching **750ML** — the string "750ML" ends with
+"50ML". It was silently removing almost every 750 mL wine, which is to say
+almost the entire wine range.
+
+Fixed with a negative lookbehind, `(?<!\d)(50|100|200)ML$`, and the filter now
+carries assertions so it cannot regress:
+
+```
+assert not bad_format('BROWN BRO MOSCATO 750ML')     # must survive
+assert bad_format('JIM BEAM WHITE LBL 37%MINS50ML')  # must not
+```
+
+It only surfaced because the wine count looked wrong against the spirits
+count. A filter that silently drops the right answer is worse than one that
+errors.
