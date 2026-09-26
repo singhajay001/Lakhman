@@ -115,11 +115,13 @@ botanicals or cask and the flavour direction, and they will take ten minutes.
    strong commercial query and the product title is a ranking signal, so both
    titles are leaving something on the table.
 
-5. **"Spirithaus" vs "SPIRITHAUS" in SEO titles.** All 28 collection titles end
-   `| Spirithaus`, while the articles, the wordmark and the Shopify shop name
-   all use SPIRITHAUS. The collection casing is applied consistently, so I read
-   it as a deliberate choice and left it alone — but the two sets of pages
-   currently disagree. Worth settling one way or the other.
+5. **Three Moët & Chandon products still spell it "Moet".** Not just the
+   typo — `moet-et-chandon-brut-imperial-nv` has it in the title, vendor and
+   both SEO fields; `moet-chandon-vintage` and `moet-chandon-rose` have it in
+   title and vendor, are missing the ampersand ("Moet Chandon"), and have **no
+   SEO title or description at all**. I left product titles alone as a
+   merchandising call, but these three want a pass: correct name, and SEO
+   written for the two that have none.
 
 6. **Nearly everything reads as zero inventory.** If that is real rather than
    untracked, expect demotion from Shopping and organic over time.
@@ -212,6 +214,32 @@ above.
 
 This gives `articles/first-single-malt.md` a real destination: its
 `/collections/single-malt` link previously landed on a one-product page.
+
+**Brand casing normalised to SPIRITHAUS, and the Moët typo cleared.** All 28
+collection SEO titles ended `| Spirithaus`; they now end `| SPIRITHAUS`,
+matching the wordmark, the Shopify shop name and the six articles. Three page
+metafields also read "Spirithaus" and were corrected: the `contact` title tag,
+and the `terms` and `privacy` description tags. The other five pages already
+used SPIRITHAUS.
+
+Casing is the same character count, so no title changed length — still 33–59
+characters, none truncating.
+
+**A trap worth recording.** `collectionUpdate` with `seo: { title }` alone does
+**not** leave the description untouched — it writes null over it. I found this
+by testing the pattern on one collection before batching, and had to restore
+`bourbon`'s description. Every subsequent update passed both fields. Anyone
+scripting Shopify SEO changes should assume the same for the whole `seo` object.
+
+**Moët & Chandon** now carries its diaeresis in the three places that had it
+wrong: the `sparkling` meta description, the `sparkling` body copy and the
+`champagne` body copy. The `champagne` SEO fields were already fixed in the
+previous pass.
+
+Checked and found already correct: all six blog articles, five of the eight
+pages, and every product — no product SEO uses a brand suffix, and the one
+product matching "spirithaus" does so through a `vendor` field that already
+reads SPIRITHAUS.
 
 **Collection SEO — audited and corrected, not written from scratch.** By the
 time I came to this, SEO titles and meta descriptions already existed on 28 of
