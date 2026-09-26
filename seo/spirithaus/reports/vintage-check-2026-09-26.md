@@ -349,3 +349,65 @@ can be shared; prose cannot.
 7 of the 30 `to-confirm` products carry a vintage: the six HIGH ones plus
 Cristal. The remaining 23 render no vintage row, which stays correct until
 their year is known.
+
+---
+
+# Part 6 — duplicate retailer copy found and removed
+
+**Owner's instruction:** rewrite the Dan Murphy's information so we give Google
+no reason to discount us.
+
+Checking before writing turned up something worth knowing: **Cristal's live
+product page was carrying Dan Murphy's copy word for word.**
+
+> "One of the finest Champagnes around, this Louis Roederer Cristal will take
+> any celebration to the next level. A blend of Pinot Noir and Chardonnay gives
+> this Cristal its varietal charm, with plenty of bubbles for a tingling
+> mouthfeel."
+
+Plus a second paragraph hardcoding the vintage disclaimer into the body text,
+which now duplicated the one the theme renders from the metafield.
+
+## It is not systemic — one product out of 486
+
+All 486 product descriptions were scanned for retailer-copy fingerprints:
+the disclaimer sentence, Dan Murphy's marketing phrases, their page furniture
+("Read less", "Product specifications", "Write the first review"), pasted spec
+blocks and any link to their domain.
+
+**One hit. Cristal.** Every other description is original. That is the good
+news — this was a single paste, not a habit, and it is now fixed.
+
+## What replaced it
+
+Both champagnes rewritten from the *facts* rather than the words. Facts are not
+copyrightable; expression is. The house voice is the same two-paragraph shape
+as the other 55 descriptions written this session — what it is and why, then
+how it actually tastes and how to serve it.
+
+**Cristal** now leads on the 1876 commission for Tsar Alexander II and the
+clear, flat-based bottle still made to that specification, then the estate-grown
+fruit and the pinot-led blend. The hardcoded disclaimer paragraph is gone — the
+theme renders it properly from `current_vintage`, so keeping a second copy in
+the body text would have been both redundant and a maintenance trap.
+
+**Krug Grande Cuvée** gained the substance from your paste, written fresh: 146
+wines across eleven years, 1998 to 2016, at roughly 44/36/20 pinot noir,
+chardonnay and meunier, then seven more years in the cellars after blending.
+
+The Édition-specific numbers are framed as **"the 172ème Édition, for
+instance"**. That matters: those figures change with every recreation, so
+stating them flat would go stale exactly the way a vintage in a title does. As
+an illustration of how the wine is built they stay true whichever Édition is in
+the box.
+
+Also kept: Krug's own suggestion of Indian food. It is distinctive, genuinely
+useful, and nothing like the interchangeable champagne copy every other
+retailer runs.
+
+## What was deliberately left out
+
+- **Dan Murphy's prose**, in any form.
+- **The 97-point James Suckling score.** It attaches to one Édition, and a
+  score asserted on a page whose contents change is a claim that quietly
+  becomes false.
