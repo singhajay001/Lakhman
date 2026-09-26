@@ -225,3 +225,59 @@ assert bad_format('JIM BEAM WHITE LBL 37%MINS50ML')  # must not
 It only surfaced because the wine count looked wrong against the spirits
 count. A filter that silently drops the right answer is worse than one that
 errors.
+
+---
+
+# Part 4 — the wishlist drafts deleted
+
+**Owner's decision:** remove only the drafts ALM does not carry; keep the 153
+that it does.
+
+**94 products deleted.** Store went from 486 to **392** — 238 live, 154 draft.
+
+It was 94 rather than 95 because Billecart-Salmon Brut Rosé was costed and
+priced earlier today, so it no longer qualified.
+
+## What was checked before deleting
+
+Deletion cannot be undone, so each candidate had to satisfy **four conditions
+simultaneously**, asserted in code rather than assumed:
+
+```
+assert all DRAFT          # nothing live could be caught
+assert no cost recorded   # no ALM match, no buying history
+assert price == 0.00      # never priced for sale
+assert no barcode         # no identity attached
+```
+
+Anything with a single one of those — a cost, a price, a barcode, an image —
+was excluded. The assertions passed on all 94 before a single delete ran.
+
+**What was lost is genuinely small:** a title, a handle and some tags. No cost,
+no image, no SEO fields, no price, no barcode. These were wishlist rows created
+from an aspirational fine-wine list, not products that had ever been worked on.
+
+A record of exactly what went, with Shopify IDs, is at
+`worksheets/deleted-drafts-2026-09-26.csv`.
+
+## Why the ALM-match caveat still stands
+
+The 94 were identified by *absence of a cost*, not by a name match — which is
+the safe direction. A missing cost means no ALM row was ever matched to it
+through any of this session's work.
+
+That is still not proof ALM cannot supply them. Bass Phillip, Bindi, By Farr,
+Tolpuddle and Chambers Rosewood are real wines that a specialist merchant may
+well be able to order. What is now true is that **they are not in the store
+pretending to be range**, and if one is wanted later it can be created properly
+from an ALM line with a cost, a barcode and an image from the outset.
+
+## Store now
+
+| | Before | After |
+|---|---:|---:|
+| Total products | 486 | **392** |
+| Live | 238 | **238** |
+| Draft | 248 | **154** |
+
+No live product was touched.
