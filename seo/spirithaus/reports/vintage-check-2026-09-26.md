@@ -155,3 +155,62 @@ is both accurate and the query people actually search.
 
 Leave the 9 MEDIUM until you have checked a bottle or an invoice. Do not touch
 the 4 LOW or the 3 NONE.
+
+---
+
+# Part 3 — correction: vintage does not belong in the title
+
+**Owner supplied, 2026-09-26:** Dan Murphy's lists Krug Vintage as
+*"Current Vintage 2006* — Vintage is not guaranteed and may vary store to store
+or when delivered."* And ALM says vintage varies batch to batch.
+
+**This overturns the Part 2 recommendation, and Krug is the proof.**
+
+Krug Vintage was my single highest-confidence call — **2013**, taken from Krug's
+own July 2026 release list. Dan Murphy's is shipping **2006**. The producer's
+current release and what the Australian retail channel actually ships are
+different things, by seven years in this case.
+
+So the recommendation to "apply the 6 HIGH-confidence vintages to titles" was
+wrong. A year in the title is a promise, and this supply chain cannot keep it.
+It would also need re-editing every time a batch turned over, on a store where
+titles feed the sitemap, the canonical URL and the product schema.
+
+## What replaced it
+
+The pattern the major retailers already use: show the vintage as an explicitly
+**indicative** figure beside the other specs, never as part of the product's
+identity.
+
+- `custom.current_vintage` metafield — created in the store. Single-line text,
+  so `2022`, `NV` and a range are all equally expressible.
+- Spec table row, below Alcohol, guarded on `!= blank`. An unknown vintage
+  renders nothing — blank is the right value, and an empty row would read as
+  "we do not know" rather than "not stated".
+- The value and the disclaimer live inside the same guard, so the figure can
+  never render bare.
+- The caveat is repeated in the JSON-LD property name
+  (`Current vintage (indicative, not guaranteed)`) because a machine reading
+  the feed never sees the on-page note. Vintage is kept out of the `Offer`
+  block — it is not part of the offer.
+
+Pull request: `singhajay001/spirithaus-theme` **#7**, 17 assertions passing in
+`patches/vintage.py`.
+
+## No values were populated
+
+Deliberately. Every vintage in the Part 2 research is an inference about the
+producer's current release, and Krug demonstrates that this is not what lands
+in the box. The field should be filled from what the supplier actually ships.
+
+The Part 2 research is not wasted — it is a reasonable starting guess to check
+a delivery against — but it is not publishable as-is.
+
+## What this also settles
+
+The 30 products tagged `to-confirm` are **not** unsafe to have live for want of
+a vintage. They are missing an indicative spec and a disclaimer, which is a gap
+to close rather than a reason to unpublish. My earlier suggestion to pull the
+22 back to draft was based on treating a missing vintage as a broken promise;
+in fact no promise was ever made, and the fix is to state the position
+explicitly rather than to hide the products.
